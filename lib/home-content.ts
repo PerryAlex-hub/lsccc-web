@@ -142,7 +142,7 @@ export const resources = [
     id: "general-enquiries",
     title: "General enquiries",
     description: "Information requests, media and partnership messages.",
-    href: destinations.citizensGate,
+    href: destinations.contact,
   },
   {
     id: "government-services",

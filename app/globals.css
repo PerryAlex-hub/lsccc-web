@@ -6,7 +6,7 @@
   color-scheme: light;
 }
 
-/* Values taken from the current Figma editorial homepage. */
+/* Shared colours and type scale from the supplied Figma designs. */
 @theme {
   --color-navy: #09284b;
   --color-blue: #0057a8;
@@ -58,6 +58,11 @@
   [id] {
     scroll-margin-top: 1.5rem;
   }
+
+  button:not(:disabled),
+  summary {
+    cursor: pointer;
+  }
 }
 
 /* Mastheads and interior pages use 64px desktop gutters; homepage
@@ -87,4 +92,27 @@
     rgba(6, 25, 47, 0.79) 57%,
     rgba(6, 25, 47, 0.27)
   );
+}
+
+@utility form-input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 3.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0;
+  background-color: white;
+  padding: 1rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: var(--color-ink);
+
+  &::placeholder {
+    color: var(--color-muted);
+    opacity: 1;
+  }
+
+  &[aria-invalid="true"] {
+    border-color: #b32136;
+  }
 }

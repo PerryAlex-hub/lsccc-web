@@ -1,24 +1,49 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
-import { destinations, navigation, searchablePages } from "@/lib/navigation";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { destinations, navigation } from "@/lib/navigation";
+import { SiteSearch } from "./search";
 
 export function SiteNavigation() {
+  const pathname = usePathname();
+  return <NavigationControls key={pathname} pathname={pathname} />;
+}
+
+function NavigationControls({ pathname }: { pathname: string }) {
+  const isActive = (href: string) =>
+    href === "/"
+      ? pathname === "/"
+      : pathname.startsWith(href.split("#")[0]) ||
+        (href === destinations.safety &&
+          pathname === destinations.beforeYouCall);
   const [panel, setPanel] = useState<"menu" | "about" | "search" | null>(null);
-  const [query, setQuery] = useState("");
   const searchButton = useRef<HTMLButtonElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
   const aboutButton = useRef<HTMLButtonElement>(null);
-  const results = searchablePages.filter((page) =>
-    `${page.title} ${page.description}`
-      .toLowerCase()
-      .includes(query.trim().toLowerCase()),
-  );
+  const containerRef = useRef<HTMLDivElement>(null);
   const close = () => setPanel(null);
+
+  useEffect(() => {
+    if (!panel) {
+      return;
+    }
+    function dismiss(event: PointerEvent) {
+      if (
+        event.target instanceof Node &&
+        !containerRef.current?.contains(event.target)
+      ) {
+        setPanel(null);
+      }
+    }
+    document.addEventListener("pointerdown", dismiss);
+    return () => document.removeEventListener("pointerdown", dismiss);
+  }, [panel]);
 
   return (
     <div
+      ref={containerRef}
       className="relative z-20 bg-paper"
       onKeyDown={(event) => {
         if (event.key === "Escape" && panel) {
@@ -59,8 +84,9 @@ export function SiteNavigation() {
                     type="button"
                     aria-expanded={panel === "about"}
                     aria-controls="about-navigation"
+                    aria-current={isActive(item.href) ? "page" : undefined}
                     onClick={() => setPanel(panel === "about" ? null : "about")}
-                    className="min-h-11 whitespace-nowrap hover:underline hover:underline-offset-4"
+                    className="min-h-11 whitespace-nowrap hover:underline hover:underline-offset-4 aria-[current=page]:underline aria-[current=page]:underline-offset-4"
                   >
                     About us{" "}
                     <span aria-hidden="true" className="ml-2">
@@ -96,9 +122,9 @@ export function SiteNavigation() {
                 <Link
                   key={item.label}
                   href={item.href}
-                  aria-current={index === 0 ? "page" : undefined}
+                  aria-current={isActive(item.href) ? "page" : undefined}
                   onClick={close}
-                  className={`${["basis-[64px]", "", "basis-[210px]", "basis-[180px]", "basis-[160px]", "basis-[110px]"][index]} flex min-h-11 items-center whitespace-nowrap hover:underline hover:underline-offset-4`}
+                  className={`${["basis-[64px]", "", "basis-[210px]", "basis-[180px]", "basis-[160px]", "basis-[110px]"][index]} flex min-h-11 items-center whitespace-nowrap hover:underline hover:underline-offset-4 aria-[current=page]:underline aria-[current=page]:underline-offset-4`}
                 >
                   {item.label}
                 </Link>
@@ -130,6 +156,7 @@ export function SiteNavigation() {
                 key={item.label}
                 href={item.href}
                 onClick={close}
+                aria-current={isActive(item.href) ? "page" : undefined}
                 className="px-1 py-3 hover:underline"
               >
                 {item.label}
@@ -145,65 +172,13 @@ export function SiteNavigation() {
           </nav>
         )}
         {panel === "search" && (
-          <section
-            id="site-search"
-            aria-label="Search the website"
-            className="border-t border-border py-6"
-          >
-            <label
-              htmlFor="site-search-input"
-              className="mb-3 block text-sm font-bold text-navy"
-            >
-              Search public information
-            </label>
-            <div className="flex max-w-3xl gap-3">
-              <input
-                id="site-search-input"
-                type="search"
-                autoFocus
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search emergency services, news or the centre"
-                className="min-w-0 flex-1 border border-border bg-white px-4 py-3 text-base"
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  close();
-                  searchButton.current?.focus();
-                }}
-                className="px-3 text-sm font-bold text-navy"
-              >
-                Close
-              </button>
-            </div>
-            <p role="status" className="my-4 text-xs text-muted">
-              {results.length} {results.length === 1 ? "result" : "results"}
-            </p>
-            <ul className="grid max-w-4xl gap-3 sm:grid-cols-2">
-              {results.map((page) => (
-                <li key={page.href}>
-                  <Link
-                    href={page.href}
-                    onClick={close}
-                    className="block border border-border bg-white p-4 hover:border-blue"
-                  >
-                    <span className="block text-sm font-bold text-navy">
-                      {page.title} <span aria-hidden="true">→</span>
-                    </span>
-                    <span className="mt-2 block text-xs leading-relaxed text-muted">
-                      {page.description}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            {results.length === 0 && (
-              <p className="text-sm text-muted">
-                No matching information. Try “emergency”, “news” or “contact”.
-              </p>
-            )}
-          </section>
+          <SiteSearch
+            onNavigate={close}
+            onClose={() => {
+              close();
+              searchButton.current?.focus();
+            }}
+          />
         )}
       </div>
     </div>

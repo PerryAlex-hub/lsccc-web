@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import { assets } from "@/lib/assets";
-import { destinations } from "@/lib/navigation";
+import { destinations, navigation } from "@/lib/navigation";
 import { SiteNavigation } from "./navigation";
 
 export function SiteHeader() {
@@ -101,7 +102,30 @@ export function SiteHeader() {
           </div>
         </div>
       </div>
-      <SiteNavigation />
+      <Suspense fallback={<NavigationFallback />}>
+        <SiteNavigation />
+      </Suspense>
     </header>
+  );
+}
+
+function NavigationFallback() {
+  return (
+    <div className="bg-paper">
+      <nav
+        aria-label="Main navigation"
+        className="site-container flex min-h-[61px] flex-wrap items-center gap-x-7 gap-y-2 py-2 text-sm font-semibold text-navy"
+      >
+        {navigation.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="py-2 hover:underline"
+          >
+            {item.label}
+          </Link>
+        ))}
+      </nav>
+    </div>
   );
 }

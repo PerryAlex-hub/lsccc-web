@@ -29,10 +29,14 @@ const photographs = [
 
 export default function DesignPreview() {
   return (
-    <main className="site-container section-space space-y-12">
+    <div className="site-container section-space space-y-12">
       <div className="max-w-3xl space-y-4">
-        <p className="text-eyebrow font-bold text-blue">STAGE 1 / FOUNDATION REVIEW</p>
-        <h1 className="text-page font-extrabold text-navy">LSCCC design foundation</h1>
+        <p className="text-eyebrow font-bold text-blue">
+          STAGE 1 / FOUNDATION REVIEW
+        </p>
+        <h1 className="text-page font-extrabold text-navy">
+          LSCCC design foundation
+        </h1>
         <p className="text-body text-muted">
           Review the Figma palette, Plus Jakarta Sans typography and original
           assets. This temporary review page will be removed before launch.
@@ -40,11 +44,15 @@ export default function DesignPreview() {
       </div>
 
       <section aria-labelledby="palette-heading" className="space-y-6">
-        <h2 id="palette-heading" className="text-section font-bold text-navy">Colour palette</h2>
+        <h2 id="palette-heading" className="text-section font-bold text-navy">
+          Colour palette
+        </h2>
         <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
           {colours.map((colour) => (
             <div key={colour.name} className="space-y-2">
-              <div className={`h-20 border border-border ${colour.className}`} />
+              <div
+                className={`h-20 border border-border ${colour.className}`}
+              />
               <p className="text-sm font-bold">{colour.name}</p>
               <p className="text-xs text-muted">{colour.value}</p>
             </div>
@@ -52,40 +60,72 @@ export default function DesignPreview() {
         </div>
       </section>
 
-      <section aria-labelledby="type-heading" className="space-y-6 border-t border-border pt-10">
-        <h2 id="type-heading" className="text-section font-bold text-navy">Typography</h2>
+      <section
+        aria-labelledby="type-heading"
+        className="space-y-6 border-t border-border pt-10"
+      >
+        <h2 id="type-heading" className="text-section font-bold text-navy">
+          Typography
+        </h2>
         <div className="space-y-6 bg-paper p-6 sm:p-10">
-          <p className="text-eyebrow font-bold text-navy">PLUS JAKARTA SANS / REGULAR TO EXTRA BOLD</p>
-          <p className="max-w-[810px] text-page font-bold text-navy md:text-hero">
-            Coordinating emergency response.<br className="hidden md:block" />
-            {" "}Serving the people of Lagos.
+          <p className="text-eyebrow font-bold text-navy">
+            PLUS JAKARTA SANS / REGULAR TO EXTRA BOLD
           </p>
-          <p className="text-section font-bold text-ink">News &amp; public information</p>
+          <p className="max-w-[810px] text-page font-bold text-navy md:text-hero">
+            Coordinating emergency response.
+            <br className="hidden md:block" /> Serving the people of Lagos.
+          </p>
+          <p className="text-section font-bold text-ink">
+            News &amp; public information
+          </p>
           <p className="max-w-3xl text-lead text-ink">
             Connecting emergency calls with the agencies that respond.
           </p>
           <p className="max-w-3xl text-body text-muted">
-            LSCCC manages communication through Lagos State’s emergency helplines
-            and coordinates with relevant response agencies.
+            LSCCC manages communication through Lagos State’s emergency
+            helplines and coordinates with relevant response agencies.
           </p>
-          <p className="text-sm font-semibold text-navy">Emergency lines: 112 / 767</p>
+          <p className="text-sm font-semibold text-navy">
+            Emergency lines: 112 / 767
+          </p>
         </div>
       </section>
 
-      <section aria-labelledby="identity-heading" className="space-y-6 border-t border-border pt-10">
-        <h2 id="identity-heading" className="text-section font-bold text-navy">Official identity assets</h2>
+      <section
+        aria-labelledby="identity-heading"
+        className="space-y-6 border-t border-border pt-10"
+      >
+        <h2 id="identity-heading" className="text-section font-bold text-navy">
+          Official identity assets
+        </h2>
         <div className="flex flex-wrap gap-10">
           {[assets.lagosCrest, assets.lscccEmblem].map((asset) => (
             <figure key={asset.figmaNodeId} className="space-y-4">
-              <Image src={asset.image} alt={asset.alt} width={80} height={80} className="size-20 object-contain" />
-              <figcaption className="max-w-64 text-sm text-muted">{asset.alt}</figcaption>
+              <Image
+                src={asset.image}
+                alt={asset.alt}
+                width={80}
+                height={80}
+                className="size-20 object-contain"
+              />
+              <figcaption className="max-w-64 text-sm text-muted">
+                {asset.alt}
+              </figcaption>
             </figure>
           ))}
         </div>
       </section>
 
-      <section aria-labelledby="photography-heading" className="space-y-6 border-t border-border pt-10">
-        <h2 id="photography-heading" className="text-section font-bold text-navy">Original photography</h2>
+      <section
+        aria-labelledby="photography-heading"
+        className="space-y-6 border-t border-border pt-10"
+      >
+        <h2
+          id="photography-heading"
+          className="text-section font-bold text-navy"
+        >
+          Original photography
+        </h2>
         <div className="grid gap-8 md:grid-cols-2">
           {photographs.map(({ asset, caption }) => (
             <figure key={asset.figmaNodeId} className="space-y-3">
@@ -96,11 +136,13 @@ export default function DesignPreview() {
                 className="h-auto w-full"
                 placeholder="blur"
               />
-              <figcaption className="text-sm font-semibold text-navy">{caption}</figcaption>
+              <figcaption className="text-sm font-semibold text-navy">
+                {caption}
+              </figcaption>
             </figure>
           ))}
         </div>
       </section>
-    </main>
+    </div>
   );
 }

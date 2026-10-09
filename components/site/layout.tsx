@@ -6,7 +6,9 @@ export function SiteLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <SiteHeader />
-      {children}
+      <main id="main-content" tabIndex={-1} className="flex-1">
+        {children}
+      </main>
       <SiteFooter />
     </>
   );

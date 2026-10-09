@@ -2,10 +2,9 @@
 
 Complete each checkpoint and stop for the user's review before starting the next.
 
-The user approved checkpoint 1 and requested checkpoints 2 and 3 together.
-The next review covers the reusable header, footer and complete homepage.
-During this review, internal links use live homepage anchors defined in
-`lib/navigation.ts`. Switch these to the interior routes at checkpoint 4.
+The user approved the foundation, then the reusable header, footer and homepage.
+The current review combines checkpoints 4 and 5: all seven interior page designs
+and their interactions. Internal links now use the completed page routes.
 
 Checkpoint 2 + 3 review includes the full editorial homepage and shared shell.
 The mobile menu, About dropdown, section search, source links and emergency
@@ -37,9 +36,30 @@ Escape with focus restoration. The desktop header and hero match the design's
 - The locally hosted variable font is distributed by Google Fonts under the
   SIL Open Font License; its license is saved alongside the font in `app/fonts`.
 
+## Interior architecture and interactions
+
+Route files compose page sections and define metadata. Shared UI, content data,
+client interactions and server enquiry handling live in separate modules. The
+homepage has also been split into reusable sections, and site search is separate
+from navigation. Prettier configuration and formatting scripts cover the project.
+
+Safety resources support text search, topic selection, result counts, empty
+states and filter reset. News supports category and text filters, the local
+article route, source attribution and article return navigation. Emergency FAQs
+can be collapsed with native keyboard-accessible disclosure controls. Navigation
+shows the current page, supports the About dropdown and mobile menu, and restores
+focus when search or menus are closed with Escape.
+
+The enquiry form validates fields using the same schema as the API, focuses the
+first invalid field, preselects approved enquiry topics from links, prevents
+duplicate submissions and preserves a message if delivery fails. The user
+explicitly deferred the email destination. SMTP delivery is prepared but remains
+unconfigured; no enquiry is reported as sent while configuration is missing.
+
 ## Items to resolve before launch
 
-- The design does not specify an enquiry delivery endpoint or recipient.
+- Confirm the centre's exact enquiry email and approved sending service. The
+  required server environment variables are documented in `.env.example`.
 - Design annotations request publishing clearance for photography and news
   references. Preserve source attribution.
 - Safety topics currently link to official resources; additional topic pages

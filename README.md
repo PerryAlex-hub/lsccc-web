@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+﻿# Lagos State Command & Control Centre
 
-## Getting Started
+Next.js 16.4, TypeScript and Tailwind CSS 4 implementation of the supplied Figma
+design. The site uses the original photographs and locally hosted Plus Jakarta
+Sans font.
 
-First, run the development server:
+## Run locally
 
-```bash
+```sh
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+For a production preview:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```sh
+npm run build
+npm run start -- --port 3003
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project structure
 
-## Learn More
+- `app/`: route composition, metadata and the enquiry API.
+- `components/ui/`: shared page introductions, sections, photographs and links.
+- `components/site/`: reusable header, footer, navigation and site search.
+- `components/home/`, `about/`, `emergency/`, `safety/`, `news/`, `contact/`:
+  page sections and focused interaction components.
+- `lib/content/`: interior page content; homepage content is in `lib/home-content.ts`.
+- `lib/enquiries/`: validation shared by the browser and API, and server email delivery.
+- `lib/assets.ts` and `lib/navigation.ts`: central asset and destination mappings.
+- `tests/`: search and enquiry validation tests.
 
-To learn more about Next.js, take a look at the following resources:
+The routes are `/`, `/about`, `/emergency-services`, `/safety-resources`,
+`/news-media`, `/contact`, `/before-you-call`, and
+`/news-media/lagos-strengthens-emergency-coordination-hub`.
+The temporary foundation review remains at `/design-preview`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Checks and formatting
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```sh
+npm run lint
+npm test
+npm run format:check
+npm run build
+```
 
-## Deploy on Vercel
+Run `npm run format` after editing files. Prettier formats TypeScript, JSX, CSS,
+JSON and Markdown consistently.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Enquiry email delivery
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Email delivery is intentionally unconfigured pending confirmation of the centre's
+inbox. The form validates enquiries, preserves messages on failure and reports
+that a message has not been sent when delivery is unavailable.
+
+When the inbox and sending service are confirmed, copy `.env.example` to
+`.env.local` and set the recipient, approved sender and SMTP credentials. Use a
+verified sender belonging to the sending service; the visitor's email is used as
+the reply-to address. Restart the server after configuration.
+
+The server uses Nodemailer's [SMTP transport](https://nodemailer.com/smtp), with
+TLS on port 465 or STARTTLS on port 587. Credentials remain on the server.
+The API returns success only after the mail server accepts delivery; it does not
+claim that the message has been read.
+
+See `docs/implementation.md` for the Figma references and review checkpoints.

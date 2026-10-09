@@ -26,7 +26,11 @@ const groups = [
 
 export function SiteFooter() {
   return (
-    <footer id="contact" className="bg-navy text-white" data-node-id="17:74">
+    <footer
+      id="site-footer"
+      className="bg-navy text-white"
+      data-node-id="17:74"
+    >
       <div className="site-container section-space space-y-10">
         <div className="grid gap-10 sm:grid-cols-2 xl:grid-cols-[424fr_240fr_264fr_240fr] xl:gap-12">
           <div className="space-y-4">
@@ -84,9 +88,12 @@ export function SiteFooter() {
                 </a>
               </p>
               <p>Available 24 hours</p>
-              <p>Ikeja, Lagos State</p>
+              <address className="not-italic">
+                Governor’s Road, opposite the Deputy Governor’s Office, Alausa,
+                Ikeja, Lagos State, Nigeria.
+              </address>
               <TextLink
-                href={destinations.citizensGate}
+                href={destinations.contact}
                 className="inline-block py-1 font-normal sm:py-0"
               >
                 Contact the centre
