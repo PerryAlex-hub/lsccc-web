@@ -210,3 +210,30 @@
     border-color: #b32136;
   }
 }
+
+@utility admin-input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 2.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  background: white;
+  padding: 0.75rem;
+  color: var(--color-ink);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+
+  &::placeholder {
+    color: var(--color-muted);
+  }
+}
+
+.admin-workspace [id] {
+  scroll-margin-top: 6rem;
+}
+
+.admin-workspace img {
+  max-width: 100%;
+}

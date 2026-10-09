@@ -82,13 +82,34 @@ adapted to the existing LSCCC colours and typography. Homepage and newsroom
 article links open internal pages. Five local summaries supply article content,
 reading times, reporting references and related stories for this review.
 
-Content lookup is isolated in `lib/news/repository.ts`. The database, admin panel,
-editorial approvals and publishing controls remain a later stage. The footer,
+Content lookup is isolated in `lib/news/repository.ts`. The database,
+editorial approvals and live publishing controls remain a later stage. The footer,
 browser favicon and Apple touch icon now use the existing LSCCC emblem.
 
 Build, TypeScript, lint and formatting passed. Browser review covered six widths
 from 320 to 1440px, category and search filters, pagination, all five article
 routes, internal news navigation, the footer emblem and icon delivery.
+
+## Admin UI review
+
+The admin workspace is available at `/admin`, separately from the public shell.
+Public pages moved into the `(site)` route group without changing their URLs.
+Admin routes use the LSCCC navy, blue, gold, font and emblem and are marked noindex.
+
+The dashboard shows counts from preview content. News management supports search,
+status and category filters, draft creation, cover selection, article previews,
+save, local publish state and deletion. Additional screens manage notices,
+resources, page copy, media metadata and site settings. Image uploads and edits
+are saved only in browser storage. A settings action resets the entire preview.
+
+Authentication, roles, server storage and live website publishing are intentionally
+deferred until the UI is approved. Public pages continue using their existing
+content repository rather than the local admin store.
+
+The production build, TypeScript, lint and formatting passed. Browser review
+covered nine admin screens at five widths (45 layouts), the article editing
+workflow, media uploads and alternative text, in-use media deletion protection,
+local storage persistence and reset, mobile menu focus, and public shell checks.
 
 ## Items to resolve before launch
 

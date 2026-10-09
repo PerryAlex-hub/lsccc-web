@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { SiteLayout } from "@/components/site/layout";
 import "./globals.css";
 
 const jakartaSans = localFont({
@@ -27,9 +26,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       data-scroll-behavior="smooth"
       className={`${jakartaSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <SiteLayout>{children}</SiteLayout>
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }

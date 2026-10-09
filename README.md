@@ -21,6 +21,9 @@ npm run start -- --port 3003
 ## Project structure
 
 - `app/`: route composition, metadata and the enquiry API.
+- `app/(site)/`: public pages and shared public layout; URLs are unchanged.
+- `app/admin/` and `components/admin/`: separate administration UI and screens.
+- `lib/admin/`: preview data, types and browser-only storage adapter.
 - `components/ui/`: shared page introductions, sections, photographs and links.
 - `components/site/`: reusable header, footer, navigation and site search.
 - `components/home/`, `about/`, `emergency/`, `safety/`, `news/`, `contact/`:
@@ -39,10 +42,26 @@ newsroom cards open these internal article routes.
 The newsroom includes a featured story, category and search filters, a responsive
 article grid, pagination, article details and related stories. Content is read
 through `lib/news/repository.ts` from the local editorial summaries in
-`lib/content/news.ts`. The database, admin panel and publishing workflow are
-future work; this UI does not claim to persist editorial changes.
+`lib/content/news.ts`. The database and real publishing workflow remain future
+work; the admin preview is described below.
 
 The shared footer, browser icon and Apple touch icon use the LSCCC emblem.
+
+## Admin UI preview
+
+Open `/admin` for the dashboard. The workspace includes news management, a new
+article editor, editing and preview routes, public notices, safety resources,
+website pages, a media library and website settings. Desktop uses a separate
+sidebar; mobile uses a keyboard-accessible menu.
+
+Edits, uploads and publication status changes are stored in this browser under
+`lsccc-admin-ui-v1`. They survive refreshes but do not change public site content.
+Use Settings → Reset preview to restore the initial review data. Image uploads
+accept JPG, PNG and WebP files up to 2 MB; browser storage limits still apply.
+Images used as article covers cannot be removed until those references change.
+
+The preview has no authentication, database or live publishing endpoint. Those
+are the next backend stage. All admin routes request `noindex, nofollow`.
 
 ## Checks and formatting
 
