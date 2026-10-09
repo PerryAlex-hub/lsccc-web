@@ -13,7 +13,7 @@ export const newsStories = [
     description:
       "The agencies discussed information exchange, traffic incident monitoring and coordinated response.",
     source: "Radio Nigeria Lagos",
-    href: "https://radionigerialagos.gov.ng/lsccc-frsc-deepen-strategic-collaboration-to-strengthen-road-safety-emergency-coordination/",
+    href: `${destinations.news}/lsccc-frsc-road-safety-collaboration`,
   },
   {
     asset: assets.responderTraining,
@@ -26,7 +26,7 @@ export const newsStories = [
     description:
       "The centre and its partners organised a three-day programme covering emergency response practices.",
     source: "Channels Television",
-    href: "https://www.channelstv.com/2025/02/18/lagos-centre-trains-first-responders-on-emergency-management/",
+    href: `${destinations.news}/first-responder-emergency-management-training`,
   },
   {
     asset: assets.operations,
@@ -39,7 +39,7 @@ export const newsStories = [
     description:
       "The visit reviewed the centre’s operations and the role of its emergency call agents.",
     source: "The MediaGood",
-    href: "https://themediagoodng.com/command-and-control-centre-underscores-lagos-commitment-to-citizen-safety-lsstf-ceo-ogunsan/",
+    href: `${destinations.news}/lsstf-leadership-visits-command-control-centre`,
   },
 ] as const;
 

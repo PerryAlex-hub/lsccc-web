@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { InteriorPage } from "@/components/ui/interior-page";
 import { NewsExplorer } from "@/components/news/news-explorer";
 import { NewsPublicInformation } from "@/components/news/public-information";
+import { getPublishedNews } from "@/lib/news/repository";
 
 export const metadata: Metadata = {
   title: "News & Media",
@@ -17,7 +18,7 @@ export default function NewsMediaPage() {
       breadcrumbs={[{ label: "News & Media" }]}
       nodeId="20:202"
     >
-      <NewsExplorer />
+      <NewsExplorer articles={getPublishedNews()} />
       <NewsPublicInformation />
     </InteriorPage>
   );

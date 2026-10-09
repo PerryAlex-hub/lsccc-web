@@ -1,123 +1,109 @@
+import Link from "next/link";
 import { Photograph } from "@/components/ui/photograph";
 import { Section } from "@/components/ui/section";
-import { ActionLink, TextLink } from "@/components/ui/text-link";
-import { assets } from "@/lib/assets";
-import { infrastructureArticle } from "@/lib/content/news";
+import { TextLink } from "@/components/ui/text-link";
+import type { NewsArticle } from "@/lib/content/news";
 import { destinations } from "@/lib/navigation";
+import { newsHref, readingMinutes } from "@/lib/news/links";
+import { ArticleShare } from "./article-share";
 
-export function ArticleContent() {
+export function ArticleContent({
+  article,
+  related,
+}: {
+  article: NewsArticle;
+  related: readonly NewsArticle[];
+}) {
   return (
-    <Section
-      nodeId="21:296"
-      className="grid items-start gap-10 lg:grid-cols-[896fr_368fr] xl:gap-12"
-    >
-      <article className="flex min-w-0 flex-col gap-6">
-        <p className="text-eyebrow font-bold text-navy">
-          <time dateTime={infrastructureArticle.dateTime}>JUNE 2025</time> •
-          INFRASTRUCTURE
-        </p>
-        <p className="text-[13px] leading-5 text-muted">
-          Summary of a Lagos State Government update
-        </p>
-        <figure className="space-y-6">
+    <Section className="grid items-start gap-12 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)]">
+      <article className="min-w-0">
+        <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-3 border-b border-border pb-5 text-sm text-muted">
+          <span className="bg-paper px-3 py-1.5 font-bold text-blue">
+            {article.category}
+          </span>
+          <time dateTime={article.dateTime}>{article.date}</time>
+          <span>{readingMinutes(article.paragraphs)} min read</span>
+          <ArticleShare />
+        </div>
+        <figure className="mb-8 space-y-3">
           <Photograph
-            asset={assets.operations}
-            className="aspect-[896/440]"
-            sizes="(max-width: 1023px) 92vw, (max-width: 1440px) 62vw, 896px"
-            nodeId="21:301"
+            asset={article.asset}
+            className="aspect-[16/10]"
+            sizes="(max-width: 1023px) 92vw, (max-width: 1440px) 62vw, 870px"
             preload
           />
-          <figcaption className="text-xs font-medium leading-[18px] text-muted">
-            LSCCC call agents at work. Photograph illustrates centre operations.
+          <figcaption className="text-xs leading-5 text-muted">
+            {article.caption}
           </figcaption>
         </figure>
-        <h2 className="text-[29px] font-extrabold leading-[44px]">
-          Strengthening the centre’s capabilities
-        </h2>
-        {infrastructureArticle.paragraphs.map((paragraph, index) => (
-          <p
-            key={paragraph}
-            className={`text-muted ${index === 0 ? "text-lg leading-[27px] xl:min-h-[54px]" : "text-[17px] leading-[26px] xl:min-h-[51px]"}`}
-          >
-            {paragraph}
-          </p>
-        ))}
-        <div className="h-px bg-border" />
-        <div className="space-y-6">
-          <h3 className="text-eyebrow font-bold text-navy">SOURCE</h3>
-          <p className="text-[15px] leading-[23px] text-muted">
-            Lagos State Government • June 2025
-          </p>
-          <TextLink
-            href={infrastructureArticle.sourceHref}
-            className="text-sm text-navy"
-          >
-            Read original government release <span aria-hidden="true">↗</span>
+        <div className="max-w-[70ch] space-y-6">
+          {article.paragraphs.map((paragraph, index) => (
+            <p
+              key={paragraph}
+              className={
+                index === 0
+                  ? "text-lg font-medium leading-[1.75] text-ink"
+                  : "text-[17px] leading-[1.8] text-muted"
+              }
+            >
+              {paragraph}
+            </p>
+          ))}
+        </div>
+        <p className="mt-8 border-t border-border pt-5 text-xs leading-5 text-muted">
+          Reporting reference: {article.source}.
+        </p>
+        <div className="mt-8">
+          <TextLink href={destinations.news} className="text-sm text-blue">
+            <span aria-hidden="true">← </span> Back to News &amp; Media
           </TextLink>
         </div>
-        <TextLink href={destinations.news} className="text-sm text-navy">
-          <span aria-hidden="true">←</span> Back to News &amp; Media
-        </TextLink>
       </article>
-      <ArticleSidebar />
-    </Section>
-  );
-}
-
-function ArticleSidebar() {
-  return (
-    <aside className="flex flex-col gap-[22px] bg-paper p-7">
-      <h2 className="text-eyebrow font-bold text-navy">ABOUT THE CENTRE</h2>
-      <p className="text-[24px] font-bold leading-9">
-        Emergency coordination
-        <br />
-        for Lagos State.
-      </p>
-      <p className="text-[15px] leading-[23px] text-muted">
-        Learn how the centre connects emergency communication and response
-        agencies.
-      </p>
-      <ActionLink href={destinations.about} className="bg-navy text-white">
-        About LSCCC{" "}
-        <span aria-hidden="true" className="ml-2">
-          →
-        </span>
-      </ActionLink>
-      <div className="h-px bg-border" />
-      <nav
-        aria-label="Related information"
-        className="flex flex-col gap-[22px]"
-      >
-        <h2 className="text-eyebrow font-bold text-navy">
-          RELATED INFORMATION
-        </h2>
-        {[
-          { label: "Before you call", href: destinations.beforeYouCall },
-          { label: "Emergency services", href: destinations.emergency },
-          { label: "Safety resources", href: destinations.safety },
-        ].map((link) => (
+      <aside className="min-w-0 space-y-8" aria-label="More from the centre">
+        <div className="border-t-4 border-gold bg-paper p-6">
+          <h2 className="text-xl font-bold text-navy">Related news</h2>
+          <nav aria-label="Related news" className="mt-6 space-y-6">
+            {related.map((item) => (
+              <Link
+                key={item.slug}
+                href={newsHref(item.slug)}
+                className="group block space-y-2 border-b border-border pb-6 last:border-b-0 last:pb-0"
+              >
+                <span className="text-eyebrow font-bold text-blue">
+                  {item.category}
+                </span>
+                <h3 className="text-base font-bold leading-[1.5] text-navy group-hover:underline group-hover:underline-offset-4">
+                  {item.title}
+                </h3>
+                <time
+                  dateTime={item.dateTime}
+                  className="block text-xs text-muted"
+                >
+                  {item.date}
+                </time>
+              </Link>
+            ))}
+          </nav>
+        </div>
+        <div className="space-y-4 bg-navy p-6 text-white">
+          <p className="text-eyebrow font-bold text-gold">MEDIA ENQUIRIES</p>
+          <h2 className="text-xl font-bold leading-[1.4]">
+            Get in touch with the centre
+          </h2>
+          <p className="text-sm leading-[1.6] text-white/85">
+            For media requests, information and partnership enquiries.
+          </p>
           <TextLink
-            key={link.href}
-            href={link.href}
-            className="text-sm text-navy"
+            href={`${destinations.contact}?topic=media`}
+            className="inline-flex min-h-11 items-center text-sm text-white"
           >
-            {link.label} <span aria-hidden="true">→</span>
+            Contact LSCCC{" "}
+            <span aria-hidden="true" className="ml-2">
+              →
+            </span>
           </TextLink>
-        ))}
-      </nav>
-      <div className="h-px bg-border" />
-      <p className="text-lg font-bold leading-[27px] text-navy">
-        Need emergency help?
-      </p>
-      <p className="text-[32px] font-extrabold leading-[48px] text-navy">
-        <a href="tel:112" className="hover:underline">
-          112
-        </a>{" "}
-        /{" "}
-        <a href="tel:767" className="hover:underline">
-          767
-        </a>
-      </p>
-    </aside>
+        </div>
+      </aside>
+    </Section>
   );
 }

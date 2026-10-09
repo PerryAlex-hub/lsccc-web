@@ -224,10 +224,10 @@ export function HomeLeadStory() {
             operational information through LERMS.
           </p>
           <TextLink
-            href="https://punchng.com/lasg-moves-to-cut-emergency-rescue-delays/"
+            href={`${destinations.news}/lerms-stakeholder-engagement`}
             className="text-[13px] leading-[19px] text-navy"
           >
-            Read the full report <span aria-hidden="true">↗</span>
+            Read article <span aria-hidden="true">→</span>
           </TextLink>
         </article>
         <PublicNotices />
@@ -283,9 +283,9 @@ export function HomeNews() {
             <TextLink
               href={story.href}
               className="text-[13px] leading-[19px] text-navy"
-              ariaLabel={`Read report: ${story.title}`}
+              ariaLabel={`Read article: ${story.title}`}
             >
-              Read report <span aria-hidden="true">↗</span>
+              Read article <span aria-hidden="true">→</span>
             </TextLink>
           </article>
         ))}

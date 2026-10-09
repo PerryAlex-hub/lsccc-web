@@ -35,11 +35,11 @@ export function SiteFooter() {
         <div className="grid gap-10 sm:grid-cols-2 xl:grid-cols-[424fr_240fr_264fr_240fr] xl:gap-12">
           <div className="space-y-4">
             <Image
-              src={assets.lagosCrest.image}
-              alt={assets.lagosCrest.alt}
+              src={assets.lscccEmblem.image}
+              alt={assets.lscccEmblem.alt}
               width={62}
               height={62}
-              className="size-[62px] object-contain"
+              className="size-[62px] rounded-full object-cover"
             />
             <p className="min-h-[70px] text-[23px] font-bold leading-[33.35px]">
               Lagos State

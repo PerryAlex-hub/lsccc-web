@@ -74,6 +74,22 @@ is no automatic rotation. Reduced-motion preferences disable the added motion.
 The production build and lint passed. Browser review covered 320, 390, 768 and
 1440px widths, the news next control, About section scrolling and reduced motion.
 
+## Newsroom UI review
+
+At the user's request, the newsroom now follows the featured-story, category,
+article-grid and pagination structure of https://lagosstate.gov.ng/news/all/1,
+adapted to the existing LSCCC colours and typography. Homepage and newsroom
+article links open internal pages. Five local summaries supply article content,
+reading times, reporting references and related stories for this review.
+
+Content lookup is isolated in `lib/news/repository.ts`. The database, admin panel,
+editorial approvals and publishing controls remain a later stage. The footer,
+browser favicon and Apple touch icon now use the existing LSCCC emblem.
+
+Build, TypeScript, lint and formatting passed. Browser review covered six widths
+from 320 to 1440px, category and search filters, pagination, all five article
+routes, internal news navigation, the footer emblem and icon delivery.
+
 ## Items to resolve before launch
 
 - Confirm the centre's exact enquiry email and approved sending service. The

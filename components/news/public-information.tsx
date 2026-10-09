@@ -25,7 +25,7 @@ export function NewsPublicInformation() {
             label: "Media & partnership enquiries",
             href: `${destinations.contact}?topic=media`,
           },
-          { label: "Lagos State newsroom", href: destinations.government },
+          { label: "Safety resources", href: destinations.safety },
         ]}
       />
     </Section>

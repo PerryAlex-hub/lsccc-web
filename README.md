@@ -26,13 +26,23 @@ npm run start -- --port 3003
 - `components/home/`, `about/`, `emergency/`, `safety/`, `news/`, `contact/`:
   page sections and focused interaction components.
 - `lib/content/`: interior page content; homepage content is in `lib/home-content.ts`.
+- `lib/news/`: news lookup, ordering, related articles and internal URL helpers.
 - `lib/enquiries/`: validation shared by the browser and API, and server email delivery.
 - `lib/assets.ts` and `lib/navigation.ts`: central asset and destination mappings.
 - `tests/`: search and enquiry validation tests.
 
 The routes are `/`, `/about`, `/emergency-services`, `/safety-resources`,
-`/news-media`, `/contact`, `/before-you-call`, and
-`/news-media/lagos-strengthens-emergency-coordination-hub`.
+`/news-media`, `/contact`, `/before-you-call`, and `/news-media/[slug]`.
+Five local news articles are available for UI review. Homepage news cards and
+newsroom cards open these internal article routes.
+
+The newsroom includes a featured story, category and search filters, a responsive
+article grid, pagination, article details and related stories. Content is read
+through `lib/news/repository.ts` from the local editorial summaries in
+`lib/content/news.ts`. The database, admin panel and publishing workflow are
+future work; this UI does not claim to persist editorial changes.
+
+The shared footer, browser icon and Apple touch icon use the LSCCC emblem.
 
 ## Checks and formatting
 

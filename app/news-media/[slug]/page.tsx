@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { InteriorPage } from "@/components/ui/interior-page";
 import { ArticleContent } from "@/components/news/article";
-import { infrastructureArticle } from "@/lib/content/news";
+import { ArticleLoading } from "@/components/news/article-loading";
+import {
+  getNewsArticle,
+  getPublishedNews,
+  getRelatedNews,
+} from "@/lib/news/repository";
 import { destinations } from "@/lib/navigation";
 
 export function generateStaticParams() {
-  return [{ slug: infrastructureArticle.slug }];
+  return getPublishedNews().map((article) => ({ slug: article.slug }));
 }
 
 export async function generateMetadata({
@@ -15,36 +21,50 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  if (slug !== infrastructureArticle.slug) {
+  const article = getNewsArticle(slug);
+  if (!article) {
     notFound();
   }
   return {
-    title: infrastructureArticle.title,
-    description: infrastructureArticle.description,
+    title: article.title,
+    description: article.description,
   };
 }
 
-export default async function NewsArticlePage({
+export default function NewsArticlePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  return (
+    <Suspense fallback={<ArticleLoading />}>
+      <ResolvedNewsArticle params={params} />
+    </Suspense>
+  );
+}
+
+async function ResolvedNewsArticle({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  if (slug !== infrastructureArticle.slug) {
+  const article = getNewsArticle(slug);
+  if (!article) {
     notFound();
   }
 
   return (
     <InteriorPage
-      title={infrastructureArticle.displayTitle}
-      description={infrastructureArticle.description}
+      title={article.title}
+      description={article.description}
       breadcrumbs={[
         { label: "News & Media", href: destinations.news },
-        { label: "Infrastructure" },
+        { label: article.category },
       ]}
       nodeId="21:292"
     >
-      <ArticleContent />
+      <ArticleContent article={article} related={getRelatedNews(slug)} />
     </InteriorPage>
   );
 }
