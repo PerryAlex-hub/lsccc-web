@@ -40,7 +40,7 @@ export function ActionLink({ className = "", ...props }: TextLinkProps) {
   return (
     <TextLink
       {...props}
-      className={`inline-flex min-h-[53px] items-center px-4 py-4 ${className.includes("text-base") ? "" : "text-sm leading-[21px]"} ${className}`}
+      className={`motion-control inline-flex min-h-[53px] items-center px-4 py-4 ${className.includes("text-base") ? "" : "text-sm leading-[21px]"} ${className}`}
     />
   );
 }

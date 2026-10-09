@@ -21,7 +21,7 @@ export function SiteSearch({
     <section
       id="site-search"
       aria-label="Search the website"
-      className="border-t border-border py-6"
+      className="panel-entrance border-t border-border py-6"
     >
       <label
         htmlFor="site-search-input"

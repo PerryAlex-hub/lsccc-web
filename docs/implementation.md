@@ -62,6 +62,18 @@ duplicate submissions and preserves a message if delivery fails. The user
 explicitly deferred the email destination. SMTP delivery is prepared but remains
 unconfigured; no enquiry is reported as sent while configuration is missing.
 
+## Minimal motion
+
+Section links use native smooth scrolling. The persistent main element fades in
+briefly on route changes without remounting page content. The homepage hero,
+navigation panels and action links have restrained entrance and hover effects.
+Agency news supports horizontal swipe, keyboard scrolling and previous/next
+controls on mobile and tablet; desktop retains the three-column layout. There
+is no automatic rotation. Reduced-motion preferences disable the added motion.
+
+The production build and lint passed. Browser review covered 320, 390, 768 and
+1440px widths, the news next control, About section scrolling and reduced motion.
+
 ## Items to resolve before launch
 
 - Confirm the centre's exact enquiry email and approved sending service. The

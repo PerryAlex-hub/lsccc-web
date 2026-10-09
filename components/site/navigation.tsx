@@ -96,7 +96,7 @@ function NavigationControls({ pathname }: { pathname: string }) {
                   {panel === "about" && (
                     <div
                       id="about-navigation"
-                      className="absolute left-0 top-full w-64 border border-border bg-white py-2 shadow-lg"
+                      className="panel-entrance absolute left-0 top-full w-64 border border-border bg-white py-2 shadow-lg"
                     >
                       {[
                         { label: "About the centre", href: destinations.about },
@@ -149,7 +149,7 @@ function NavigationControls({ pathname }: { pathname: string }) {
           <nav
             id="mobile-navigation"
             aria-label="Mobile navigation"
-            className="grid border-t border-border py-3 text-sm font-semibold text-navy xl:hidden"
+            className="panel-entrance grid border-t border-border py-3 text-sm font-semibold text-navy xl:hidden"
           >
             {navigation.map((item) => (
               <Link

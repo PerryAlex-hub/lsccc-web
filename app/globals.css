@@ -4,6 +4,7 @@
   --background: #ffffff;
   --foreground: #18212d;
   color-scheme: light;
+  --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 /* Shared colours and type scale from the supplied Figma designs. */
@@ -39,6 +40,10 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     background: var(--background);
     color: var(--foreground);
@@ -62,6 +67,95 @@
   button:not(:disabled),
   summary {
     cursor: pointer;
+  }
+}
+
+/* Motion is intentionally limited to navigation feedback and news browsing. */
+.news-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 88%;
+  gap: 1.5rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding-block: 0.25rem 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.news-card {
+  scroll-snap-align: start;
+}
+
+@media (min-width: 48rem) {
+  .news-track {
+    grid-auto-columns: calc((100% - 1.5rem) / 2);
+  }
+}
+
+@media (min-width: 64rem) {
+  .news-track {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: visible;
+    padding-block: 0;
+  }
+}
+
+@keyframes gentle-enter {
+  from {
+    opacity: 0.7;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-entrance {
+    animation: gentle-enter 420ms var(--ease-out);
+  }
+
+  .panel-entrance {
+    animation: gentle-enter 180ms var(--ease-out);
+  }
+
+  .motion-control {
+    transition:
+      transform 180ms var(--ease-out),
+      background-color 180ms var(--ease-out),
+      border-color 180ms var(--ease-out);
+  }
+
+  .news-card img {
+    transition: transform 280ms var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .motion-control:hover {
+      transform: translateY(-1px);
+    }
+
+    .news-card:hover img,
+    .news-card:focus-within img {
+      transform: scale(1.025);
+    }
+  }
+
+  .motion-control:active {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html,
+  .news-track {
+    scroll-behavior: auto;
   }
 }
 

@@ -11,6 +11,7 @@ import {
 import { destinations } from "@/lib/navigation";
 
 import { Photograph } from "@/components/ui/photograph";
+import { NewsSlider } from "./news-slider";
 
 function SectionHeading({
   children,
@@ -123,7 +124,7 @@ export function HomeHero() {
         data-node-id="43:762"
       />
       <div className="site-container py-12 xl:pt-[62px] xl:pb-[77px]">
-        <div className="flex max-w-[810px] flex-col gap-[18px]">
+        <div className="hero-entrance flex max-w-[810px] flex-col gap-[18px]">
           <p className="min-h-5 text-xs font-bold leading-[18px] text-gold sm:text-sm">
             LAGOS STATE COMMAND &amp; CONTROL CENTRE
           </p>
@@ -250,11 +251,11 @@ export function HomeNews() {
       >
         Agency news
       </h2>
-      <div className="grid gap-8 md:grid-cols-3 md:gap-6">
+      <NewsSlider>
         {newsStories.map((story) => (
           <article
             key={story.nodeId}
-            className="flex flex-col gap-3"
+            className="news-card flex min-w-0 flex-col gap-3"
             data-node-id={story.nodeId}
           >
             <Photograph
@@ -288,7 +289,7 @@ export function HomeNews() {
             </TextLink>
           </article>
         ))}
-      </div>
+      </NewsSlider>
     </section>
   );
 }
