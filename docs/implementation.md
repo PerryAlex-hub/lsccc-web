@@ -2,6 +2,19 @@
 
 Complete each checkpoint and stop for the user's review before starting the next.
 
+The user approved checkpoint 1 and requested checkpoints 2 and 3 together.
+The next review covers the reusable header, footer and complete homepage.
+During this review, internal links use live homepage anchors defined in
+`lib/navigation.ts`. Switch these to the interior routes at checkpoint 4.
+
+Checkpoint 2 + 3 review includes the full editorial homepage and shared shell.
+The mobile menu, About dropdown, section search, source links and emergency
+phone links are implemented. Lint, TypeScript and production build pass.
+Browser checks cover 1440, 1280, 1024, 768, 390 and 320px widths, all 12 image
+placements, anchor targets, menu navigation, search filtering and keyboard
+Escape with focus restoration. The desktop header and hero match the design's
+283px and 570px heights, and the complete desktop page is approximately 5099px.
+
 1. Shared foundation: Figma colours, local Plus Jakarta Sans, original local assets,
    typography and responsive spacing. Review at `/design-preview`.
 2. Reusable header and footer, including responsive navigation.

@@ -54,6 +54,10 @@
     background: var(--color-gold);
     color: var(--color-ink);
   }
+
+  [id] {
+    scroll-margin-top: 1.5rem;
+  }
 }
 
 /* Mastheads and interior pages use 64px desktop gutters; homepage
