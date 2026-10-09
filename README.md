@@ -33,7 +33,6 @@ npm run start -- --port 3003
 The routes are `/`, `/about`, `/emergency-services`, `/safety-resources`,
 `/news-media`, `/contact`, `/before-you-call`, and
 `/news-media/lagos-strengthens-emergency-coordination-hub`.
-The temporary foundation review remains at `/design-preview`.
 
 ## Checks and formatting
 

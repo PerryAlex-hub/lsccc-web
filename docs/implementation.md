@@ -15,13 +15,19 @@ Escape with focus restoration. The desktop header and hero match the design's
 283px and 570px heights, and the complete desktop page is approximately 5099px.
 
 1. Shared foundation: Figma colours, local Plus Jakarta Sans, original local assets,
-   typography and responsive spacing. Review at `/design-preview`.
+   typography and responsive spacing. The temporary foundation review route has
+   been removed.
 2. Reusable header and footer, including responsive navigation.
 3. Editorial homepage, based on Figma node `32:682`.
 4. Interior pages: About, Emergency Services, Safety Resources, News & Media,
    Contact, news article and Before You Call.
 5. Search, filters, form handling and remaining interactions.
-6. Responsive and visual verification; remove the temporary review page.
+6. Responsive and visual verification; temporary review page removed.
+
+The full footer address was visually reviewed at 320, 390 and 430px widths. It
+wraps within the footer without clipping or horizontal overflow. The removed
+`/design-preview` route returns 404. Further interaction checks were deferred at
+the user's request.
 
 ## Design sources
 
