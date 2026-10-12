@@ -63,6 +63,22 @@ Images used as article covers cannot be removed until those references change.
 The preview has no authentication, database or live publishing endpoint. Those
 are the next backend stage. All admin routes request `noindex, nofollow`.
 
+### Authentication UI preview
+
+Start at `/admin/login`. Login, forgot-password, reset-password and invitation
+setup have a separate responsive layout. `/admin/team` manages sample staff,
+roles and invitations. Sample addresses use `example.com` and are fictional.
+The initial administrator is protected from role changes or deactivation.
+
+Invitations created in Team & access expire after 24 hours; resending replaces
+the old preview link. Accepting one marks the sample member active in browser
+storage. The seeded `demo-invitation` is a non-expiring review example. Links
+depend on local browser data and will not work for a recipient in another browser.
+
+No email is sent, no password is stored and no login or permissions are enforced.
+Forms discard submitted passwords. Reset preview in Settings restores the sample
+invitation. The preview state links demonstrate expired, used and invalid invitations.
+
 ## Checks and formatting
 
 ```sh

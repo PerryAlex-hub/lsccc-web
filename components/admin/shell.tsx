@@ -111,6 +111,12 @@ export function AdminShell({ children }: { children: ReactNode }) {
         </Suspense>
         <div className="mt-auto space-y-6 px-6 py-6">
           <Link
+            href="/admin/login"
+            className="block py-2 text-sm font-semibold text-white/80 hover:text-white"
+          >
+            Review login screen
+          </Link>
+          <Link
             href="/"
             className="flex min-h-11 items-center justify-between text-sm font-semibold text-white/80 hover:text-white"
           >

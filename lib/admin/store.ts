@@ -28,7 +28,10 @@ function readStoredState(): AdminState {
     ) {
       return initialAdminState;
     }
-    return stored;
+    return {
+      ...stored,
+      team: Array.isArray(stored.team) ? stored.team : initialAdminState.team,
+    };
   } catch {
     return initialAdminState;
   }

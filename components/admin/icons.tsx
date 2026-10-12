@@ -1,4 +1,5 @@
 const paths = {
+  team: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8 M20 21v-2a4 4 0 0 0-3-4 M16 3a4 4 0 0 1 0 8",
   overview: "M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z",
   news: "M4 3h16v18H4z M8 7h8 M8 11h8 M8 15h5",
   notice: "M4 10v5l5 2V8l-5 2z M9 8l11-4v17L9 17 M6 16l1 5h3",

@@ -9,6 +9,7 @@ export const adminNavigation = [
   { label: "Safety resources", href: "/admin/resources", icon: "shield" },
   { label: "Website pages", href: "/admin/pages", icon: "pages" },
   { label: "Media library", href: "/admin/media", icon: "image" },
+  { label: "Team & access", href: "/admin/team", icon: "team" },
   { label: "Settings", href: "/admin/settings", icon: "settings" },
 ] as const;
 
@@ -145,4 +146,25 @@ export const initialAdminState: AdminState = {
     enquiryEmail: "",
   },
   activity: [],
+  team: [
+    {
+      id: "preview-owner",
+      name: "Workspace administrator",
+      email: "admin@example.com",
+      role: "Administrator",
+      status: "Active",
+      token: "",
+      expiresAt: null,
+      owner: true,
+    },
+    {
+      id: "preview-invite",
+      name: "",
+      email: "invited@example.com",
+      role: "Editor",
+      status: "Invited",
+      token: "demo-invitation",
+      expiresAt: null,
+    },
+  ],
 };
