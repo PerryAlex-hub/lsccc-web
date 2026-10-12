@@ -55,6 +55,7 @@ export type AdminState = {
   settings: AdminSettings;
   activity: AdminActivity[];
   team: AdminTeamMember[];
+  categories: string[];
 };
 
 export type AdminRole = "Administrator" | "Editor";

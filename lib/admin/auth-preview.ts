@@ -1,5 +1,16 @@
 import type { AdminTeamMember } from "./types";
 
+// Separate from saved team data so the state review remains repeatable.
+export const demoInvitation: AdminTeamMember = {
+  id: "invitation-state-preview",
+  name: "",
+  email: "invited@example.com",
+  role: "Editor",
+  status: "Invited",
+  token: "demo-invitation",
+  expiresAt: null,
+};
+
 export const passwordHint =
   "Use at least 15 characters. Spaces and passphrases are welcome.";
 

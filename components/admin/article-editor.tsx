@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { newsCategories } from "@/lib/content/news";
 import { createSlug, formatAdminDate } from "@/lib/admin/helpers";
 import { updateAdminState, useAdminState } from "@/lib/admin/store";
 import type { AdminArticle, PublicationStatus } from "@/lib/admin/types";
@@ -18,6 +17,7 @@ import {
 import { AdminDialog } from "./dialog";
 import { MediaPicker } from "./media-picker";
 import { ArticlePreview } from "./article-preview";
+import { CategoryPicker } from "./category-picker";
 
 const blankArticle: AdminArticle = {
   id: "new",
@@ -235,17 +235,10 @@ function ArticleEditorForm({
               <h2 className="text-lg font-bold text-navy">Publication</h2>
               <StatusBadge status={form.status} />
             </div>
-            <AdminField label="Category">
-              <select
-                className="admin-input"
-                value={form.category}
-                onChange={(event) => change("category", event.target.value)}
-              >
-                {newsCategories.slice(1).map((category) => (
-                  <option key={category}>{category}</option>
-                ))}
-              </select>
-            </AdminField>
+            <CategoryPicker
+              value={form.category}
+              onChange={(category) => change("category", category)}
+            />
             <AdminField label="Author / team">
               <input
                 className="admin-input"

@@ -60,6 +60,11 @@ Use Settings → Reset preview to restore the initial review data. Image uploads
 accept JPG, PNG and WebP files up to 2 MB; browser storage limits still apply.
 Images used as article covers cannot be removed until those references change.
 
+Use Add category in the article editor to create and select a news category.
+Category names are saved in this browser and appear in the article list filter.
+Names must be unique regardless of case, with a maximum of 60 characters.
+Older preview data keeps existing edits when categories are added to the store.
+
 The preview has no authentication, database or live publishing endpoint. Those
 are the next backend stage. All admin routes request `noindex, nofollow`.
 
@@ -77,7 +82,8 @@ depend on local browser data and will not work for a recipient in another browse
 
 No email is sent, no password is stored and no login or permissions are enforced.
 Forms discard submitted passwords. Reset preview in Settings restores the sample
-invitation. The preview state links demonstrate expired, used and invalid invitations.
+invitation. The state review links use a separate sample to demonstrate valid,
+expired, used and invalid invitations, regardless of changes to saved team data.
 
 ## Checks and formatting
 

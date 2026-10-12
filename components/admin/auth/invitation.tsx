@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAdminState, updateAdminState } from "@/lib/admin/store";
 import {
+  demoInvitation,
   invitationState,
   passwordError,
   passwordHint,
@@ -49,11 +50,18 @@ function InvitationDetails({
   scenario: string | null;
 }) {
   const state = useAdminState();
-  const member = state.team.find((item) => item.token && item.token === token);
-  const status =
-    scenario === "expired" || scenario === "used" || scenario === "invalid"
+  const previewState =
+    token === demoInvitation.token &&
+    (scenario === "valid" ||
+      scenario === "expired" ||
+      scenario === "used" ||
+      scenario === "invalid")
       ? scenario
-      : invitationState(member);
+      : null;
+  const member = previewState
+    ? demoInvitation
+    : state.team.find((item) => item.token && item.token === token);
+  const status = previewState ?? invitationState(member);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
@@ -68,6 +76,12 @@ function InvitationDetails({
     }
     if (!member || invitationState(member) !== "valid") {
       setError("This invitation is no longer available.");
+      return;
+    }
+    if (previewState === "valid") {
+      setPassword("");
+      setConfirmation("");
+      setComplete(true);
       return;
     }
     const result = updateAdminState(
@@ -94,7 +108,11 @@ function InvitationDetails({
       <>
         <AuthHeading
           title="Your setup preview is complete"
-          description="Your team member is now active in this browser preview. No real account was created and your password was discarded."
+          description={
+            previewState
+              ? "The sample setup is complete. Your saved team data was unchanged and your password was discarded."
+              : "Your team member is now active in this browser preview. No real account was created and your password was discarded."
+          }
         />
         <AuthBackLink />
       </>
@@ -163,7 +181,8 @@ function InvitationDetails({
           {["valid", "expired", "used", "invalid"].map((item) => (
             <Link
               key={item}
-              href={`/admin/accept-invitation?token=demo-invitation${item === "valid" ? "" : `&state=${item}`}`}
+              href={`/admin/accept-invitation?token=demo-invitation&state=${item}`}
+              aria-current={previewState === item ? "page" : undefined}
               className="inline-flex min-h-11 items-center text-xs font-semibold capitalize text-blue hover:underline"
             >
               {item}

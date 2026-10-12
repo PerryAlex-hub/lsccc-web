@@ -1,4 +1,4 @@
-import { newsArticles } from "@/lib/content/news";
+import { newsArticles, newsCategories } from "@/lib/content/news";
 import { safetyTopics } from "@/lib/content/safety";
 import type { AdminState } from "./types";
 
@@ -15,6 +15,7 @@ export const adminNavigation = [
 
 export const initialAdminState: AdminState = {
   version: 1,
+  categories: newsCategories.slice(1),
   articles: [
     ...newsArticles.map((article) => ({
       id: article.slug,

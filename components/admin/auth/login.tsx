@@ -60,7 +60,7 @@ export function LoginForm() {
           Open workspace preview
         </AdminLink>
         <Link
-          href="/admin/accept-invitation?token=demo-invitation"
+          href="/admin/accept-invitation?token=demo-invitation&state=valid"
           className="mt-4 block py-2 text-xs font-semibold text-blue hover:underline"
         >
           Review invitation setup

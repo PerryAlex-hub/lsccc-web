@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { newsCategories } from "@/lib/content/news";
+import { getAdminCategories } from "@/lib/admin/categories";
 import { formatAdminDate } from "@/lib/admin/helpers";
 import { updateAdminState, useAdminState } from "@/lib/admin/store";
 import type { AdminArticle } from "@/lib/admin/types";
@@ -136,7 +136,7 @@ export function AdminNewsList() {
               onChange={(event) => setCategory(event.target.value)}
             >
               <option>All categories</option>
-              {newsCategories.slice(1).map((item) => (
+              {getAdminCategories(state).map((item) => (
                 <option key={item}>{item}</option>
               ))}
             </select>

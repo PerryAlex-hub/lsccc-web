@@ -31,6 +31,11 @@ function readStoredState(): AdminState {
     return {
       ...stored,
       team: Array.isArray(stored.team) ? stored.team : initialAdminState.team,
+      categories:
+        Array.isArray(stored.categories) &&
+        stored.categories.every((category) => typeof category === "string")
+          ? stored.categories
+          : initialAdminState.categories,
     };
   } catch {
     return initialAdminState;
