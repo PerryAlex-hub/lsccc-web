@@ -1,0 +1,228 @@
+{
+  "categories": [
+    {
+      "name": "Coordination",
+      "nameKey": "coordination",
+      "slug": "coordination"
+    },
+    {
+      "name": "Partnerships",
+      "nameKey": "partnerships",
+      "slug": "partnerships"
+    },
+    {
+      "name": "Infrastructure",
+      "nameKey": "infrastructure",
+      "slug": "infrastructure"
+    },
+    {
+      "name": "Training",
+      "nameKey": "training",
+      "slug": "training"
+    }
+  ],
+  "media": [
+    {
+      "key": "/images/lsccc/lerms-engagement.jpg",
+      "filename": "lerms-engagement.jpg",
+      "alt": "Participants at the LERMS stakeholder engagement",
+      "width": 600,
+      "height": 332
+    },
+    {
+      "key": "/images/lsccc/frsc-engagement.jpg",
+      "filename": "frsc-engagement.jpg",
+      "alt": "LSCCC and FRSC representatives at their institutional engagement",
+      "width": 600,
+      "height": 362
+    },
+    {
+      "key": "/images/lsccc/operations.jpg",
+      "filename": "operations.jpg",
+      "alt": "Emergency call agents working at the Lagos State Command & Control Centre",
+      "width": 600,
+      "height": 338
+    },
+    {
+      "key": "/images/lsccc/responder-training.jpg",
+      "filename": "responder-training.jpg",
+      "alt": "First responders attending emergency management training",
+      "width": 600,
+      "height": 323
+    }
+  ],
+  "articles": [
+    {
+      "title": "LERMS stakeholder engagement strengthens Lagos emergency response coordination",
+      "slug": "lerms-stakeholder-engagement",
+      "excerpt": "Response agencies and technical partners come together to strengthen incident reporting, dispatch coordination and shared operational information.",
+      "body": "Emergency response agencies and technical partners met in Ikeja to discuss how the Lagos Emergency Response Management System (LERMS) can support coordinated emergency response.\n\nThe engagement focused on incident reporting, dispatch coordination and the exchange of operational information between participating agencies. Shared information helps the response network understand an incident and identify the agencies required.\n\nThe Command & Control Centre brings emergency communication and interagency coordination together. Its call agents receive incident information, while specialist response agencies provide assistance on the ground.\n\nThe stakeholder engagement forms part of the centre’s work with response partners to strengthen the systems supporting emergency communication across Lagos State.",
+      "category": "Coordination",
+      "cover": "/images/lsccc/lerms-engagement.jpg",
+      "publishedAt": "2026-05-20",
+      "caption": "Participants at the LERMS stakeholder engagement in Ikeja.",
+      "source": "Punch"
+    },
+    {
+      "title": "LSCCC and FRSC deepen road safety collaboration",
+      "slug": "lsccc-frsc-road-safety-collaboration",
+      "excerpt": "The centre and the Federal Road Safety Corps discuss information exchange, traffic incident monitoring and coordinated response.",
+      "body": "The Lagos State Command & Control Centre and the Federal Road Safety Corps reaffirmed their commitment to working together on road safety and emergency coordination.\n\nTheir discussions covered information exchange, traffic incident monitoring and coordinated response. Cooperation between the centre and road safety officers supports the communication required when incidents occur on Lagos roads.\n\nThe engagement reflects the centre’s role in connecting emergency information with the agencies responsible for providing assistance. The FRSC is part of the wider network of response partners working with the centre.",
+      "category": "Partnerships",
+      "cover": "/images/lsccc/frsc-engagement.jpg",
+      "publishedAt": "2026-02-18",
+      "caption": "LSCCC and FRSC representatives at their institutional engagement.",
+      "source": "Radio Nigeria Lagos"
+    },
+    {
+      "title": "LSSTF leadership visits the Command & Control Centre",
+      "slug": "lsstf-leadership-visits-command-control-centre",
+      "excerpt": "An institutional visit reviews the centre’s operations and the work of its emergency call agents.",
+      "body": "Leadership of the Lagos State Security Trust Fund visited the Command & Control Centre to review its operations and the role of its emergency call agents.\n\nThe centre receives emergency information through the state’s published helplines and coordinates communication with response agencies. Its work depends on both trained personnel and the systems supporting incident handling.\n\nThe visit provided an opportunity to learn about the centre’s contribution to public safety and its place within Lagos State’s emergency response network.",
+      "category": "Partnerships",
+      "cover": "/images/lsccc/operations.jpg",
+      "publishedAt": "2026-01-18",
+      "caption": "Emergency call agents working at the Command & Control Centre.",
+      "source": "The MediaGood"
+    },
+    {
+      "title": "Lagos strengthens its emergency coordination hub",
+      "slug": "lagos-strengthens-emergency-coordination-hub",
+      "excerpt": "Technology and infrastructure upgrades support coordinated emergency response across Lagos State.",
+      "body": "Lagos State announced technology and infrastructure upgrades at the Command & Control Centre to strengthen emergency coordination.\n\nThe centre serves as a communication hub linking emergency management, fire and rescue, traffic management, ambulance services and rapid response teams.\n\nThe announced work focuses on the systems and infrastructure supporting this coordination. These systems help the centre receive incident information and communicate with the agencies involved in responding.",
+      "category": "Infrastructure",
+      "cover": "/images/lsccc/operations.jpg",
+      "publishedAt": "2025-06-04",
+      "caption": "LSCCC call agents at work. Photograph illustrates centre operations.",
+      "source": "Lagos State Government"
+    },
+    {
+      "title": "First responders trained in emergency management",
+      "slug": "first-responder-emergency-management-training",
+      "excerpt": "A three-day programme brings first responders together to strengthen their preparedness and emergency response practices.",
+      "body": "The Command & Control Centre and its partners organised a three-day emergency management programme for first responders.\n\nThe programme brought responders together to strengthen preparedness and share emergency response practices. Training supports the capacity of personnel who work across the emergency response network.\n\nThe centre’s work includes communication, interagency coordination and institutional engagement. Training with response partners supports these responsibilities and the people delivering assistance on the ground.",
+      "category": "Training",
+      "cover": "/images/lsccc/responder-training.jpg",
+      "publishedAt": "2025-02-18",
+      "caption": "First responders attending emergency management training.",
+      "source": "Channels Television"
+    }
+  ],
+  "notices": [
+    {
+      "key": "emergency-lines",
+      "title": "Emergency assistance",
+      "summary": "Lagos State emergency lines: 112 and 767. Available 24 hours.",
+      "body": "For urgent assistance anywhere in Lagos State, call 112 or 767.",
+      "url": "/emergency-services"
+    },
+    {
+      "key": "keep-lines-open",
+      "title": "Keep the lines open",
+      "summary": "Hoax calls obstruct access for people needing emergency help.",
+      "body": "Use emergency lines for incidents requiring immediate assistance. Visit Before You Call for the information to provide to a call agent.",
+      "url": "/before-you-call"
+    }
+  ],
+  "resources": [
+    {
+      "key": "fire",
+      "title": "Fire safety",
+      "summary": "Household precautions, workplace awareness and fire reporting.",
+      "body": "Household precautions, workplace awareness and fire reporting.",
+      "url": "https://lagosstate.gov.ng/services/"
+    },
+    {
+      "key": "flood",
+      "title": "Flood preparedness",
+      "summary": "Seasonal awareness, emergency planning and reporting flooding.",
+      "body": "Seasonal awareness, emergency planning and reporting flooding.",
+      "url": "https://lagosstate.gov.ng/services/"
+    },
+    {
+      "key": "road",
+      "title": "Road safety",
+      "summary": "Reporting serious incidents and understanding response agencies.",
+      "body": "Reporting serious incidents and understanding response agencies.",
+      "url": "https://lagosstate.gov.ng/services/"
+    },
+    {
+      "key": "community",
+      "title": "Home & community",
+      "summary": "Emergency contacts, household plans and shared awareness.",
+      "body": "Emergency contacts, household plans and shared awareness.",
+      "url": "https://lagosstate.gov.ng/services/"
+    },
+    {
+      "key": "reporting",
+      "title": "Emergency reporting",
+      "summary": "How to communicate incident details when you call for help.",
+      "body": "How to communicate incident details when you call for help.",
+      "url": "/before-you-call"
+    },
+    {
+      "key": "information",
+      "title": "Public information",
+      "summary": "Find agency announcements and official government resources.",
+      "body": "Find agency announcements and official government resources.",
+      "url": "https://lagosstate.gov.ng/services/"
+    }
+  ],
+  "pages": [
+    {
+      "key": "home",
+      "title": "Homepage",
+      "path": "/",
+      "introduction": "Coordinating emergency response. Serving the people of Lagos.",
+      "body": "Coordinating emergency response. Serving the people of Lagos."
+    },
+    {
+      "key": "about",
+      "title": "About the centre",
+      "path": "/about",
+      "introduction": "Our mandate, operations and response partners.",
+      "body": "Our mandate, operations and response partners."
+    },
+    {
+      "key": "emergency",
+      "title": "Emergency services",
+      "path": "/emergency-services",
+      "introduction": "Emergency numbers, incident reporting and what happens when you call.",
+      "body": "Emergency numbers, incident reporting and what happens when you call."
+    },
+    {
+      "key": "safety",
+      "title": "Safety resources",
+      "path": "/safety-resources",
+      "introduction": "Guides for safety awareness and emergency preparedness.",
+      "body": "Guides for safety awareness and emergency preparedness."
+    },
+    {
+      "key": "news",
+      "title": "News & Media",
+      "path": "/news-media",
+      "introduction": "Updates on coordination, partnerships and the work of the centre.",
+      "body": "Updates on coordination, partnerships and the work of the centre."
+    },
+    {
+      "key": "contact",
+      "title": "Contact",
+      "path": "/contact",
+      "introduction": "General enquiries, media requests and partnership information.",
+      "body": "General enquiries, media requests and partnership information."
+    },
+    {
+      "key": "before-call",
+      "title": "Before You Call",
+      "path": "/before-you-call",
+      "introduction": "What to tell a call agent when reporting an incident.",
+      "body": "What to tell a call agent when reporting an incident."
+    }
+  ],
+  "settings": {
+    "siteName": "Lagos State Command & Control Centre",
+    "description": "Coordinating emergency response. Serving the people of Lagos.",
+    "address": "Governor’s Road, opposite the Deputy Governor’s Office, Alausa, Ikeja, Lagos State, Nigeria.",
+    "enquiryEmail": ""
+  }
+}

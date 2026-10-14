@@ -7,6 +7,14 @@ const nextConfig: NextConfig = {
   },
   cacheComponents: true,
   partialPrefetching: true,
+  logging: {
+    incomingRequests: {
+      ignore: [
+        /^\/api\/auth\//,
+        /^\/admin\/(accept-invitation|reset-password)/,
+      ],
+    },
+  },
   turbopack: {
     rules: {
       "*.css": {

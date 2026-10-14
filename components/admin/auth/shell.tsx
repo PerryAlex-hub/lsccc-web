@@ -50,8 +50,8 @@ export function AuthShell({ children }: { children: ReactNode }) {
       </aside>
       <div className="flex min-w-0 flex-col">
         <div className="border-b border-[#e6d9b0] bg-[#fff8e6] px-6 py-3 text-xs leading-5 text-[#705b25]">
-          <strong>UI preview.</strong> No emails are sent. Passwords are not
-          stored, and access is not protected yet.
+          Staff access is by invitation. Contact your administrator if you need
+          an account.
         </div>
         <main
           id="auth-main"

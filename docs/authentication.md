@@ -1,0 +1,56 @@
+# Custom staff authentication
+
+Authentication is implemented separately from content publishing. Login, logout,
+invitation acceptance, password resets and team permissions use Neon/PostgreSQL.
+Content editing still uses browser preview data until the publishing batch.
+
+## First administrator
+
+Set `BOOTSTRAP_ADMIN_NAME`, `BOOTSTRAP_ADMIN_EMAIL` and `BOOTSTRAP_ADMIN_PASSWORD`
+in the private environment file. Choose your own password with 15–128 characters.
+Run `npm run auth:bootstrap`, then remove these variables. The command refuses to
+run once any staff account exists. It never prints credentials or sets a default
+password. Email delivery is not needed to create the first administrator.
+
+## Sessions and permissions
+
+Passwords use salted scrypt (N=131072, r=8, p=1), constant-time comparisons and
+bounded concurrent hashing. Random 256-bit session tokens are stored only as
+SHA-256 hashes in the database. Session cookies are HTTP-only, SameSite=Lax,
+secure and host-only in production, and expire after seven days. Logout deletes
+the session. Deactivation, permission changes and password reset revoke sessions.
+
+Administrators manage staff, website pages and settings. Editors can access news,
+media, notices and safety resources. Layout checks are inside Suspense, and each
+team API request validates its own session and role. Last-administrator changes
+are serialised with a database advisory lock; the final active administrator
+cannot be demoted or deactivated. Tokens and credential fields never appear in
+team list responses or audit data.
+
+Set APP_URL to the canonical website origin. Authentication mutations require
+matching Origin and JSON bodies, and reject cross-site requests. Rate limits use
+shared PostgreSQL buckets rather than process-local counters. Do not expose the
+backend through multiple canonical origins without configuring a deliberate
+trusted-origin policy. Expired session/rate-limit rows can be periodically removed.
+
+## Invitations and email
+
+Invitations are valid for 24 hours and may be accepted once. Resending replaces
+the token. The account is created transactionally with invitation acceptance.
+Pending invitations and access changes are actual database records, not UI previews.
+
+Email may remain unconfigured. In that case, administrators receive a setup link
+once in the team UI, accompanied by a clear no-email-sent message. The raw link
+is not persisted; resending creates a new link if it is lost. Never log or paste
+these links into public channels. Configuring AUTH_FROM_EMAIL and SMTP credentials
+enables email delivery. Successful delivery means the SMTP server accepted it.
+
+Password recovery returns 503 with a clear message while email is unconfigured.
+Once configured, it gives a generic response to avoid disclosing account existence.
+Reset tokens expire after 30 minutes, are single-use, and revoke all account
+sessions when consumed. Existing-account SMTP failures invalidate that token and
+retain the generic public response; they do not claim that an email was sent.
+
+No demo invitation or reset tokens grant access. Staff sessions are validated on
+the server. Content preview notices explicitly distinguish browser-only changes
+from real team-access changes.

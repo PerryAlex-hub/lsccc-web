@@ -1,371 +1,324 @@
 "use client";
 
-import Link from "next/link";
-import { useState, type FormEvent } from "react";
-import { invitationHref, invitationState } from "@/lib/admin/auth-preview";
-import { updateAdminState, useAdminState } from "@/lib/admin/store";
-import type { AdminRole, AdminTeamMember } from "@/lib/admin/types";
+import { useEffect, useState, type FormEvent } from "react";
+import { authRequest, navigateAfterAuth } from "@/lib/auth/client";
+import { AdminButton, AdminField, AdminFeedback, AdminHeading } from "./ui";
 import { AdminDialog } from "./dialog";
-import { AdminButton, AdminFeedback, AdminField, AdminHeading } from "./ui";
+
+type Staff = {
+  id: string;
+  name: string;
+  email: string;
+  role: "ADMINISTRATOR" | "EDITOR";
+  status: "ACTIVE" | "DEACTIVATED";
+};
+type Invite = {
+  id: string;
+  email: string;
+  role: Staff["role"];
+  expiresAt: string;
+  revokedAt: string | null;
+};
+type Team = { users: Staff[]; invitations: Invite[] };
 
 export function TeamManager() {
-  const state = useAdminState();
-  const [invite, setInvite] = useState(false);
+  const [team, setTeam] = useState<Team | null>(null);
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<AdminRole>("Editor");
-  const [search, setSearch] = useState("");
+  const [role, setRole] = useState<Staff["role"]>("EDITOR");
   const [message, setMessage] = useState("");
   const [error, setError] = useState(false);
-  const [dialogError, setDialogError] = useState("");
-  const [confirmation, setConfirmation] = useState<{
-    member: AdminTeamMember;
-    action: "Revoke" | "Deactivate";
+  const [busy, setBusy] = useState(false);
+  const [setupUrl, setSetupUrl] = useState("");
+  const [confirm, setConfirm] = useState<{
+    id: string;
+    email: string;
+    action: "deactivate" | "revoke";
   } | null>(null);
-  const members = state.team.filter((member) =>
-    `${member.name} ${member.email}`
-      .toLowerCase()
-      .includes(search.toLowerCase()),
-  );
 
-  function save(member: AdminTeamMember, label: string) {
-    const result = updateAdminState(
-      (current) => ({
-        ...current,
-        team: current.team.map((item) =>
-          item.id === member.id ? member : item,
-        ),
-      }),
-      label,
-    );
-    setMessage(
-      result.ok
-        ? `${label}. Saved in this browser only; no email was sent.`
-        : result.message,
-    );
-    setError(!result.ok);
-    return result.ok;
-  }
-
-  function createInvitation(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const normalized = email.trim().toLowerCase();
-    if (
-      state.team.some((member) => member.email.toLowerCase() === normalized)
-    ) {
-      setDialogError(
-        "This email is already listed. Resend its invitation or reactivate the existing member.",
-      );
+  async function load() {
+    const response = await fetch("/api/admin/team", { cache: "no-store" });
+    if (response.status === 401) {
+      navigateAfterAuth("/admin/login");
       return;
     }
-    const member: AdminTeamMember = {
-      id: crypto.randomUUID(),
-      name: "",
-      email: normalized,
-      role,
-      status: "Invited",
-      token: crypto.randomUUID(),
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.message || "Unable to load staff.");
+    }
+    setTeam(result);
+  }
+  useEffect(() => {
+    let active = true;
+    fetch("/api/admin/team", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(
+            "Unable to load staff. Administrator access is required.",
+          );
+        }
+        return response.json();
+      })
+      .then((result) => {
+        if (active) {
+          setTeam(result);
+        }
+      })
+      .catch((error) => {
+        if (active) {
+          setMessage(error.message);
+          setError(true);
+        }
+      });
+    return () => {
+      active = false;
     };
-    const result = updateAdminState(
-      (current) => ({ ...current, team: [...current.team, member] }),
-      "Created team invitation in preview",
-    );
-    if (!result.ok) {
-      setDialogError(result.message);
-      return;
-    }
-    setInvite(false);
-    setEmail("");
-    setRole("Editor");
-    setDialogError("");
-    setMessage(
-      "Invitation created in this browser. No email was sent. Open its setup preview below.",
-    );
-    setError(false);
-  }
-
-  function resend(member: AdminTeamMember) {
-    save(
-      {
-        ...member,
-        status: "Invited",
-        token: crypto.randomUUID(),
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-      },
-      "Replaced invitation link in preview",
-    );
-  }
-
-  async function copyLink(member: AdminTeamMember) {
+  }, []);
+  async function update(data: unknown, method = "PATCH") {
+    setBusy(true);
+    setMessage("");
+    setSetupUrl("");
     try {
-      await navigator.clipboard.writeText(
-        `${window.location.origin}${invitationHref(member.token)}`,
-      );
-      setMessage(
-        "Preview invitation link copied. It works only with this browser’s preview data.",
-      );
+      const result = await authRequest("/api/admin/team", data, method);
+      setMessage(result.message);
       setError(false);
-    } catch {
+      setSetupUrl(result.setupUrl || "");
+      setConfirm(null);
+      await load();
+      return true;
+    } catch (error) {
       setMessage(
-        "Could not copy the link. Use Open setup preview to review the invitation.",
+        error instanceof Error ? error.message : "Unable to update access.",
       );
       setError(true);
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function invite(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (await update({ email, role }, "POST")) {
+      setEmail("");
     }
   }
 
   return (
     <>
       <AdminHeading
-        eyebrow="WORKSPACE ACCESS"
+        eyebrow="STAFF ACCESS"
         title="Team & access"
-        description="Invite staff and define what they can manage. These are sample accounts; roles and access are not enforced until the backend is connected."
-        actions={
-          <AdminButton
-            onClick={() => {
-              setDialogError("");
-              setInvite(true);
-            }}
-          >
-            Invite staff member
-          </AdminButton>
-        }
+        description="Manage staff accounts and invitations. Administrators manage access and settings; editors manage news, media and safety information."
       />
-      <div className="mb-7 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-md border border-border bg-white p-5">
-          <h2 className="font-bold text-navy">Administrator</h2>
-          <p className="mt-2 text-sm leading-6 text-muted">
-            Manages content, website settings and team access. Can invite staff
-            and change roles.
-          </p>
-        </div>
-        <div className="rounded-md border border-border bg-white p-5">
-          <h2 className="font-bold text-navy">Editor</h2>
-          <p className="mt-2 text-sm leading-6 text-muted">
-            Manages news, media and safety resources. Cannot manage staff access
-            or website settings.
-          </p>
-        </div>
-      </div>
-      {message && (
-        <div className="mb-5">
-          <AdminFeedback message={message} error={error} />
-        </div>
-      )}
-      <div className="mb-5 max-w-md">
-        <AdminField label="Find a team member">
-          <input
-            type="search"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search name or email"
-            className="admin-input"
-          />
-        </AdminField>
-      </div>
-      <div className="space-y-3">
-        {members.map((member) => {
-          const expired =
-            member.status === "Invited" &&
-            invitationState(member) === "expired";
-          const status = expired ? "Expired invitation" : member.status;
-          return (
-            <article
-              key={member.id}
-              className="flex min-w-0 flex-col gap-5 rounded-md border border-border bg-white p-5 xl:flex-row xl:items-center xl:justify-between"
-            >
-              <div className="min-w-0">
-                <h2 className="break-words text-sm font-bold text-navy">
-                  {member.name || member.email}
-                </h2>
-                {member.name && (
-                  <p className="mt-1 break-all text-xs text-muted">
-                    {member.email}
-                  </p>
-                )}
-                <div className="mt-3 flex flex-wrap items-center gap-3">
-                  <span
-                    className={`rounded-full px-2.5 py-1 text-xs font-semibold ${member.status === "Active" ? "bg-[#e8f3ed] text-[#246743]" : "bg-paper text-muted"}`}
-                  >
-                    {status}
-                  </span>
-                  {member.owner && (
-                    <span className="text-xs text-muted">
-                      Initial administrator · Sample account
-                    </span>
-                  )}
-                  {member.expiresAt && member.status === "Invited" && (
-                    <span className="text-xs text-muted">
-                      Expires{" "}
-                      {new Date(member.expiresAt).toLocaleString("en-GB", {
-                        timeZone: "Africa/Lagos",
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                      })}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-3">
-                <label className="text-xs font-semibold text-muted">
-                  <span className="sr-only">Role for {member.email}</span>
-                  <select
-                    value={member.role}
-                    disabled={member.owner}
-                    onChange={(event) =>
-                      save(
-                        { ...member, role: event.target.value as AdminRole },
-                        "Changed staff role in preview",
-                      )
-                    }
-                    className="admin-input min-w-36 disabled:opacity-60"
-                  >
-                    <option>Administrator</option>
-                    <option>Editor</option>
-                  </select>
-                </label>
-                {member.status === "Invited" && (
-                  <>
-                    <AdminButton
-                      variant="secondary"
-                      onClick={() => resend(member)}
-                    >
-                      Resend invitation
-                    </AdminButton>
-                    <AdminButton
-                      variant="secondary"
-                      onClick={() =>
-                        setConfirmation({ member, action: "Revoke" })
-                      }
-                    >
-                      Revoke
-                    </AdminButton>
-                  </>
-                )}
-                {member.status === "Active" && !member.owner && (
-                  <AdminButton
-                    variant="secondary"
-                    onClick={() =>
-                      setConfirmation({ member, action: "Deactivate" })
-                    }
-                  >
-                    Deactivate
-                  </AdminButton>
-                )}
-                {(member.status === "Deactivated" ||
-                  member.status === "Revoked") && (
-                  <AdminButton
-                    variant="secondary"
-                    onClick={() => resend(member)}
-                  >
-                    Invite again
-                  </AdminButton>
-                )}
-                {member.status === "Invited" && !expired && (
-                  <div className="flex w-full flex-wrap gap-x-5">
-                    <Link
-                      href={invitationHref(member.token)}
-                      className="inline-flex min-h-11 items-center text-xs font-bold text-blue hover:underline"
-                    >
-                      Open setup preview
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => copyLink(member)}
-                      className="min-h-11 text-xs font-bold text-blue hover:underline"
-                    >
-                      Copy preview link
-                    </button>
-                  </div>
-                )}
-              </div>
-            </article>
-          );
-        })}
-        {!members.length && (
-          <p className="rounded-md border border-border bg-white p-8 text-sm text-muted">
-            No team members match your search.
-          </p>
-        )}
-      </div>
-      <AdminDialog
-        open={invite}
-        onClose={() => setInvite(false)}
-        title="Invite staff member"
+      <form
+        onSubmit={invite}
+        className="mb-7 space-y-4 rounded-md border border-border bg-white p-5"
       >
-        <form onSubmit={createInvitation} className="space-y-5">
-          <p className="text-sm leading-6 text-muted">
-            The invitation leads to account setup, where the recipient chooses
-            their own password. In this preview, no email is sent.
-          </p>
+        <h2 className="text-lg font-bold text-navy">Invite staff member</h2>
+        <div className="grid items-end gap-4 sm:grid-cols-[minmax(0,1fr)_180px_auto]">
           <AdminField label="Email address">
             <input
               type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
               required
               maxLength={254}
-              autoComplete="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
               className="admin-input"
             />
           </AdminField>
           <AdminField label="Role">
             <select
               value={role}
-              onChange={(event) => setRole(event.target.value as AdminRole)}
+              onChange={(event) => setRole(event.target.value as Staff["role"])}
               className="admin-input"
             >
-              <option>Editor</option>
-              <option>Administrator</option>
+              <option value="EDITOR">Editor</option>
+              <option value="ADMINISTRATOR">Administrator</option>
             </select>
           </AdminField>
-          <p className="text-xs leading-5 text-muted">
-            Invitations expire after 24 hours. Resending replaces the previous
-            link.
-          </p>
-          {dialogError && <AdminFeedback message={dialogError} error />}
-          <div className="flex flex-wrap gap-3">
-            <AdminButton type="submit">Create invitation preview</AdminButton>
-            <AdminButton variant="secondary" onClick={() => setInvite(false)}>
-              Cancel
-            </AdminButton>
-          </div>
-        </form>
-      </AdminDialog>
-      <AdminDialog
-        open={!!confirmation}
-        onClose={() => setConfirmation(null)}
-        title={`${confirmation?.action || "Update"} access?`}
-      >
-        <p className="mb-6 break-words text-sm leading-6 text-muted">
-          {confirmation?.action === "Revoke"
-            ? "The current invitation link will become unavailable"
-            : "This staff member will be marked inactive"}{" "}
-          for {confirmation?.member.email}. This affects the browser preview
-          only.
+          <AdminButton type="submit" disabled={busy}>
+            Create invitation
+          </AdminButton>
+        </div>
+        <p className="text-xs leading-5 text-muted">
+          Invitations expire after 24 hours. Resending replaces the previous
+          link.
         </p>
-        <div className="flex gap-3">
+      </form>
+      {message && (
+        <div className="mb-5">
+          <AdminFeedback message={message} error={error} />
+        </div>
+      )}
+      {setupUrl && (
+        <div className="mb-6 space-y-3 rounded-md border border-border bg-white p-5">
+          <p className="text-sm text-muted">
+            Email is unavailable. This setup link is shown once and is not
+            stored in the browser.
+          </p>
+          <a
+            href={setupUrl}
+            className="inline-flex min-h-11 items-center text-sm font-bold text-blue"
+          >
+            Open setup link
+          </a>
           <AdminButton
-            variant="danger"
-            onClick={() => {
-              if (!confirmation) {
-                return;
-              }
-              const updated: AdminTeamMember = {
-                ...confirmation.member,
-                status:
-                  confirmation.action === "Revoke" ? "Revoked" : "Deactivated",
-              };
-              if (save(updated, `${confirmation.action}d access in preview`)) {
-                setConfirmation(null);
+            variant="secondary"
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(setupUrl);
+                setMessage("Setup link copied.");
+              } catch {
+                setMessage("Could not copy the link. Open it above.");
               }
             }}
           >
-            Confirm {confirmation?.action.toLowerCase()}
+            Copy setup link
           </AdminButton>
-          <AdminButton
-            variant="secondary"
-            onClick={() => setConfirmation(null)}
+        </div>
+      )}
+      {!team && !error && <p role="status">Loading staff…</p>}
+      <div className="space-y-3">
+        {team?.users.map((member) => (
+          <article
+            key={member.id}
+            className="flex flex-col justify-between gap-4 rounded-md border border-border bg-white p-5 sm:flex-row sm:items-center"
           >
+            <div className="min-w-0">
+              <h2 className="break-words font-bold text-navy">{member.name}</h2>
+              <p className="mt-1 break-all text-sm text-muted">
+                {member.email}
+              </p>
+              <p className="mt-2 text-xs text-muted">
+                {member.status === "ACTIVE" ? "Active" : "Deactivated"}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <label>
+                <span className="sr-only">Role for {member.email}</span>
+                <select
+                  value={member.role}
+                  disabled={busy}
+                  onChange={(event) =>
+                    update({ id: member.id, role: event.target.value })
+                  }
+                  className="admin-input"
+                >
+                  <option value="EDITOR">Editor</option>
+                  <option value="ADMINISTRATOR">Administrator</option>
+                </select>
+              </label>
+              {member.status === "ACTIVE" ? (
+                <AdminButton
+                  variant="secondary"
+                  disabled={busy}
+                  onClick={() =>
+                    setConfirm({
+                      id: member.id,
+                      email: member.email,
+                      action: "deactivate",
+                    })
+                  }
+                >
+                  Deactivate
+                </AdminButton>
+              ) : (
+                <AdminButton
+                  variant="secondary"
+                  disabled={busy}
+                  onClick={() => update({ id: member.id, status: "ACTIVE" })}
+                >
+                  Reactivate
+                </AdminButton>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+      {!!team?.invitations.length && (
+        <section className="mt-8 space-y-3">
+          <h2 className="text-xl font-bold text-navy">Invitations</h2>
+          {team.invitations.map((invitation) => (
+            <article
+              key={invitation.id}
+              className="flex flex-col justify-between gap-4 rounded-md border border-border bg-white p-5 sm:flex-row sm:items-center"
+            >
+              <div className="min-w-0">
+                <p className="break-all text-sm font-bold text-navy">
+                  {invitation.email}
+                </p>
+                <p className="mt-2 text-xs text-muted">
+                  {invitation.revokedAt
+                    ? "Revoked"
+                    : new Date(invitation.expiresAt) <= new Date()
+                      ? "Expired"
+                      : "Pending"}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <AdminButton
+                  variant="secondary"
+                  disabled={busy}
+                  onClick={() =>
+                    update(
+                      { email: invitation.email, role: invitation.role },
+                      "POST",
+                    )
+                  }
+                >
+                  Resend invitation
+                </AdminButton>
+                {!invitation.revokedAt && (
+                  <AdminButton
+                    variant="secondary"
+                    disabled={busy}
+                    onClick={() =>
+                      setConfirm({
+                        id: invitation.id,
+                        email: invitation.email,
+                        action: "revoke",
+                      })
+                    }
+                  >
+                    Revoke
+                  </AdminButton>
+                )}
+              </div>
+            </article>
+          ))}
+        </section>
+      )}
+      <AdminDialog
+        open={!!confirm}
+        onClose={() => setConfirm(null)}
+        title="Confirm access change"
+      >
+        <p className="mb-5 break-words text-sm leading-6">
+          {confirm?.action === "deactivate"
+            ? "Deactivate this account and revoke its sessions"
+            : "Revoke this invitation"}{" "}
+          for {confirm?.email}?
+        </p>
+        {confirm && error && (
+          <div className="mb-4">
+            <AdminFeedback message={message} error />
+          </div>
+        )}
+        <div className="flex gap-3">
+          <AdminButton
+            variant="danger"
+            disabled={busy}
+            onClick={() =>
+              confirm &&
+              update(
+                confirm.action === "revoke"
+                  ? { id: confirm.id, action: "revoke" }
+                  : { id: confirm.id, status: "DEACTIVATED" },
+              )
+            }
+          >
+            Confirm
+          </AdminButton>
+          <AdminButton variant="secondary" onClick={() => setConfirm(null)}>
             Cancel
           </AdminButton>
         </div>

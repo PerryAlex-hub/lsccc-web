@@ -6,8 +6,15 @@ import { Suspense, useEffect, useRef, useState, type ReactNode } from "react";
 import { assets } from "@/lib/assets";
 import { AdminIcon } from "./icons";
 import { AdminNavigation, AdminNavigationLinks } from "./navigation";
+import { StaffControls } from "./staff-controls";
 
-export function AdminShell({ children }: { children: ReactNode }) {
+export function AdminShell({
+  children,
+  user,
+}: {
+  children: ReactNode;
+  user: { name: string; role: string };
+}) {
   const [menu, setMenu] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
   const sidebar = useRef<HTMLElement>(null);
@@ -106,8 +113,18 @@ export function AdminShell({ children }: { children: ReactNode }) {
         <p className="px-7 pb-3 pt-7 text-[10px] font-bold tracking-[0.14em] text-white/40">
           WORKSPACE
         </p>
-        <Suspense fallback={<AdminNavigationLinks onNavigate={close} />}>
-          <AdminNavigation onNavigate={close} />
+        <Suspense
+          fallback={
+            <AdminNavigationLinks
+              onNavigate={close}
+              administrator={user.role === "ADMINISTRATOR"}
+            />
+          }
+        >
+          <AdminNavigation
+            onNavigate={close}
+            administrator={user.role === "ADMINISTRATOR"}
+          />
         </Suspense>
         <div className="mt-auto space-y-6 px-6 py-6">
           <Link
@@ -122,15 +139,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           >
             View website <AdminIcon name="arrow" className="size-4" />
           </Link>
-          <div className="flex items-center gap-3 border-t border-white/10 pt-5">
-            <span className="flex size-9 items-center justify-center rounded-full bg-white/10 text-xs font-bold">
-              ED
-            </span>
-            <div>
-              <p className="text-sm font-semibold">Editorial team</p>
-              <p className="mt-1 text-xs text-white/50">Preview workspace</p>
-            </div>
-          </div>
+          <StaffControls name={user.name} role={user.role} />
         </div>
       </aside>
       <div className="min-w-0 lg:pl-[248px]">
@@ -152,12 +161,13 @@ export function AdminShell({ children }: { children: ReactNode }) {
             </p>
           </div>
           <span className="shrink-0 rounded-full border border-border px-3 py-1.5 text-[11px] font-semibold text-muted">
-            UI preview
+            Content preview
           </span>
         </header>
         <div className="border-b border-[#e6d9b0] bg-[#fff8e6] px-5 py-3 text-xs leading-5 text-[#705b25] sm:px-8 lg:px-10">
-          <strong className="font-bold">Preview mode.</strong> Changes are saved
-          in this browser only. The live website is unchanged.
+          <strong className="font-bold">Staff access is connected.</strong> Team
+          changes are saved to the database. Content edits remain in this
+          browser until publishing integration is complete.
         </div>
         <main
           id="admin-main"

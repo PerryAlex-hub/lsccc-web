@@ -1,30 +1,19 @@
-import nodemailer from "nodemailer";
+import {
+  createMailTransport,
+  mailTransportConfigured,
+} from "../email/transport";
 import type { Enquiry } from "./schema";
 
 export function emailDeliveryConfigured() {
   return Boolean(
     process.env.CONTACT_TO_EMAIL &&
     process.env.CONTACT_FROM_EMAIL &&
-    process.env.SMTP_HOST &&
-    process.env.SMTP_USER &&
-    process.env.SMTP_PASSWORD,
+    mailTransportConfigured(),
   );
 }
 
 export async function deliverEnquiry(enquiry: Enquiry) {
-  const port = Number(process.env.SMTP_PORT || 587);
-  const transport = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port,
-    secure: port === 465,
-    requireTLS: port !== 465,
-    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD },
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
-    disableFileAccess: true,
-    disableUrlAccess: true,
-  });
+  const transport = createMailTransport();
   const result = await transport.sendMail({
     from: process.env.CONTACT_FROM_EMAIL,
     to: process.env.CONTACT_TO_EMAIL,

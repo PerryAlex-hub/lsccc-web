@@ -65,25 +65,24 @@ Category names are saved in this browser and appear in the article list filter.
 Names must be unique regardless of case, with a maximum of 60 characters.
 Older preview data keeps existing edits when categories are added to the store.
 
-The preview has no authentication, database or live publishing endpoint. Those
-are the next backend stage. All admin routes request `noindex, nofollow`.
+Content publishing still uses browser preview data. Authentication and team access
+are connected to Neon. All admin routes request `noindex, nofollow`.
 
-### Authentication UI preview
+### Staff authentication
 
-Start at `/admin/login`. Login, forgot-password, reset-password and invitation
-setup have a separate responsive layout. `/admin/team` manages sample staff,
-roles and invitations. Sample addresses use `example.com` and are fictional.
-The initial administrator is protected from role changes or deactivation.
+Start at `/admin/login`. Login, password recovery and invitation setup use the
+backend. `/admin/team` manages real staff accounts, roles and invitations. The
+last active administrator cannot be demoted or deactivated. Protected pages
+require a server-validated session.
 
-Invitations created in Team & access expire after 24 hours; resending replaces
-the old preview link. Accepting one marks the sample member active in browser
-storage. The seeded `demo-invitation` is a non-expiring review example. Links
-depend on local browser data and will not work for a recipient in another browser.
+Invitations expire after 24 hours and can be accepted once; resending replaces
+the old link. When SMTP is unconfigured, the administrator gets a setup link
+once in the UI with a clear no-email-sent message. No raw tokens are stored.
 
-No email is sent, no password is stored and no login or permissions are enforced.
-Forms discard submitted passwords. Reset preview in Settings restores the sample
-invitation. The state review links use a separate sample to demonstrate valid,
-expired, used and invalid invitations, regardless of changes to saved team data.
+Email delivery may remain deferred. Password recovery reports it unavailable
+until SMTP is configured. See [authentication setup](docs/authentication.md) for
+first-administrator bootstrap, session policy and permissions. No demo tokens
+grant access.
 
 ## Checks and formatting
 
@@ -114,3 +113,9 @@ The API returns success only after the mail server accepts delivery; it does not
 claim that the message has been read.
 
 See `docs/implementation.md` for the Figma references and review checkpoints.
+
+## Backend foundation
+
+Prisma/Neon schema, migrations, repeatable content seeding and a Neon S3 upload service
+are prepared. Authentication and content integration remain the next review batches.
+See [backend setup](docs/backend.md) for environment variables and database commands.

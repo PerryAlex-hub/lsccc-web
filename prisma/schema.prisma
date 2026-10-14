@@ -1,0 +1,248 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMINISTRATOR
+  EDITOR
+}
+
+enum UserStatus {
+  ACTIVE
+  DEACTIVATED
+}
+
+enum PublicationStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum StorageProvider {
+  LOCAL
+  NEON
+}
+
+enum MediaStatus {
+  PENDING
+  READY
+}
+
+model User {
+  id           String     @id @default(uuid()) @db.Uuid
+  name         String     @db.VarChar(120)
+  email        String     @unique @db.VarChar(254)
+  passwordHash String
+  role         UserRole   @default(EDITOR)
+  status       UserStatus @default(ACTIVE)
+  createdAt    DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime   @updatedAt @db.Timestamptz(3)
+
+  sessions            Session[]
+  passwordResets      PasswordResetToken[]
+  sentInvitations     Invitation[]         @relation("Inviter")
+  acceptedInvitations Invitation[]         @relation("Invitee")
+  uploads             MediaAsset[]
+  articles            NewsArticle[]
+  auditLogs           AuditLog[]
+
+  @@index([role, status])
+}
+
+model Session {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  tokenHash String   @unique @db.Char(64)
+  expiresAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Invitation {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique @db.VarChar(254)
+  role         UserRole  @default(EDITOR)
+  tokenHash    String    @unique @db.Char(64)
+  inviterId    String?   @db.Uuid
+  acceptedById String?   @db.Uuid
+  expiresAt    DateTime  @db.Timestamptz(3)
+  acceptedAt   DateTime? @db.Timestamptz(3)
+  revokedAt    DateTime? @db.Timestamptz(3)
+  createdAt    DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime  @updatedAt @db.Timestamptz(3)
+  inviter      User?     @relation("Inviter", fields: [inviterId], references: [id], onDelete: SetNull)
+  acceptedBy   User?     @relation("Invitee", fields: [acceptedById], references: [id], onDelete: SetNull)
+
+  @@index([expiresAt])
+  @@index([inviterId])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @unique @db.Char(64)
+  expiresAt DateTime  @db.Timestamptz(3)
+  usedAt    DateTime? @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model RateLimitBucket {
+  key       String   @id @db.Char(64)
+  attempts  Int      @default(0)
+  expiresAt DateTime @db.Timestamptz(3)
+
+  @@index([expiresAt])
+}
+
+model Category {
+  id        String        @id @default(uuid()) @db.Uuid
+  name      String        @db.VarChar(60)
+  nameKey   String        @unique @db.VarChar(60)
+  slug      String        @unique @db.VarChar(100)
+  createdAt DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime      @updatedAt @db.Timestamptz(3)
+  articles  NewsArticle[]
+}
+
+model MediaAsset {
+  id         String          @id @default(uuid()) @db.Uuid
+  provider   StorageProvider @default(NEON)
+  status     MediaStatus     @default(PENDING)
+  objectKey  String?         @unique
+  url        String
+  filename   String          @db.VarChar(200)
+  alt        String          @default("") @db.VarChar(500)
+  mimeType   String          @db.VarChar(50)
+  byteSize   Int
+  width      Int?
+  height     Int?
+  uploaderId String?         @db.Uuid
+  createdAt  DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime        @updatedAt @db.Timestamptz(3)
+  uploader   User?           @relation(fields: [uploaderId], references: [id], onDelete: SetNull)
+  articles   NewsArticle[]
+
+  @@index([uploaderId])
+  @@index([status, createdAt])
+}
+
+model NewsArticle {
+  id          String            @id @default(uuid()) @db.Uuid
+  title       String            @db.VarChar(180)
+  slug        String            @unique @db.VarChar(200)
+  excerpt     String            @default("") @db.VarChar(500)
+  body        String            @default("")
+  byline      String            @default("Editorial team") @db.VarChar(120)
+  source      String            @default("") @db.VarChar(500)
+  caption     String            @default("") @db.VarChar(500)
+  categoryId  String            @db.Uuid
+  coverId     String?           @db.Uuid
+  creatorId   String?           @db.Uuid
+  status      PublicationStatus @default(DRAFT)
+  featured    Boolean           @default(false)
+  publishedAt DateTime?         @db.Timestamptz(3)
+  deletedAt   DateTime?         @db.Timestamptz(3)
+  createdAt   DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime          @updatedAt @db.Timestamptz(3)
+  category    Category          @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  cover       MediaAsset?       @relation(fields: [coverId], references: [id], onDelete: Restrict)
+  creator     User?             @relation(fields: [creatorId], references: [id], onDelete: SetNull)
+
+  @@index([status, deletedAt, publishedAt])
+  @@index([categoryId, status, publishedAt])
+  @@index([coverId])
+  @@index([creatorId])
+}
+
+model PublicNotice {
+  id          String            @id @default(uuid()) @db.Uuid
+  key         String            @unique @db.VarChar(100)
+  title       String            @db.VarChar(180)
+  summary     String            @db.VarChar(500)
+  body        String
+  url         String            @default("")
+  status      PublicationStatus @default(DRAFT)
+  publishedAt DateTime?         @db.Timestamptz(3)
+  createdAt   DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime          @updatedAt @db.Timestamptz(3)
+
+  @@index([status, publishedAt])
+}
+
+model SafetyResource {
+  id          String            @id @default(uuid()) @db.Uuid
+  key         String            @unique @db.VarChar(100)
+  title       String            @db.VarChar(180)
+  summary     String            @db.VarChar(500)
+  body        String
+  url         String            @default("")
+  position    Int               @default(0)
+  status      PublicationStatus @default(DRAFT)
+  publishedAt DateTime?         @db.Timestamptz(3)
+  createdAt   DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime          @updatedAt @db.Timestamptz(3)
+
+  @@index([status, position])
+}
+
+model WebsitePage {
+  id              String            @id @default(uuid()) @db.Uuid
+  key             String            @unique @db.VarChar(100)
+  path            String            @unique @db.VarChar(200)
+  title           String            @db.VarChar(180)
+  introduction    String
+  body            String
+  metaDescription String            @default("") @db.VarChar(320)
+  status          PublicationStatus @default(DRAFT)
+  createdAt       DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime          @updatedAt @db.Timestamptz(3)
+  sections        PageSection[]
+}
+
+model PageSection {
+  id        String      @id @default(uuid()) @db.Uuid
+  pageId    String      @db.Uuid
+  key       String      @db.VarChar(100)
+  position  Int         @default(0)
+  content   Json
+  createdAt DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime    @updatedAt @db.Timestamptz(3)
+  page      WebsitePage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, key])
+  @@index([pageId, position])
+}
+
+model SiteSettings {
+  id           String   @id @default("site")
+  siteName     String   @db.VarChar(180)
+  description  String   @db.VarChar(500)
+  address      String   @db.VarChar(500)
+  enquiryEmail String   @default("") @db.VarChar(254)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String?  @db.Uuid
+  action     String   @db.VarChar(100)
+  entityType String   @db.VarChar(60)
+  entityId   String
+  metadata   Json?
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId, createdAt])
+  @@index([entityType, entityId, createdAt])
+  @@index([createdAt])
+}

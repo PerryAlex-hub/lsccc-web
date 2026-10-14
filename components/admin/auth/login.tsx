@@ -2,16 +2,29 @@
 
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { AdminButton, AdminFeedback, AdminField, AdminLink } from "../ui";
+import { AdminButton, AdminFeedback, AdminField } from "../ui";
+import { authRequest, navigateAfterAuth } from "@/lib/auth/client";
 import { AuthHeading, PasswordField } from "./ui";
 
 export function LoginForm() {
   const [password, setPassword] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-  function submit(event: FormEvent<HTMLFormElement>) {
+  const [message, setMessage] = useState("");
+  const [busy, setBusy] = useState(false);
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setPassword("");
-    setSubmitted(true);
+    setBusy(true);
+    setMessage("");
+    const email = new FormData(event.currentTarget).get("email");
+    try {
+      await authRequest("/api/auth/login", { email, password });
+      setPassword("");
+      navigateAfterAuth("/admin");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to log in.");
+      setPassword("");
+    } finally {
+      setBusy(false);
+    }
   }
   return (
     <>
@@ -44,27 +57,16 @@ export function LoginForm() {
             Forgot password?
           </Link>
         </div>
-        <AdminButton type="submit" className="w-full">
-          Log in
+        <AdminButton type="submit" className="w-full" disabled={busy}>
+          {busy ? "Logging in…" : "Log in"}
         </AdminButton>
-        {submitted && (
-          <AdminFeedback message="Login is not connected yet. Your password was discarded. You can open the workspace preview below." />
-        )}
+        {message && <AdminFeedback message={message} error />}
       </form>
       <div className="mt-8 border-t border-border pt-6">
         <p className="mb-4 text-xs leading-5 text-muted">
           Accounts are created by invitation. Contact your administrator if you
           need access.
         </p>
-        <AdminLink href="/admin" secondary>
-          Open workspace preview
-        </AdminLink>
-        <Link
-          href="/admin/accept-invitation?token=demo-invitation&state=valid"
-          className="mt-4 block py-2 text-xs font-semibold text-blue hover:underline"
-        >
-          Review invitation setup
-        </Link>
       </div>
     </>
   );
