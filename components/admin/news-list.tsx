@@ -34,11 +34,11 @@ export function AdminNewsList() {
     )
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 
-  function remove() {
+  async function remove() {
     if (!deleting) {
       return;
     }
-    const result = updateAdminState(
+    const result = await updateAdminState(
       (current) => ({
         ...current,
         articles: current.articles.filter(
@@ -254,8 +254,8 @@ export function AdminNewsList() {
         title="Delete article?"
       >
         <p className="text-sm leading-6 text-muted">
-          “{deleting?.title}” will be removed from this browser’s preview. The
-          live website is unchanged.
+          “{deleting?.title}” will be removed. Published articles will no longer
+          appear on the website.
         </p>
         <div className="mt-6 flex flex-wrap justify-end gap-3">
           <AdminButton variant="secondary" onClick={() => setDeleting(null)}>

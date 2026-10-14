@@ -31,7 +31,7 @@ const labels = {
     title: "Website pages",
     singular: "page",
     description:
-      "Review and prepare the core information across the public website.",
+      "Manage page headings, introductions and body text. Designed sections are maintained in code.",
   },
 };
 
@@ -63,7 +63,7 @@ export function AdminContentManager({
     setFeedback({ message: "", error: false });
   }
 
-  function save() {
+  async function save() {
     if (!editing) {
       return;
     }
@@ -94,7 +94,7 @@ export function AdminContentManager({
       id: editing.id === "new" ? crypto.randomUUID() : editing.id,
       updatedAt: new Date().toISOString(),
     };
-    const result = updateAdminState(
+    const result = await updateAdminState(
       (current) => ({
         ...current,
         [collection]:
@@ -112,11 +112,11 @@ export function AdminContentManager({
     }
   }
 
-  function remove() {
+  async function remove() {
     if (!deleting) {
       return;
     }
-    const result = updateAdminState(
+    const result = await updateAdminState(
       (current) => ({
         ...current,
         [collection]: current[collection].filter(
@@ -281,7 +281,7 @@ export function AdminContentManager({
               <AdminButton variant="secondary" onClick={() => setEditing(null)}>
                 Cancel
               </AdminButton>
-              <AdminButton type="submit">Save preview</AdminButton>
+              <AdminButton type="submit">Save changes</AdminButton>
             </div>
           </form>
         )}
@@ -292,7 +292,7 @@ export function AdminContentManager({
         title={`Delete ${copy.singular}?`}
       >
         <p className="text-sm leading-6 text-muted">
-          Remove “{deleting?.title}” from this browser’s preview?
+          Remove “{deleting?.title}” from the website?
         </p>
         <div className="mt-6 flex justify-end gap-3">
           <AdminButton variant="secondary" onClick={() => setDeleting(null)}>

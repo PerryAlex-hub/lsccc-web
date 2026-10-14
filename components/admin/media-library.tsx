@@ -2,7 +2,11 @@
 
 import Image from "next/image";
 import { useRef, useState } from "react";
-import { updateAdminState, useAdminState } from "@/lib/admin/store";
+import {
+  replaceAdminState,
+  updateAdminState,
+  useAdminState,
+} from "@/lib/admin/store";
 import type { AdminMedia } from "@/lib/admin/types";
 import { matchesQuery } from "@/lib/search";
 import { AdminButton, AdminFeedback, AdminField, AdminHeading } from "./ui";
@@ -37,30 +41,29 @@ export function AdminMediaLibrary() {
     }
     setUploading(true);
     try {
-      const url = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result));
-        reader.onerror = () => reject(new Error("Image could not be read."));
-        reader.readAsDataURL(file);
+      const response = await fetch("/api/admin/media", {
+        method: "POST",
+        headers: {
+          "Content-Type": file.type,
+          "x-filename": encodeURIComponent(file.name),
+        },
+        body: file,
       });
-      const image: AdminMedia = {
-        id: crypto.randomUUID(),
-        name: file.name,
-        url,
-        alt: file.name.replace(/\.[^.]+$/, "").replace(/[-_]/g, " "),
-        size: `${Math.max(1, Math.round(file.size / 1024))} KB`,
-      };
-      const result = updateAdminState(
-        (current) => ({ ...current, media: [image, ...current.media] }),
-        `Uploaded image: ${file.name}`,
-      );
-      setFeedback({ message: result.message, error: !result.ok });
-      if (result.ok) {
-        setSelected(image);
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message);
       }
-    } catch {
+      replaceAdminState(result.state);
+      setFeedback({ message: result.message, error: false });
+      setSelected(
+        result.state.media.find(
+          (image: AdminMedia) => image.id === result.id,
+        ) ?? null,
+      );
+    } catch (error) {
       setFeedback({
-        message: "The image could not be read. Try another file.",
+        message:
+          error instanceof Error ? error.message : "Upload failed. Try again.",
         error: true,
       });
     } finally {
@@ -71,7 +74,7 @@ export function AdminMediaLibrary() {
     }
   }
 
-  function saveDetails() {
+  async function saveDetails() {
     if (!selected) {
       return;
     }
@@ -82,7 +85,7 @@ export function AdminMediaLibrary() {
       });
       return;
     }
-    const result = updateAdminState(
+    const result = await updateAdminState(
       (current) => ({
         ...current,
         media: current.media.map((image) =>
@@ -97,7 +100,7 @@ export function AdminMediaLibrary() {
     }
   }
 
-  function remove() {
+  async function remove() {
     if (!selected) {
       return;
     }
@@ -110,7 +113,7 @@ export function AdminMediaLibrary() {
       setConfirmRemove(false);
       return;
     }
-    const result = updateAdminState(
+    const result = await updateAdminState(
       (current) => ({
         ...current,
         media: current.media.filter((image) => image.id !== selected.id),

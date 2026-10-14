@@ -2,15 +2,14 @@
 
 Authentication is implemented separately from content publishing. Login, logout,
 invitation acceptance, password resets and team permissions use Neon/PostgreSQL.
-Content editing still uses browser preview data until the publishing batch.
+Content editing and public publishing also use the database.
 
 ## First administrator
 
-Set `BOOTSTRAP_ADMIN_NAME`, `BOOTSTRAP_ADMIN_EMAIL` and `BOOTSTRAP_ADMIN_PASSWORD`
-in the private environment file. Choose your own password with 15–128 characters.
-Run `npm run auth:bootstrap`, then remove these variables. The command refuses to
-run once any staff account exists. It never prints credentials or sets a default
-password. Email delivery is not needed to create the first administrator.
+The first administrator already exists in the configured database. Its credentials
+are in the private, ignored `.admin-access.local.txt` file. The one-off bootstrap
+script was removed after setup. Create additional staff through Team & Access.
+A fresh empty database needs an approved account import or backup restore.
 
 ## Sessions and permissions
 
@@ -52,5 +51,4 @@ sessions when consumed. Existing-account SMTP failures invalidate that token and
 retain the generic public response; they do not claim that an email was sent.
 
 No demo invitation or reset tokens grant access. Staff sessions are validated on
-the server. Content preview notices explicitly distinguish browser-only changes
-from real team-access changes.
+the server. Content changes persist in the database rather than browser storage.

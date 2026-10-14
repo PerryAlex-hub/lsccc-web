@@ -1,6 +1,6 @@
 import { AuthError } from "./errors";
 
-export async function readAuthBody(request: Request) {
+export function assertRequestOrigin(request: Request) {
   const origin = request.headers.get("origin");
   const expected = process.env.APP_URL;
   if (
@@ -11,10 +11,14 @@ export async function readAuthBody(request: Request) {
   ) {
     throw new AuthError(403, "Submit this request from the website.");
   }
+}
+
+export async function readAuthBody(request: Request, maximumBytes = 12000) {
+  assertRequestOrigin(request);
   if (!request.headers.get("content-type")?.startsWith("application/json")) {
     throw new AuthError(415, "Use a JSON request.");
   }
-  if (Number(request.headers.get("content-length")) > 12000) {
+  if (Number(request.headers.get("content-length")) > maximumBytes) {
     throw new AuthError(413, "Request is too large.");
   }
   const reader = request.body?.getReader();
@@ -30,7 +34,7 @@ export async function readAuthBody(request: Request) {
       break;
     }
     size += value.byteLength;
-    if (size > 12000) {
+    if (size > maximumBytes) {
       await reader.cancel();
       throw new AuthError(413, "Request is too large.");
     }

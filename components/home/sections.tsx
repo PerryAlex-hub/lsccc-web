@@ -1,3 +1,5 @@
+import { getPublishedNews } from "@/lib/news/repository";
+import { getPublicNotices, getWebsitePage } from "@/lib/cms/public";
 import type { ReactNode } from "react";
 import { ActionLink, TextLink } from "@/components/ui/text-link";
 import { assets } from "@/lib/assets";
@@ -5,7 +7,6 @@ import {
   agencies,
   gallery,
   informationLinks,
-  newsStories,
   resources,
 } from "@/lib/home-content";
 import { destinations } from "@/lib/navigation";
@@ -39,73 +40,51 @@ function SectionHeading({
   );
 }
 
-function PublicNotices() {
+async function PublicNotices() {
+  const notices = await getPublicNotices();
   return (
     <aside
       id="emergency"
       aria-labelledby="notices-title"
       className="flex flex-col gap-[18px] bg-paper p-[26px]"
-      data-node-id="34:724"
     >
-      <h2 id="notices-title" className="min-h-6 text-base font-bold text-navy">
+      <h2 id="notices-title" className="text-base font-bold text-navy">
         PUBLIC NOTICES
       </h2>
       <div className="h-[3px] bg-navy" />
-      <h3 className="min-h-[29px] text-xl font-bold leading-[29px]">
-        Emergency assistance
-      </h3>
-      <p className="text-[40px] font-extrabold leading-[67px] text-navy sm:text-[46px]">
-        <a href="tel:112" className="hover:underline">
-          112
-        </a>
-        <span className="mx-3">/</span>
-        <a href="tel:767" className="hover:underline">
-          767
-        </a>
-      </p>
-      <p className="text-[15px] leading-[21.75px] text-muted xl:min-h-[68px]">
-        Lagos State emergency lines are available round the clock for distress
-        calls requiring immediate assistance.
-      </p>
-      <ActionLink
-        href={destinations.beforeYouCall}
-        className="min-h-[53px] bg-navy text-white"
-      >
-        How to report an emergency{" "}
-        <span aria-hidden="true" className="ml-2">
-          →
-        </span>
-      </ActionLink>
-      <div className="h-px bg-border" />
-      <h3 className="min-h-7 text-[19px] font-bold leading-[27.55px]">
-        Keep the lines open
-      </h3>
-      <p className="text-[15px] leading-[21.75px] text-muted xl:min-h-[68px]">
-        The centre has cautioned residents against hoax calls, which obstruct
-        access for people needing help.
-      </p>
-      <p className="min-h-[15px] text-[10px] font-bold leading-[14.5px] text-navy">
-        18 MAY 2026 / PUBLIC AWARENESS
-      </p>
-      <div className="h-px bg-border" />
-      <h3 className="min-h-[27px] text-lg font-bold leading-[26.1px]">
-        General government feedback
-      </h3>
-      <p className="text-sm leading-[20.3px] text-muted xl:min-h-[63px]">
-        Send non-emergency complaints and suggestions through Lagos State
-        Citizens Gate.
-      </p>
-      <TextLink
-        href={destinations.citizensGate}
-        className="text-[13px] leading-[19px] text-navy"
-      >
-        Open Citizens Gate <span aria-hidden="true">↗</span>
+      {notices.map((notice) => (
+        <article
+          key={notice.id}
+          className="space-y-4 border-b border-border pb-5"
+        >
+          <h3 className="text-xl font-bold">{notice.title}</h3>
+          {notice.key === "emergency-lines" && (
+            <p className="text-[40px] font-extrabold text-navy">
+              <a href="tel:112">112</a> / <a href="tel:767">767</a>
+            </p>
+          )}
+          <p className="text-[15px] leading-6 text-muted">{notice.summary}</p>
+          {notice.body && notice.body !== notice.summary && (
+            <p className="whitespace-pre-line text-sm leading-6 text-muted">
+              {notice.body}
+            </p>
+          )}
+          {notice.url && (
+            <TextLink href={notice.url} className="text-sm text-navy">
+              More information →
+            </TextLink>
+          )}
+        </article>
+      ))}
+      <TextLink href={destinations.citizensGate} className="text-sm text-navy">
+        Open Citizens Gate ↗
       </TextLink>
     </aside>
   );
 }
 
-export function HomeHero() {
+export async function HomeHero() {
+  const page = await getWebsitePage("/");
   return (
     <section
       aria-labelledby="hero-heading"
@@ -132,9 +111,7 @@ export function HomeHero() {
             id="hero-heading"
             className="text-[34px] font-bold leading-[1.25] sm:text-[42px] xl:min-h-[184px] xl:text-hero"
           >
-            Coordinating emergency response.
-            <br />
-            Serving the people of Lagos.
+            {page?.introduction}
           </h1>
           <p className="text-base leading-6 sm:text-[19px] xl:min-h-[58px]">
             Connecting emergency calls with the agencies that respond.
@@ -182,7 +159,8 @@ export function HomeHero() {
   );
 }
 
-export function HomeLeadStory() {
+export async function HomeLeadStory() {
+  const article = (await getPublishedNews())[0];
   return (
     <section
       id="news"
@@ -202,41 +180,42 @@ export function HomeLeadStory() {
         </TextLink>
       </div>
       <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,884fr)_minmax(0,428fr)]">
-        <article className="flex flex-col gap-[14px]" data-node-id="34:718">
-          <Photograph
-            asset={assets.lermsEngagement}
-            className="aspect-[884/430]"
-            sizes="(max-width: 1023px) 93vw, (max-width: 1440px) 62vw, 884px"
-            nodeId="34:719"
-          />
-          <p className="min-h-4 text-[11px] font-bold leading-[15.95px] text-navy">
-            <time dateTime="2026-05-20">20 MAY 2026</time> / TECHNOLOGY &amp;
-            COORDINATION
-          </p>
-          <h3 className="text-[24px] font-bold leading-[1.45] xl:min-h-[84px] xl:text-section">
-            LERMS stakeholder engagement strengthens
-            <br className="hidden xl:block" /> Lagos emergency response
-            coordination
-          </h3>
-          <p className="text-body text-muted xl:min-h-[72px]">
-            Emergency response agencies and technical partners met in Ikeja to
-            strengthen incident reporting, dispatch coordination and shared
-            operational information through LERMS.
-          </p>
-          <TextLink
-            href={`${destinations.news}/lerms-stakeholder-engagement`}
-            className="text-[13px] leading-[19px] text-navy"
-          >
-            Read article <span aria-hidden="true">→</span>
-          </TextLink>
-        </article>
+        {article ? (
+          <article className="flex flex-col gap-[14px]" data-node-id="34:718">
+            <Photograph
+              asset={article.asset}
+              className="aspect-[884/430]"
+              sizes="(max-width: 1023px) 93vw, (max-width: 1440px) 62vw, 884px"
+              nodeId="34:719"
+            />
+            <p className="min-h-4 text-[11px] font-bold leading-[15.95px] text-navy">
+              <time dateTime={article.dateTime}>{article.date}</time> /{" "}
+              {article.category}
+            </p>
+            <h3 className="text-[24px] font-bold leading-[1.45] xl:min-h-[84px] xl:text-section">
+              {article.title}
+            </h3>
+            <p className="text-body text-muted xl:min-h-[72px]">
+              {article.description}
+            </p>
+            <TextLink
+              href={`${destinations.news}/${article.slug}`}
+              className="text-[13px] leading-[19px] text-navy"
+            >
+              Read article <span aria-hidden="true">→</span>
+            </TextLink>
+          </article>
+        ) : (
+          <p className="text-muted">No published news yet.</p>
+        )}
         <PublicNotices />
       </div>
     </section>
   );
 }
 
-export function HomeNews() {
+export async function HomeNews() {
+  const newsStories = (await getPublishedNews()).slice(1, 7);
   return (
     <section
       id="agency-news"
@@ -254,15 +233,13 @@ export function HomeNews() {
       <NewsSlider>
         {newsStories.map((story) => (
           <article
-            key={story.nodeId}
+            key={story.slug}
             className="news-card flex min-w-0 flex-col gap-3"
-            data-node-id={story.nodeId}
           >
             <Photograph
               asset={story.asset}
               className="aspect-[432/244]"
               sizes="(max-width: 767px) 93vw, (max-width: 1440px) 30vw, 432px"
-              nodeId={story.imageNodeId}
             />
             <time
               dateTime={story.dateTime}
@@ -271,8 +248,7 @@ export function HomeNews() {
               {story.date}
             </time>
             <h3 className="text-[22px] font-bold leading-[31.9px] xl:min-h-[66px]">
-              {story.titleLines[0]}
-              <br className="hidden xl:block" /> {story.titleLines[1]}
+              {story.title}
             </h3>
             <p className="text-[15px] leading-[21.75px] text-muted xl:min-h-[68px]">
               {story.description}
@@ -281,7 +257,7 @@ export function HomeNews() {
               SOURCE: {story.source}
             </p>
             <TextLink
-              href={story.href}
+              href={`${destinations.news}/${story.slug}`}
               className="text-[13px] leading-[19px] text-navy"
               ariaLabel={`Read article: ${story.title}`}
             >

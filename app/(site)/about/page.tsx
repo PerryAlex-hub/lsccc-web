@@ -1,3 +1,4 @@
+import { getPageMetadata } from "@/lib/cms/public";
 import type { Metadata } from "next";
 import { InteriorPage } from "@/components/ui/interior-page";
 import {
@@ -8,15 +9,14 @@ import {
   AboutManagement,
 } from "@/components/about/sections";
 
-export const metadata: Metadata = {
-  title: "About the Centre",
-  description:
-    "Our mandate, management, operations and partner response agencies.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata("/about");
+}
 
 export default function AboutPage() {
   return (
     <InteriorPage
+      cmsPath="/about"
       title="About the Centre"
       description="Our role is to connect emergency communication, response agencies and the people who need help."
       breadcrumbs={[{ label: "About the Centre" }]}

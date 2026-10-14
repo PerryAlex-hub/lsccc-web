@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { searchablePages } from "@/lib/navigation";
+import { useEffect, useState } from "react";
 import { matchesQuery } from "@/lib/search";
 
 export function SiteSearch({
@@ -13,6 +12,32 @@ export function SiteSearch({
   onNavigate: () => void;
 }) {
   const [query, setQuery] = useState("");
+  const [searchablePages, setPages] = useState<
+    { href: string; title: string; description: string }[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/search", { cache: "no-store", signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error("Search is unavailable. Please try again later.");
+        }
+        const data = await response.json();
+        setPages(data.results);
+        setLoading(false);
+      })
+      .catch((error) => {
+        if (!controller.signal.aborted) {
+          setError(
+            error instanceof Error ? error.message : "Search is unavailable.",
+          );
+          setLoading(false);
+        }
+      });
+    return () => controller.abort();
+  }, []);
   const results = searchablePages.filter((page) =>
     matchesQuery(query, page.title, page.description),
   );
@@ -48,7 +73,10 @@ export function SiteSearch({
         </button>
       </div>
       <p role="status" className="my-4 text-xs text-muted">
-        {results.length} {results.length === 1 ? "result" : "results"}
+        {loading
+          ? "Loading public information…"
+          : error ||
+            `${results.length} ${results.length === 1 ? "result" : "results"}`}
       </p>
       <ul className="grid max-w-4xl gap-3 sm:grid-cols-2">
         {results.map((page) => (
@@ -68,7 +96,7 @@ export function SiteSearch({
           </li>
         ))}
       </ul>
-      {results.length === 0 && (
+      {!loading && !error && results.length === 0 && (
         <p className="text-sm text-muted">
           No matching information. Try “emergency”, “news” or “contact”.
         </p>

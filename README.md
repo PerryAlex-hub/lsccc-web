@@ -1,90 +1,49 @@
-﻿# Lagos State Command & Control Centre
+# Lagos State Command & Control Centre
 
-Next.js 16.4, TypeScript and Tailwind CSS 4 implementation of the supplied Figma
-design. The site uses the original photographs and locally hosted Plus Jakarta
-Sans font.
+Next.js 16.4, TypeScript and Tailwind CSS 4 implementation of the supplied Figma design, using the original photographs and locally hosted Plus Jakarta Sans font.
 
 ## Run locally
+
+Configure the private environment variables from `.env.example`, then:
 
 ```sh
 npm install
 npm run dev
 ```
 
-For a production preview:
+Production uses `npm run build` and `npm start`. Keep `APP_URL` aligned with the website origin.
 
-```sh
-npm run build
-npm run start -- --port 3003
-```
+## Content management
 
-## Project structure
+Sign in at `/admin/login`. The dashboard, articles, custom categories, notices, safety resources, page copy, media and settings read from Neon PostgreSQL through authenticated Next.js APIs. Changes survive browser refreshes and work across staff devices. Drafts remain private; publishing and unpublishing invalidate public caches.
 
-- `app/`: route composition, metadata and the enquiry API.
-- `app/(site)/`: public pages and shared public layout; URLs are unchanged.
-- `app/admin/` and `components/admin/`: separate administration UI and screens.
-- `lib/admin/`: preview data, types and browser-only storage adapter.
-- `components/ui/`: shared page introductions, sections, photographs and links.
-- `components/site/`: reusable header, footer, navigation and site search.
-- `components/home/`, `about/`, `emergency/`, `safety/`, `news/`, `contact/`:
-  page sections and focused interaction components.
-- `lib/content/`: interior page content; homepage content is in `lib/home-content.ts`.
-- `lib/news/`: news lookup, ordering, related articles and internal URL helpers.
-- `lib/enquiries/`: validation shared by the browser and API, and server email delivery.
-- `lib/assets.ts` and `lib/navigation.ts`: central asset and destination mappings.
-- `tests/`: search and enquiry validation tests.
+The public homepage and newsroom show published database articles. Each article has its own internal route. Search, category filters, pagination, image captions, attribution and related stories use this content. Site search includes published pages and articles.
 
-The routes are `/`, `/about`, `/emergency-services`, `/safety-resources`,
-`/news-media`, `/contact`, `/before-you-call`, and `/news-media/[slug]`.
-Five local news articles are available for UI review. Homepage news cards and
-newsroom cards open these internal article routes.
+Administrators manage staff, page copy and settings. Editors manage news, categories, media, notices and resources. Permissions are checked on the server. The page editor manages headings, introductions and body text; designed sections, agency lists, navigation and emergency numbers remain in code.
 
-The newsroom includes a featured story, category and search filters, a responsive
-article grid, pagination, article details and related stories. Content is read
-through `lib/news/repository.ts` from the local editorial summaries in
-`lib/content/news.ts`. The database and real publishing workflow remain future
-work; the admin preview is described below.
+Photographs upload through the server to Neon Object Storage. PostgreSQL holds URLs and metadata, rather than image bytes. Uploads accept JPG, PNG and WebP up to 2 MB and require matching image signatures. Referenced covers cannot be deleted. Original bundled design photographs are retained because other website sections use them.
 
-The shared footer, browser icon and Apple touch icon use the LSCCC emblem.
+The original content has already been imported into the configured database. Seed files, preview fixtures, browser persistence and temporary setup/check scripts have been removed. Prisma schema and migration history remain. Deleting these files does not delete existing database records. A fresh empty database needs an approved content/account import or backup restore.
 
-## Admin UI preview
+## Staff access and email
 
-Open `/admin` for the dashboard. The workspace includes news management, a new
-article editor, editing and preview routes, public notices, safety resources,
-website pages, a media library and website settings. Desktop uses a separate
-sidebar; mobile uses a keyboard-accessible menu.
+Login, logout, sessions, invitations, password changes and roles use the backend. Invitations are single-use and expire after 24 hours. When email is unconfigured, administrators receive a setup link once in the team screen. Password recovery and contact enquiries clearly report that delivery is unavailable.
 
-Edits, uploads and publication status changes are stored in this browser under
-`lsccc-admin-ui-v1`. They survive refreshes but do not change public site content.
-Use Settings → Reset preview to restore the initial review data. Image uploads
-accept JPG, PNG and WebP files up to 2 MB; browser storage limits still apply.
-Images used as article covers cannot be removed until those references change.
+Email remains deferred. Configure SMTP and the approved sender/recipient variables privately when ready; restart the server afterward. See [authentication](docs/authentication.md) and [backend setup](docs/backend.md).
 
-Use Add category in the article editor to create and select a news category.
-Category names are saved in this browser and appear in the article list filter.
-Names must be unique regardless of case, with a maximum of 60 characters.
-Older preview data keeps existing edits when categories are added to the store.
+## Structure
 
-Content publishing still uses browser preview data. Authentication and team access
-are connected to Neon. All admin routes request `noindex, nofollow`.
+- `app/`: public/admin route composition, metadata and API controllers.
+- `components/`: page sections, shared design components and administration screens.
+- `lib/cms/`: server content reads, writes, validation and public cached queries.
+- `lib/admin/`: client state adapter, types and UI helpers.
+- `lib/auth/`: custom session, password, invitation and team services.
+- `lib/news/`: published article repository and URL helpers.
+- `lib/storage/`: private Neon S3 connection and image services.
+- `prisma/`: schema and checked-in migrations.
+- `public/images/lsccc/`: original design assets used by the website and database records.
 
-### Staff authentication
-
-Start at `/admin/login`. Login, password recovery and invitation setup use the
-backend. `/admin/team` manages real staff accounts, roles and invitations. The
-last active administrator cannot be demoted or deactivated. Protected pages
-require a server-validated session.
-
-Invitations expire after 24 hours and can be accepted once; resending replaces
-the old link. When SMTP is unconfigured, the administrator gets a setup link
-once in the UI with a clear no-email-sent message. No raw tokens are stored.
-
-Email delivery may remain deferred. Password recovery reports it unavailable
-until SMTP is configured. See [authentication setup](docs/authentication.md) for
-first-administrator bootstrap, session policy and permissions. No demo tokens
-grant access.
-
-## Checks and formatting
+## Verification
 
 ```sh
 npm run lint
@@ -93,29 +52,4 @@ npm run format:check
 npm run build
 ```
 
-Run `npm run format` after editing files. Prettier formats TypeScript, JSX, CSS,
-JSON and Markdown consistently.
-
-## Enquiry email delivery
-
-Email delivery is intentionally unconfigured pending confirmation of the centre's
-inbox. The form validates enquiries, preserves messages on failure and reports
-that a message has not been sent when delivery is unavailable.
-
-When the inbox and sending service are confirmed, copy `.env.example` to
-`.env.local` and set the recipient, approved sender and SMTP credentials. Use a
-verified sender belonging to the sending service; the visitor's email is used as
-the reply-to address. Restart the server after configuration.
-
-The server uses Nodemailer's [SMTP transport](https://nodemailer.com/smtp), with
-TLS on port 465 or STARTTLS on port 587. Credentials remain on the server.
-The API returns success only after the mail server accepts delivery; it does not
-claim that the message has been read.
-
-See `docs/implementation.md` for the Figma references and review checkpoints.
-
-## Backend foundation
-
-Prisma/Neon schema, migrations, repeatable content seeding and a Neon S3 upload service
-are prepared. Authentication and content integration remain the next review batches.
-See [backend setup](docs/backend.md) for environment variables and database commands.
+Run `npm run format` to format TypeScript, JSX, CSS, JSON and Markdown. Figma references and earlier UI review checkpoints are recorded in [implementation notes](docs/implementation.md).

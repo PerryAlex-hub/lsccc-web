@@ -3,21 +3,15 @@
 import Image from "next/image";
 import { useState } from "react";
 import { assets } from "@/lib/assets";
-import {
-  resetAdminState,
-  updateAdminState,
-  useAdminState,
-} from "@/lib/admin/store";
+import { updateAdminState, useAdminState } from "@/lib/admin/store";
 import type { AdminSettings } from "@/lib/admin/types";
 import { AdminButton, AdminFeedback, AdminField, AdminHeading } from "./ui";
-import { AdminDialog } from "./dialog";
 
 export function AdminSettingsPage() {
   const state = useAdminState();
-  const [reset, setReset] = useState(false);
   const [feedback, setFeedback] = useState({ message: "", error: false });
 
-  function save(settings: AdminSettings) {
+  async function save(settings: AdminSettings) {
     if (
       !settings.siteName.trim() ||
       !settings.description.trim() ||
@@ -40,7 +34,7 @@ export function AdminSettingsPage() {
       });
       return;
     }
-    const result = updateAdminState(
+    const result = await updateAdminState(
       (current) => ({ ...current, settings }),
       "Updated website settings",
     );
@@ -88,51 +82,6 @@ export function AdminSettingsPage() {
           </section>
         </div>
       </div>
-      <section className="mt-8 flex flex-col justify-between gap-5 rounded-lg border border-border bg-white p-6 sm:flex-row sm:items-center">
-        <div>
-          <h2 className="font-bold text-navy">Reset the preview workspace</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-            Remove your browser-only changes and restore the original review
-            content.
-          </p>
-        </div>
-        <AdminButton variant="secondary" onClick={() => setReset(true)}>
-          Reset preview
-        </AdminButton>
-      </section>
-      <AdminDialog
-        open={reset}
-        onClose={() => setReset(false)}
-        title="Reset this workspace?"
-      >
-        <p className="text-sm leading-6 text-muted">
-          Your preview articles, uploaded images and other local changes will be
-          replaced with the original review content. The live website is
-          unchanged.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-end gap-3">
-          <AdminButton variant="secondary" onClick={() => setReset(false)}>
-            Cancel
-          </AdminButton>
-          <AdminButton
-            variant="danger"
-            onClick={() => {
-              const ok = resetAdminState();
-              setFeedback({
-                message: ok
-                  ? "Preview workspace reset."
-                  : "Could not reset browser storage.",
-                error: !ok,
-              });
-              if (ok) {
-                setReset(false);
-              }
-            }}
-          >
-            Reset workspace
-          </AdminButton>
-        </div>
-      </AdminDialog>
     </>
   );
 }
@@ -188,7 +137,7 @@ function SettingsForm({
       </AdminField>
       <AdminField
         label="Enquiry email (optional)"
-        hint="Leave blank until the approved centre inbox is confirmed. This preview does not configure email delivery."
+        hint="Leave blank until the approved centre inbox is confirmed. Email delivery is configured separately."
       >
         <input
           type="email"
@@ -201,7 +150,7 @@ function SettingsForm({
         />
       </AdminField>
       <AdminFeedback {...feedback} />
-      <AdminButton type="submit">Save settings preview</AdminButton>
+      <AdminButton type="submit">Save settings</AdminButton>
     </form>
   );
 }

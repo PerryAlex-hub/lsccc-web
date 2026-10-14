@@ -1,11 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import {
-  newsCategories,
-  type NewsArticle,
-  type NewsCategory,
-} from "@/lib/content/news";
+import type { NewsArticle } from "@/lib/content/news";
 import { matchesQuery } from "@/lib/search";
 import { FeaturedNews, NewsCard } from "./news-cards";
 import { NewsPagination } from "./pagination";
@@ -17,7 +13,11 @@ export function NewsExplorer({
 }: {
   articles: readonly NewsArticle[];
 }) {
-  const [category, setCategory] = useState<NewsCategory>("All news");
+  const newsCategories = [
+    "All news",
+    ...new Set(articles.map((article) => article.category)),
+  ];
+  const [category, setCategory] = useState<string>("All news");
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const heading = useRef<HTMLHeadingElement>(null);

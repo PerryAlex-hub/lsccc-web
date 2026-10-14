@@ -11,8 +11,8 @@ import {
 } from "@/lib/news/repository";
 import { destinations } from "@/lib/navigation";
 
-export function generateStaticParams() {
-  return getPublishedNews().map((article) => ({ slug: article.slug }));
+export async function generateStaticParams() {
+  return (await getPublishedNews()).map((article) => ({ slug: article.slug }));
 }
 
 export async function generateMetadata({
@@ -21,7 +21,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const article = getNewsArticle(slug);
+  const article = await getNewsArticle(slug);
   if (!article) {
     notFound();
   }
@@ -49,7 +49,7 @@ async function ResolvedNewsArticle({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = getNewsArticle(slug);
+  const article = await getNewsArticle(slug);
   if (!article) {
     notFound();
   }
@@ -64,7 +64,7 @@ async function ResolvedNewsArticle({
       ]}
       nodeId="21:292"
     >
-      <ArticleContent article={article} related={getRelatedNews(slug)} />
+      <ArticleContent article={article} related={await getRelatedNews(slug)} />
     </InteriorPage>
   );
 }

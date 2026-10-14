@@ -1,5 +1,6 @@
 import "server-only";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import { getDatabase } from "../db/prisma";
 import { createToken, hashToken, isToken } from "./crypto";
 import { AuthError } from "./errors";
@@ -17,6 +18,8 @@ const cookieOptions = {
 };
 
 export async function currentUser() {
+  // Session expiry must be evaluated at request time, including development prefetches.
+  await connection();
   const token = (await cookies()).get(sessionCookie)?.value;
   if (!isToken(token)) {
     return null;

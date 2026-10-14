@@ -1,11 +1,15 @@
 import { Suspense } from "react";
 import { ArticleEditor } from "@/components/admin/article-editor";
-import { initialAdminState } from "@/lib/admin/data";
+import { getDatabase } from "@/lib/db/prisma";
 
 export const metadata = { title: "Edit article" };
 
-export function generateStaticParams() {
-  return initialAdminState.articles.map((article) => ({ id: article.id }));
+export async function generateStaticParams() {
+  const articles = await getDatabase().newsArticle.findMany({
+    where: { deletedAt: null },
+    select: { id: true },
+  });
+  return articles.map((article) => ({ id: article.id }));
 }
 
 export default function EditArticlePage({

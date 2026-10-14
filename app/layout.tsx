@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { getSiteSettings } from "@/lib/cms/public";
 
 const jakartaSans = localFont({
   src: "./fonts/PlusJakartaSans-Variable.ttf",
@@ -10,14 +11,16 @@ const jakartaSans = localFont({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Lagos State Command & Control Centre",
-    template: "%s | Lagos State Command & Control Centre",
-  },
-  description:
-    "Coordinating emergency response. Serving the people of Lagos. Learn about the centre, emergency services and public safety resources.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  return {
+    title: {
+      default: settings.siteName,
+      template: `%s | ${settings.siteName}`,
+    },
+    description: settings.description,
+  };
+}
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

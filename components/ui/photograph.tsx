@@ -2,7 +2,7 @@ import Image from "next/image";
 import type { StaticImageData } from "next/image";
 
 type PhotographProps = {
-  asset: { image: StaticImageData; alt: string };
+  asset: { image: StaticImageData | string; alt: string };
   className: string;
   sizes: string;
   nodeId?: string;
@@ -27,7 +27,10 @@ export function Photograph({
         fill
         sizes={sizes}
         className="object-cover"
-        placeholder="blur"
+        placeholder={typeof asset.image === "string" ? "empty" : "blur"}
+        unoptimized={
+          typeof asset.image === "string" && asset.image.startsWith("https:")
+        }
         preload={preload}
       />
     </div>

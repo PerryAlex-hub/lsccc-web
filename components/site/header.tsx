@@ -1,3 +1,4 @@
+import { getSiteSettings } from "@/lib/cms/public";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -5,7 +6,8 @@ import { assets } from "@/lib/assets";
 import { destinations, navigation } from "@/lib/navigation";
 import { SiteNavigation } from "./navigation";
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const settings = await getSiteSettings();
   return (
     <header data-node-id="34:682">
       <a
@@ -67,7 +69,7 @@ export function SiteHeader() {
             Command &amp; Control Centre
           </Link>
           <p className="hidden text-[13px] leading-[19px] text-muted sm:block">
-            Coordinating emergency response. Serving the people of Lagos.
+            {settings.description}
           </p>
         </div>
         <div className="flex w-full items-center gap-4 border-t border-border pt-4 sm:ml-auto sm:w-auto sm:border-0 sm:pt-0 xl:gap-6">

@@ -11,6 +11,8 @@ export type AdminArticle = {
   status: PublicationStatus;
   coverId: string;
   author: string;
+  source: string;
+  caption: string;
   updatedAt: string;
 };
 
@@ -54,20 +56,5 @@ export type AdminState = {
   pages: AdminContent[];
   settings: AdminSettings;
   activity: AdminActivity[];
-  team: AdminTeamMember[];
   categories: string[];
-};
-
-export type AdminRole = "Administrator" | "Editor";
-export type MemberStatus = "Active" | "Invited" | "Revoked" | "Deactivated";
-
-export type AdminTeamMember = {
-  id: string;
-  name: string;
-  email: string;
-  role: AdminRole;
-  status: MemberStatus;
-  token: string;
-  expiresAt: string | null;
-  owner?: boolean;
 };

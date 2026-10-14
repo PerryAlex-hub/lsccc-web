@@ -111,6 +111,19 @@ covered nine admin screens at five widths (45 layouts), the article editing
 workflow, media uploads and alternative text, in-use media deletion protection,
 local storage persistence and reset, mobile menu focus, and public shell checks.
 
+## Database publishing integration
+
+The earlier preview checkpoints above describe the UI review phase. The current
+workspace uses authenticated Next.js content APIs and Neon PostgreSQL. News,
+categories, notices, resources, page copy, image metadata and settings persist
+across browsers. Public pages read published records and caches are invalidated
+after edits. Uploads use Neon Object Storage with server-side validation.
+
+Seed files, fake staff/draft fixtures, browser persistence and one-off setup/check
+scripts have been removed. Schema, migrations and original photographs remain.
+The page editor controls headings, introductions and body copy; the designed
+sections remain in code. Email configuration remains deferred.
+
 ## Items to resolve before launch
 
 - Confirm the centre's exact enquiry email and approved sending service. The

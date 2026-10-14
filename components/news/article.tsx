@@ -23,6 +23,7 @@ export function ArticleContent({
           </span>
           <time dateTime={article.dateTime}>{article.date}</time>
           <span>{readingMinutes(article.paragraphs)} min read</span>
+          {article.author && <span>{article.author}</span>}
           <ArticleShare />
         </div>
         <figure className="mb-8 space-y-3">
@@ -50,9 +51,11 @@ export function ArticleContent({
             </p>
           ))}
         </div>
-        <p className="mt-8 border-t border-border pt-5 text-xs leading-5 text-muted">
-          Reporting reference: {article.source}.
-        </p>
+        {article.source && (
+          <p className="mt-8 border-t border-border pt-5 text-xs leading-5 text-muted">
+            Reporting reference: {article.source}.
+          </p>
+        )}
         <div className="mt-8">
           <TextLink href={destinations.news} className="text-sm text-blue">
             <span aria-hidden="true">← </span> Back to News &amp; Media

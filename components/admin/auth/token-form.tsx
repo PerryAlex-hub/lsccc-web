@@ -3,7 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import { authRequest } from "@/lib/auth/client";
-import { passwordError, passwordHint } from "@/lib/admin/auth-preview";
+import { passwordError, passwordHint } from "@/lib/admin/password";
 import { AdminButton, AdminField, AdminFeedback } from "../ui";
 import { AuthHeading, AuthBackLink, PasswordField } from "./ui";
 

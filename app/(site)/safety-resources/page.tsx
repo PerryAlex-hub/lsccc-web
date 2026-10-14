@@ -1,3 +1,5 @@
+import { getSafetyResources } from "@/lib/cms/public";
+import { getPageMetadata } from "@/lib/cms/public";
 import type { Metadata } from "next";
 import { InteriorPage } from "@/components/ui/interior-page";
 import { ResourceExplorer } from "@/components/safety/resource-explorer";
@@ -6,21 +8,20 @@ import {
   OfficialSafetyInformation,
 } from "@/components/safety/sections";
 
-export const metadata: Metadata = {
-  title: "Safety Resources",
-  description:
-    "Browse fire safety, flood preparedness, road safety and emergency reporting resources.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata("/safety-resources");
+}
 
-export default function SafetyResourcesPage() {
+export default async function SafetyResourcesPage() {
   return (
     <InteriorPage
+      cmsPath="/safety-resources"
       title="Safety Resources"
       description="Find public safety topics and practical information for your household, workplace and community."
       breadcrumbs={[{ label: "Safety Resources" }]}
       nodeId="19:235"
     >
-      <ResourceExplorer>
+      <ResourceExplorer resources={await getSafetyResources()}>
         <FeaturedSafetyGuide />
       </ResourceExplorer>
       <OfficialSafetyInformation />

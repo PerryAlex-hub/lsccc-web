@@ -75,7 +75,7 @@ export function AdminArticlePreviewPage({ id }: { id: string }) {
       <>
         <AdminHeading
           title="Article unavailable"
-          description="This article is not available in this browser’s preview."
+          description="This article is unavailable or has been deleted."
         />
         <AdminLink href="/admin/news">Back to articles</AdminLink>
       </>

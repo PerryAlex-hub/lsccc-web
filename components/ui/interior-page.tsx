@@ -1,21 +1,31 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { getWebsitePage } from "@/lib/cms/public";
+import { notFound } from "next/navigation";
 
 type Breadcrumb = { label: string; href?: string };
 
-export function InteriorPage({
+export async function InteriorPage({
   title,
   description,
   breadcrumbs,
   children,
   nodeId,
+  cmsPath,
 }: {
   title: string;
   description: string;
   breadcrumbs: Breadcrumb[];
   children: ReactNode;
   nodeId?: string;
+  cmsPath?: string;
 }) {
+  const page = cmsPath ? await getWebsitePage(cmsPath) : null;
+  if (cmsPath && (!page || page.status !== "PUBLISHED")) {
+    notFound();
+  }
+  title = page?.title ?? title;
+  description = page?.introduction ?? description;
   return (
     <div>
       <div className="bg-navy text-white" data-node-id={nodeId}>
@@ -49,6 +59,13 @@ export function InteriorPage({
           </p>
         </div>
       </div>
+      {page?.body && page.body !== page.introduction && (
+        <div className="site-container space-y-5 py-8 text-body text-muted">
+          {page.body.split(/\n\s*\n/).map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
+          ))}
+        </div>
+      )}
       {children}
     </div>
   );

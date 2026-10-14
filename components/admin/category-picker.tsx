@@ -32,14 +32,14 @@ export function CategoryPicker({
     trigger.current?.focus();
   }
 
-  function create() {
+  async function create() {
     const category = name.trim().replace(/\s+/g, " ");
     const error = categoryError(category, categories);
     if (error) {
       setFeedback({ message: error, error: true });
       return;
     }
-    const result = updateAdminState(
+    const result = await updateAdminState(
       (current) => ({
         ...current,
         categories: [...current.categories, category],
@@ -48,7 +48,7 @@ export function CategoryPicker({
     );
     setFeedback({
       message: result.ok
-        ? "Category created and selected. Saved in this browser only."
+        ? "Category created and selected. Saved to the database."
         : result.message,
       error: !result.ok,
     });

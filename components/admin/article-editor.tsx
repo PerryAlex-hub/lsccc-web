@@ -29,6 +29,8 @@ const blankArticle: AdminArticle = {
   status: "Draft",
   coverId: "",
   author: "Editorial team",
+  source: "",
+  caption: "",
   updatedAt: "",
 };
 
@@ -42,7 +44,7 @@ export function ArticleEditor({ id = "new" }: { id?: string }) {
       <>
         <AdminHeading
           title="Article unavailable"
-          description="This article is not available in this browser’s preview."
+          description="This article is unavailable or has been deleted."
         />
         <AdminLink href="/admin/news">Back to articles</AdminLink>
       </>
@@ -95,7 +97,7 @@ function ArticleEditorForm({
     setForm((current) => ({ ...current, [key]: value }));
   }
 
-  function save(status: PublicationStatus) {
+  async function save(status: PublicationStatus) {
     const title = form.title.trim();
     const slug = form.slug.trim();
     let error = "";
@@ -114,8 +116,7 @@ function ArticleEditorForm({
       status === "Published" &&
       (!form.excerpt.trim() || !form.body.trim() || !cover)
     ) {
-      error =
-        "Add a summary, article body and cover image before publishing in the preview.";
+      error = "Add a summary, article body and cover image before publishing.";
     }
     if (error) {
       setFeedback({ message: error, error: true });
@@ -129,7 +130,7 @@ function ArticleEditorForm({
       id: article.id === "new" ? crypto.randomUUID() : article.id,
       updatedAt: new Date().toISOString(),
     };
-    const result = updateAdminState(
+    const result = await updateAdminState(
       (current) => ({
         ...current,
         articles:
@@ -139,7 +140,7 @@ function ArticleEditorForm({
                 item.id === saved.id ? saved : item,
               ),
       }),
-      `${status === "Published" ? "Published in preview" : "Saved draft"}: ${title}`,
+      `${status === "Published" ? "Published" : "Saved draft"}: ${title}`,
     );
     setFeedback({ message: result.message, error: !result.ok });
     if (result.ok && article.id === "new") {
@@ -246,6 +247,22 @@ function ArticleEditorForm({
                 onChange={(event) => change("author", event.target.value)}
               />
             </AdminField>
+            <AdminField label="Reporting reference (optional)">
+              <input
+                className="admin-input"
+                value={form.source}
+                maxLength={500}
+                onChange={(event) => change("source", event.target.value)}
+              />
+            </AdminField>
+            <AdminField label="Image caption (optional)">
+              <textarea
+                className="admin-input"
+                value={form.caption}
+                maxLength={500}
+                onChange={(event) => change("caption", event.target.value)}
+              />
+            </AdminField>
             <p className="text-xs leading-5 text-muted">
               {dirty
                 ? "Unsaved changes"
@@ -257,10 +274,16 @@ function ArticleEditorForm({
               <AdminButton type="submit" variant="secondary">
                 Save draft
               </AdminButton>
+              {article.status === "Published" && (
+                <p className="text-xs leading-5 text-muted">
+                  Saving as a draft removes this article from the public
+                  website.
+                </p>
+              )}
               <AdminButton onClick={() => save("Published")}>
                 {article.status === "Published"
-                  ? "Update published preview"
-                  : "Publish in preview"}
+                  ? "Update published article"
+                  : "Publish article"}
               </AdminButton>
             </div>
             <AdminFeedback {...feedback} />

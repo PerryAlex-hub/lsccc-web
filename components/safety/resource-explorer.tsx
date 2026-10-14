@@ -4,10 +4,23 @@ import { useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import { Section, SectionIntro, InfoCard } from "@/components/ui/section";
 import { TextLink } from "@/components/ui/text-link";
-import { safetyTopics } from "@/lib/content/safety";
+
 import { matchesQuery } from "@/lib/search";
 
-export function ResourceExplorer({ children }: { children: ReactNode }) {
+export function ResourceExplorer({
+  children,
+  resources: safetyTopics,
+}: {
+  children: ReactNode;
+  resources: {
+    id: string;
+    title: string;
+    description: string;
+    body: string;
+    href: string;
+    accent: string;
+  }[];
+}) {
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
   const [topic, setTopic] = useState("all");
@@ -101,18 +114,23 @@ export function ResourceExplorer({ children }: { children: ReactNode }) {
               className="bg-paper"
             >
               <p className="xl:min-h-[45px]">{item.description}</p>
-              <TextLink
-                href={item.href}
-                className="mt-4 inline-block text-[13px] leading-[19px] text-navy"
-                ariaLabel={`Explore ${item.title} resources`}
-              >
-                {item.href.startsWith("https:")
-                  ? "Explore official resources"
-                  : "Read: Before you call"}{" "}
-                <span aria-hidden="true">
-                  {item.href.startsWith("https:") ? "↗" : "→"}
-                </span>
-              </TextLink>
+              {item.body && item.body !== item.description && (
+                <p className="mt-3 whitespace-pre-line">{item.body}</p>
+              )}
+              {item.href && (
+                <TextLink
+                  href={item.href}
+                  className="mt-4 inline-block text-[13px] leading-[19px] text-navy"
+                  ariaLabel={`Explore ${item.title} resources`}
+                >
+                  {item.href.startsWith("https:")
+                    ? "Explore official resources"
+                    : "Read more"}{" "}
+                  <span aria-hidden="true">
+                    {item.href.startsWith("https:") ? "↗" : "→"}
+                  </span>
+                </TextLink>
+              )}
             </InfoCard>
           ))}
         </div>

@@ -1,3 +1,4 @@
+import { getPageMetadata } from "@/lib/cms/public";
 import type { Metadata } from "next";
 import { InteriorPage } from "@/components/ui/interior-page";
 import {
@@ -6,15 +7,14 @@ import {
   ContactRoutes,
 } from "@/components/contact/sections";
 
-export const metadata: Metadata = {
-  title: "Contact & Enquiries",
-  description:
-    "Find the right route for general enquiries, media requests and government feedback.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata("/contact");
+}
 
 export default function ContactPage() {
   return (
     <InteriorPage
+      cmsPath="/contact"
       title="Contact & Enquiries"
       description="Find the right route for general enquiries, media requests and government feedback."
       breadcrumbs={[{ label: "Contact" }]}

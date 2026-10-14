@@ -6,6 +6,7 @@ import { Suspense, useEffect, useRef, useState, type ReactNode } from "react";
 import { assets } from "@/lib/assets";
 import { AdminIcon } from "./icons";
 import { AdminNavigation, AdminNavigationLinks } from "./navigation";
+import { AdminDataBoundary } from "./data-boundary";
 import { StaffControls } from "./staff-controls";
 
 export function AdminShell({
@@ -161,20 +162,15 @@ export function AdminShell({
             </p>
           </div>
           <span className="shrink-0 rounded-full border border-border px-3 py-1.5 text-[11px] font-semibold text-muted">
-            Content preview
+            Live content
           </span>
         </header>
-        <div className="border-b border-[#e6d9b0] bg-[#fff8e6] px-5 py-3 text-xs leading-5 text-[#705b25] sm:px-8 lg:px-10">
-          <strong className="font-bold">Staff access is connected.</strong> Team
-          changes are saved to the database. Content edits remain in this
-          browser until publishing integration is complete.
-        </div>
         <main
           id="admin-main"
           tabIndex={-1}
           className="mx-auto min-w-0 max-w-[1440px] px-5 py-8 sm:px-8 lg:px-10 lg:py-10"
         >
-          {children}
+          <AdminDataBoundary>{children}</AdminDataBoundary>
         </main>
       </div>
     </div>

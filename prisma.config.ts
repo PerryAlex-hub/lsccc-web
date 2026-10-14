@@ -8,7 +8,6 @@ export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
-    seed: "tsx prisma/seed.ts",
   },
   // Offline schema validation and generation do not need a database URL.
   datasource: {

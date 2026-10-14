@@ -1,3 +1,4 @@
+import { getSiteSettings } from "@/lib/cms/public";
 import Image from "next/image";
 import { assets } from "@/lib/assets";
 import { destinations } from "@/lib/navigation";
@@ -24,7 +25,8 @@ const groups = [
   },
 ];
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const settings = await getSiteSettings();
   return (
     <footer
       id="site-footer"
@@ -42,9 +44,7 @@ export function SiteFooter() {
               className="size-[62px] rounded-full object-cover"
             />
             <p className="min-h-[70px] text-[23px] font-bold leading-[33.35px]">
-              Lagos State
-              <br />
-              Command &amp; Control Centre
+              {settings.siteName}
             </p>
             <p className="min-h-12 text-sm leading-[20.3px]">
               Emergency communication and coordination
@@ -88,10 +88,15 @@ export function SiteFooter() {
                 </a>
               </p>
               <p>Available 24 hours</p>
-              <address className="not-italic">
-                Governor’s Road, opposite the Deputy Governor’s Office, Alausa,
-                Ikeja, Lagos State, Nigeria.
-              </address>
+              <address className="not-italic">{settings.address}</address>
+              {settings.enquiryEmail && (
+                <a
+                  href={`mailto:${settings.enquiryEmail}`}
+                  className="mt-2 block break-all hover:underline"
+                >
+                  {settings.enquiryEmail}
+                </a>
+              )}
               <TextLink
                 href={destinations.contact}
                 className="inline-block py-1 font-normal sm:py-0"
