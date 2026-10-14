@@ -34,9 +34,24 @@ Media detail changes accept only filename and alternative text. Deletion checks 
 
 ## Email
 
-Email configuration is independent. Staff invitation/reset delivery uses `AUTH_FROM_EMAIL` and SMTP settings. General enquiries additionally use `CONTACT_TO_EMAIL` and `CONTACT_FROM_EMAIL`. The public enquiry email in Site Settings is display information and does not configure the mail transport.
+Create a Brevo API key under SMTP & API > API Keys and set `BREVO_API_KEY`
+privately. Register and verify the sender used for `AUTH_FROM_EMAIL` and
+`CONTACT_FROM_EMAIL`; authenticate the sending domain in Brevo. Set
+`CONTACT_TO_EMAIL` to the approved enquiry inbox. The two sender variables may
+use the same verified address. Keep `APP_URL` set to the canonical website URL
+so invitation and reset links point to the right deployment. Restart the server
+after configuration changes.
 
-Unconfigured email never produces a false sent confirmation. Administrators receive manual invitation setup links while SMTP is deferred. Password recovery and the contact form report delivery unavailable.
+The shared email adapter uses Brevo's HTTPS transactional endpoint with plain
+text content and a 15-second timeout. It requires a successful acceptance
+response containing a message ID; acceptance does not confirm inbox delivery.
+Requests are not automatically retried because an ambiguous network failure
+could otherwise send duplicates. Contact enquiries use the visitor as reply-to,
+never as the sending identity. No SMTP credentials or Nodemailer are required.
+
+Email configuration is independent. Staff invitation/reset delivery uses `AUTH_FROM_EMAIL` and `BREVO_API_KEY`. General enquiries additionally use `CONTACT_TO_EMAIL` and `CONTACT_FROM_EMAIL`. The public enquiry email in Site Settings is display information and does not configure the mail transport.
+
+Unconfigured email never produces a false sent confirmation. Administrators receive manual invitation setup links while Brevo is unconfigured. Password recovery and the contact form report delivery unavailable.
 
 ## Dependency maintenance
 

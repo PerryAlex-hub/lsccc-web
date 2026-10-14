@@ -1,6 +1,6 @@
 import "server-only";
 import {
-  createMailTransport,
+  sendTransactionalEmail,
   mailTransportConfigured,
 } from "../email/transport";
 
@@ -32,18 +32,13 @@ export async function sendAuthEmail(
   subject: string,
   text: string,
 ) {
-  const transport = createMailTransport();
-  try {
-    const result = await transport.sendMail({
-      from: process.env.AUTH_FROM_EMAIL,
-      to: email,
-      subject,
-      text,
-    });
-    if (!result.accepted.length || result.rejected.length) {
-      throw new Error("Email was not accepted.");
-    }
-  } finally {
-    transport.close();
+  if (!authEmailConfigured()) {
+    throw new Error("Staff email delivery is not configured.");
   }
+  await sendTransactionalEmail({
+    from: { email: process.env.AUTH_FROM_EMAIL!, name: "LSCCC administration" },
+    to: { email },
+    subject,
+    text,
+  });
 }

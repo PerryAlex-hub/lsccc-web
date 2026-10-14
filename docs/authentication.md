@@ -26,6 +26,11 @@ are serialised with a database advisory lock; the final active administrator
 cannot be demoted or deactivated. Tokens and credential fields never appear in
 team list responses or audit data.
 
+The protected workspace layout sets `instant = false` as documented for
+session-dependent routes. This avoids instant-UI validation attempting to render
+a workspace that redirects anonymous prefetches to login. Session checks and
+API authorization remain active.
+
 Set APP_URL to the canonical website origin. Authentication mutations require
 matching Origin and JSON bodies, and reject cross-site requests. Rate limits use
 shared PostgreSQL buckets rather than process-local counters. Do not expose the
@@ -41,13 +46,13 @@ Pending invitations and access changes are actual database records, not UI previ
 Email may remain unconfigured. In that case, administrators receive a setup link
 once in the team UI, accompanied by a clear no-email-sent message. The raw link
 is not persisted; resending creates a new link if it is lost. Never log or paste
-these links into public channels. Configuring AUTH_FROM_EMAIL and SMTP credentials
-enables email delivery. Successful delivery means the SMTP server accepted it.
+these links into public channels. Configuring AUTH_FROM_EMAIL and BREVO_API_KEY
+enables email delivery. Successful delivery means Brevo accepted it for processing.
 
 Password recovery returns 503 with a clear message while email is unconfigured.
 Once configured, it gives a generic response to avoid disclosing account existence.
 Reset tokens expire after 30 minutes, are single-use, and revoke all account
-sessions when consumed. Existing-account SMTP failures invalidate that token and
+sessions when consumed. Existing-account provider failures invalidate that token and
 retain the generic public response; they do not claim that an email was sent.
 
 No demo invitation or reset tokens grant access. Staff sessions are validated on

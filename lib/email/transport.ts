@@ -1,29 +1,55 @@
-import nodemailer from "nodemailer";
+type EmailAddress = { email: string; name?: string };
+
+export type TransactionalEmail = {
+  from: EmailAddress;
+  to: EmailAddress;
+  replyTo?: EmailAddress;
+  subject: string;
+  text: string;
+};
 
 export function mailTransportConfigured() {
-  return Boolean(
-    process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASSWORD,
-  );
+  return Boolean(process.env.BREVO_API_KEY?.trim());
 }
 
-export function createMailTransport() {
-  if (!mailTransportConfigured()) {
-    throw new Error("Email transport is not configured.");
+// Keep provider credentials and responses out of client errors and application logs.
+export async function sendTransactionalEmail(
+  message: TransactionalEmail,
+  apiKey = process.env.BREVO_API_KEY,
+  request: typeof fetch = fetch,
+) {
+  if (!apiKey?.trim()) {
+    throw new Error("Email delivery is not configured.");
   }
-  const port = Number(process.env.SMTP_PORT || 587);
-  if (!Number.isInteger(port) || port < 1 || port > 65535) {
-    throw new Error("SMTP_PORT must be a valid port number.");
-  }
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port,
-    secure: port === 465,
-    requireTLS: port !== 465,
-    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD },
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
-    disableFileAccess: true,
-    disableUrlAccess: true,
+  const response = await request("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+      "api-key": apiKey.trim(),
+    },
+    body: JSON.stringify({
+      sender: message.from,
+      to: [message.to],
+      ...(message.replyTo ? { replyTo: message.replyTo } : {}),
+      subject: message.subject,
+      textContent: message.text,
+    }),
+    cache: "no-store",
+    redirect: "error",
+    signal: AbortSignal.timeout(15000),
   });
+  if (response.status !== 201) {
+    throw new Error("Email service did not accept the message.");
+  }
+  const result: unknown = await response.json();
+  if (
+    !result ||
+    typeof result !== "object" ||
+    !("messageId" in result) ||
+    typeof result.messageId !== "string" ||
+    !result.messageId.trim()
+  ) {
+    throw new Error("Email service did not confirm acceptance.");
+  }
 }

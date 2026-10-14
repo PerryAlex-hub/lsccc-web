@@ -1,5 +1,5 @@
 import {
-  createMailTransport,
+  sendTransactionalEmail,
   mailTransportConfigured,
 } from "../email/transport";
 import type { Enquiry } from "./schema";
@@ -13,11 +13,13 @@ export function emailDeliveryConfigured() {
 }
 
 export async function deliverEnquiry(enquiry: Enquiry) {
-  const transport = createMailTransport();
-  const result = await transport.sendMail({
-    from: process.env.CONTACT_FROM_EMAIL,
-    to: process.env.CONTACT_TO_EMAIL,
-    replyTo: { name: enquiry.name, address: enquiry.email },
+  if (!emailDeliveryConfigured()) {
+    throw new Error("Enquiry email delivery is not configured.");
+  }
+  await sendTransactionalEmail({
+    from: { email: process.env.CONTACT_FROM_EMAIL!, name: "LSCCC website" },
+    to: { email: process.env.CONTACT_TO_EMAIL! },
+    replyTo: { name: enquiry.name, email: enquiry.email },
     subject: `LSCCC enquiry: ${enquiry.subject}`,
     text: [
       `Name: ${enquiry.name}`,
@@ -28,7 +30,4 @@ export async function deliverEnquiry(enquiry: Enquiry) {
       enquiry.message,
     ].join("\n"),
   });
-  if (!result.accepted.length || result.rejected.length) {
-    throw new Error("Enquiry delivery was not accepted.");
-  }
 }

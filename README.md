@@ -29,7 +29,7 @@ The original content has already been imported into the configured database. See
 
 Login, logout, sessions, invitations, password changes and roles use the backend. Invitations are single-use and expire after 24 hours. When email is unconfigured, administrators receive a setup link once in the team screen. Password recovery and contact enquiries clearly report that delivery is unavailable.
 
-Email remains deferred. Configure SMTP and the approved sender/recipient variables privately when ready; restart the server afterward. See [authentication](docs/authentication.md) and [backend setup](docs/backend.md).
+Email remains deferred. Configure Brevo and the approved sender/recipient variables privately when ready; restart the server afterward. See [authentication](docs/authentication.md) and [backend setup](docs/backend.md).
 
 ## Structure
 
