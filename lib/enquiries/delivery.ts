@@ -2,7 +2,9 @@ import {
   sendTransactionalEmail,
   mailTransportConfigured,
 } from "../email/transport";
-import type { Enquiry } from "./schema";
+import { enquiryTopics, type Enquiry } from "./schema";
+import { getEmailBrand } from "../email/brand";
+import { enquiryEmail } from "../email/templates";
 
 export function emailDeliveryConfigured() {
   return Boolean(
@@ -20,14 +22,11 @@ export async function deliverEnquiry(enquiry: Enquiry) {
     from: { email: process.env.CONTACT_FROM_EMAIL!, name: "LSCCC website" },
     to: { email: process.env.CONTACT_TO_EMAIL! },
     replyTo: { name: enquiry.name, email: enquiry.email },
-    subject: `LSCCC enquiry: ${enquiry.subject}`,
-    text: [
-      `Name: ${enquiry.name}`,
-      `Email: ${enquiry.email}`,
-      `Topic: ${enquiry.topic}`,
-      `Phone: ${enquiry.phone || "Not provided"}`,
-      "",
-      enquiry.message,
-    ].join("\n"),
+    ...enquiryEmail(getEmailBrand(), {
+      ...enquiry,
+      topic:
+        enquiryTopics.find((topic) => topic.value === enquiry.topic)?.label ||
+        enquiry.topic,
+    }),
   });
 }

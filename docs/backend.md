@@ -42,12 +42,25 @@ use the same verified address. Keep `APP_URL` set to the canonical website URL
 so invitation and reset links point to the right deployment. Restart the server
 after configuration changes.
 
-The shared email adapter uses Brevo's HTTPS transactional endpoint with plain
-text content and a 15-second timeout. It requires a successful acceptance
+The shared email adapter uses Brevo's HTTPS transactional endpoint with LSCCC
+HTML templates, plain-text alternatives and a 15-second timeout. It requires a successful acceptance
 response containing a message ID; acceptance does not confirm inbox delivery.
 Requests are not automatically retried because an ambiguous network failure
 could otherwise send duplicates. Contact enquiries use the visitor as reply-to,
 never as the sending identity. No SMTP credentials or Nodemailer are required.
+
+Invitation, password-reset and enquiry notifications share the table-based
+responsive layout in `lib/email/templates.ts`. Colours match the website; the
+templates include the LSCCC emblem, address, action buttons and relevant expiry
+or security instructions. User-supplied text is escaped before insertion into
+HTML, and staff links must point to the expected route on `APP_URL`.
+
+`EMAIL_LOGO_URL` selects the publicly accessible email emblem. The configured
+development environment uses a content-addressed image in Neon storage under
+`branding/`; retain this object independently of the editable media library.
+When the variable is blank, emails reference the original image under `APP_URL`,
+which must be publicly accessible for recipients to load it. Email clients may
+block remote images; the centre name and all instructions remain visible as text.
 
 Email configuration is independent. Staff invitation/reset delivery uses `AUTH_FROM_EMAIL` and `BREVO_API_KEY`. General enquiries additionally use `CONTACT_TO_EMAIL` and `CONTACT_FROM_EMAIL`. The public enquiry email in Site Settings is display information and does not configure the mail transport.
 

@@ -86,12 +86,21 @@
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   padding-block: 0.25rem 1rem;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-border) transparent;
+  scrollbar-width: none;
+}
+
+.news-track::-webkit-scrollbar {
+  display: none;
+}
+
+.news-slide {
+  min-width: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .news-card {
-  scroll-snap-align: start;
+  height: 100%;
 }
 
 @media (min-width: 48rem) {
@@ -102,11 +111,7 @@
 
 @media (min-width: 64rem) {
   .news-track {
-    grid-auto-flow: row;
-    grid-auto-columns: auto;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    overflow: visible;
-    padding-block: 0;
+    grid-auto-columns: calc((100% - 3rem) / 3);
   }
 }
 

@@ -6,6 +6,7 @@ export type TransactionalEmail = {
   replyTo?: EmailAddress;
   subject: string;
   text: string;
+  html?: string;
 };
 
 export function mailTransportConfigured() {
@@ -34,6 +35,7 @@ export async function sendTransactionalEmail(
       ...(message.replyTo ? { replyTo: message.replyTo } : {}),
       subject: message.subject,
       textContent: message.text,
+      ...(message.html ? { htmlContent: message.html } : {}),
     }),
     cache: "no-store",
     redirect: "error",

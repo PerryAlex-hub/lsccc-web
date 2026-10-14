@@ -226,10 +226,13 @@ export async function HomeNews() {
       <div className="mb-6 h-px bg-border" />
       <h2
         id="agency-news-title"
-        className="mb-6 text-[25px] font-bold leading-[37px] text-navy"
+        className="text-[25px] font-bold leading-[37px] text-navy"
       >
         Agency news
       </h2>
+      <p className="mb-6 mt-2 text-sm leading-6 text-muted">
+        Updates from the centre and its response partners.
+      </p>
       <NewsSlider>
         {newsStories.map((story) => (
           <article
@@ -247,18 +250,20 @@ export async function HomeNews() {
             >
               {story.date}
             </time>
-            <h3 className="text-[22px] font-bold leading-[31.9px] xl:min-h-[66px]">
+            <h3 className="min-h-[87px] text-[20px] font-bold leading-[29px] text-navy line-clamp-3">
               {story.title}
             </h3>
-            <p className="text-[15px] leading-[21.75px] text-muted xl:min-h-[68px]">
+            <p className="min-h-[66px] text-[15px] leading-[22px] text-muted line-clamp-3">
               {story.description}
             </p>
-            <p className="min-h-[15px] text-[10px] font-medium leading-[14.5px] text-muted">
-              SOURCE: {story.source}
-            </p>
+            {story.source && (
+              <p className="min-h-[15px] text-[10px] font-medium leading-[14.5px] text-muted">
+                SOURCE: {story.source}
+              </p>
+            )}
             <TextLink
               href={`${destinations.news}/${story.slug}`}
-              className="text-[13px] leading-[19px] text-navy"
+              className="mt-auto pt-2 text-[13px] leading-[19px] text-blue"
               ariaLabel={`Read article: ${story.title}`}
             >
               Read article <span aria-hidden="true">→</span>

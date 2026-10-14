@@ -12,6 +12,8 @@ import { AuthError } from "./errors";
 import { rateLimit } from "./rate-limit";
 import { startSession } from "./session";
 import { authEmailConfigured, authLink, sendAuthEmail } from "./email";
+import { getEmailBrand } from "../email/brand";
+import { passwordResetEmail } from "../email/templates";
 
 export async function login(input: Record<string, unknown>) {
   const email = normalizedEmail(input.email);
@@ -160,8 +162,7 @@ export async function requestPasswordReset(input: Record<string, unknown>) {
     try {
       await sendAuthEmail(
         email,
-        "Reset your LSCCC password",
-        `Choose a new password using this one-time link. It expires in 30 minutes.\n\n${link}\n\nIf you did not request this, ignore this email.`,
+        passwordResetEmail(getEmailBrand(), link, user.name),
       );
     } catch {
       await getDatabase().passwordResetToken.update({

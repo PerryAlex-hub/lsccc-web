@@ -3,6 +3,7 @@ import {
   sendTransactionalEmail,
   mailTransportConfigured,
 } from "../email/transport";
+import type { EmailContent } from "../email/templates";
 
 export function authEmailConfigured() {
   return !!process.env.AUTH_FROM_EMAIL && mailTransportConfigured();
@@ -27,18 +28,13 @@ export function authLink(path: string, token: string) {
   return url.toString();
 }
 
-export async function sendAuthEmail(
-  email: string,
-  subject: string,
-  text: string,
-) {
+export async function sendAuthEmail(email: string, content: EmailContent) {
   if (!authEmailConfigured()) {
     throw new Error("Staff email delivery is not configured.");
   }
   await sendTransactionalEmail({
     from: { email: process.env.AUTH_FROM_EMAIL!, name: "LSCCC administration" },
     to: { email },
-    subject,
-    text,
+    ...content,
   });
 }

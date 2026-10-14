@@ -6,6 +6,8 @@ import { createToken, hashToken } from "./crypto";
 import { authEmailConfigured, authLink, sendAuthEmail } from "./email";
 import { rateLimit } from "./rate-limit";
 import type { UserRole } from "@prisma/client";
+import { getEmailBrand } from "../email/brand";
+import { invitationEmail } from "../email/templates";
 
 export async function listTeam() {
   const database = getDatabase();
@@ -86,8 +88,7 @@ export async function inviteStaff(
   try {
     await sendAuthEmail(
       email,
-      "You are invited to the LSCCC workspace",
-      `You have been invited to the staff workspace. Choose your password using this one-time link, valid for 24 hours.\n\n${setupUrl}`,
+      invitationEmail(getEmailBrand(), setupUrl, role),
     );
     return { message: "Invitation email accepted for delivery." };
   } catch {
