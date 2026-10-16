@@ -8,6 +8,7 @@ import {
   HomePartners,
   HomeGallery,
   HomeResources,
+  HomeServiceLinks,
 } from "@/components/home/sections";
 
 export async function generateMetadata() {
@@ -26,6 +27,7 @@ export default async function Home() {
   return (
     <div data-node-id="32:682">
       <HomeHero />
+      <HomeServiceLinks />
       {page.body && page.body !== page.introduction && (
         <div className="site-container whitespace-pre-line py-8 text-body text-muted">
           {page.body}

@@ -8,6 +8,7 @@ import { AdminIcon } from "./icons";
 import { AdminNavigation, AdminNavigationLinks } from "./navigation";
 import { AdminDataBoundary } from "./data-boundary";
 import { StaffControls } from "./staff-controls";
+import { AdminToastRegion } from "./toast";
 
 export function AdminShell({
   children,
@@ -67,112 +68,114 @@ export function AdminShell({
   }, [menu]);
 
   return (
-    <div className="admin-workspace min-h-screen bg-[#f4f6f8] text-ink">
-      <a
-        href="#admin-main"
-        className="sr-only z-[80] bg-white p-4 focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
-      >
-        Skip to admin content
-      </a>
-      {menu && (
-        <button
-          type="button"
-          aria-label="Close navigation"
-          onClick={close}
-          className="fixed inset-0 z-50 bg-navy/50 lg:hidden"
-        />
-      )}
-      <aside
-        id="admin-sidebar"
-        ref={sidebar}
-        aria-label="Admin workspace"
-        role={menu ? "dialog" : undefined}
-        aria-modal={menu || undefined}
-        className={`${menu ? "flex" : "hidden"} fixed inset-y-0 left-0 z-[60] w-[248px] flex-col overflow-y-auto bg-navy text-white lg:flex`}
-      >
-        <div className="flex items-center gap-3 border-b border-white/10 px-6 py-7">
-          <Image
-            src={assets.lscccEmblem.image}
-            alt={assets.lscccEmblem.alt}
-            width={44}
-            height={44}
-            className="size-11 rounded-full object-cover"
-          />
-          <div>
-            <p className="text-lg font-bold">LSCCC</p>
-            <p className="text-xs text-white/65">Content management</p>
-          </div>
+    <AdminToastRegion>
+      <div className="admin-workspace min-h-screen bg-[#f4f6f8] text-ink">
+        <a
+          href="#admin-main"
+          className="sr-only z-[80] bg-white p-4 focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+        >
+          Skip to admin content
+        </a>
+        {menu && (
           <button
             type="button"
-            aria-label="Close menu"
+            aria-label="Close navigation"
             onClick={close}
-            className="ml-auto flex size-9 items-center justify-center lg:hidden"
+            className="fixed inset-0 z-50 bg-navy/50 lg:hidden"
+          />
+        )}
+        <aside
+          id="admin-sidebar"
+          ref={sidebar}
+          aria-label="Admin workspace"
+          role={menu ? "dialog" : undefined}
+          aria-modal={menu || undefined}
+          className={`${menu ? "flex" : "hidden"} fixed inset-y-0 left-0 z-[60] w-[248px] flex-col overflow-y-auto bg-navy text-white lg:flex`}
+        >
+          <div className="flex items-center gap-3 border-b border-white/10 px-6 py-7">
+            <Image
+              src={assets.lscccEmblem.image}
+              alt={assets.lscccEmblem.alt}
+              width={44}
+              height={44}
+              className="size-11 rounded-full object-cover"
+            />
+            <div>
+              <p className="text-lg font-bold">LSCCC</p>
+              <p className="text-xs text-white/65">Content management</p>
+            </div>
+            <button
+              type="button"
+              aria-label="Close menu"
+              onClick={close}
+              className="ml-auto flex size-9 items-center justify-center lg:hidden"
+            >
+              <AdminIcon name="close" />
+            </button>
+          </div>
+          <p className="px-7 pb-3 pt-7 text-[10px] font-bold tracking-[0.14em] text-white/40">
+            WORKSPACE
+          </p>
+          <Suspense
+            fallback={
+              <AdminNavigationLinks
+                onNavigate={close}
+                administrator={user.role === "ADMINISTRATOR"}
+              />
+            }
           >
-            <AdminIcon name="close" />
-          </button>
-        </div>
-        <p className="px-7 pb-3 pt-7 text-[10px] font-bold tracking-[0.14em] text-white/40">
-          WORKSPACE
-        </p>
-        <Suspense
-          fallback={
-            <AdminNavigationLinks
+            <AdminNavigation
               onNavigate={close}
               administrator={user.role === "ADMINISTRATOR"}
             />
-          }
-        >
-          <AdminNavigation
-            onNavigate={close}
-            administrator={user.role === "ADMINISTRATOR"}
-          />
-        </Suspense>
-        <div className="mt-auto space-y-6 px-6 py-6">
-          <Link
-            href="/admin/login"
-            className="block py-2 text-sm font-semibold text-white/80 hover:text-white"
-          >
-            Review login screen
-          </Link>
-          <Link
-            href="/"
-            className="flex min-h-11 items-center justify-between text-sm font-semibold text-white/80 hover:text-white"
-          >
-            View website <AdminIcon name="arrow" className="size-4" />
-          </Link>
-          <StaffControls name={user.name} role={user.role} />
-        </div>
-      </aside>
-      <div className="min-w-0 lg:pl-[248px]">
-        <header className="sticky top-0 z-40 flex min-h-[76px] items-center justify-between gap-4 border-b border-border bg-white px-5 sm:px-8 lg:px-10">
-          <div className="flex items-center gap-3">
-            <button
-              ref={trigger}
-              type="button"
-              aria-label="Open admin navigation"
-              aria-controls="admin-sidebar"
-              aria-expanded={menu}
-              onClick={() => setMenu(!menu)}
-              className="flex size-11 items-center justify-center rounded-md hover:bg-paper lg:hidden"
+          </Suspense>
+          <div className="mt-auto space-y-6 px-6 py-6">
+            <Link
+              href="/admin/login"
+              className="block py-2 text-sm font-semibold text-white/80 hover:text-white"
             >
-              <AdminIcon name="menu" />
-            </button>
-            <p className="text-sm font-semibold text-navy">
-              Website administration
-            </p>
+              Review login screen
+            </Link>
+            <Link
+              href="/"
+              className="flex min-h-11 items-center justify-between text-sm font-semibold text-white/80 hover:text-white"
+            >
+              View website <AdminIcon name="arrow" className="size-4" />
+            </Link>
+            <StaffControls name={user.name} role={user.role} />
           </div>
-          <span className="shrink-0 rounded-full border border-border px-3 py-1.5 text-[11px] font-semibold text-muted">
-            Live content
-          </span>
-        </header>
-        <main
-          id="admin-main"
-          tabIndex={-1}
-          className="mx-auto min-w-0 max-w-[1440px] px-5 py-8 sm:px-8 lg:px-10 lg:py-10"
-        >
-          <AdminDataBoundary>{children}</AdminDataBoundary>
-        </main>
+        </aside>
+        <div className="min-w-0 lg:pl-[248px]">
+          <header className="sticky top-0 z-40 flex min-h-[76px] items-center justify-between gap-4 border-b border-border bg-white px-5 sm:px-8 lg:px-10">
+            <div className="flex items-center gap-3">
+              <button
+                ref={trigger}
+                type="button"
+                aria-label="Open admin navigation"
+                aria-controls="admin-sidebar"
+                aria-expanded={menu}
+                onClick={() => setMenu(!menu)}
+                className="flex size-11 items-center justify-center rounded-md hover:bg-paper lg:hidden"
+              >
+                <AdminIcon name="menu" />
+              </button>
+              <p className="text-sm font-semibold text-navy">
+                Website administration
+              </p>
+            </div>
+            <span className="shrink-0 rounded-full border border-border px-3 py-1.5 text-[11px] font-semibold text-muted">
+              Live content
+            </span>
+          </header>
+          <main
+            id="admin-main"
+            tabIndex={-1}
+            className="mx-auto min-w-0 max-w-[1440px] px-5 py-8 sm:px-8 lg:px-10 lg:py-10"
+          >
+            <AdminDataBoundary>{children}</AdminDataBoundary>
+          </main>
+        </div>
       </div>
-    </div>
+    </AdminToastRegion>
   );
 }

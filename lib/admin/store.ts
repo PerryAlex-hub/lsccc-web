@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import type { AdminState } from "./types";
+import { showAdminToast } from "@/components/admin/toast";
 
 export const emptyAdminState: AdminState = {
   version: 1,
@@ -117,7 +118,9 @@ export async function updateAdminState(
       };
     }
     if (!command) {
-      return { ok: true, message: "No changes to save." };
+      const result = { ok: true, message: "No changes to save." };
+      showAdminToast({ message: result.message, tone: "success" });
+      return result;
     }
     const response = await fetch("/api/admin/content", {
       method: "POST",
@@ -129,15 +132,18 @@ export async function updateAdminState(
       throw new Error(result.message);
     }
     replaceAdminState(result.state);
+    showAdminToast({ message: result.message, tone: "success" });
     return { ok: true, message: result.message };
   } catch (error) {
-    return {
+    const result = {
       ok: false,
       message:
         error instanceof Error
           ? error.message
           : "Could not save changes. Try again.",
     };
+    showAdminToast({ message: result.message, tone: "error" });
+    return result;
   } finally {
     saving = false;
   }

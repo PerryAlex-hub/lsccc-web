@@ -25,6 +25,7 @@ export function AdminNewsList() {
   const [category, setCategory] = useState("All categories");
   const [deleting, setDeleting] = useState<AdminArticle | null>(null);
   const [feedback, setFeedback] = useState({ message: "", error: false });
+  const [deletingNow, setDeletingNow] = useState(false);
   const articles = [...state.articles]
     .filter(
       (article) =>
@@ -38,6 +39,7 @@ export function AdminNewsList() {
     if (!deleting) {
       return;
     }
+    setDeletingNow(true);
     const result = await updateAdminState(
       (current) => ({
         ...current,
@@ -47,6 +49,7 @@ export function AdminNewsList() {
       }),
       `Deleted article: ${deleting.title}`,
     );
+    setDeletingNow(false);
     setFeedback({ message: result.message, error: !result.ok });
     if (result.ok) {
       setDeleting(null);
@@ -261,7 +264,12 @@ export function AdminNewsList() {
           <AdminButton variant="secondary" onClick={() => setDeleting(null)}>
             Cancel
           </AdminButton>
-          <AdminButton variant="danger" onClick={remove}>
+          <AdminButton
+            variant="danger"
+            onClick={remove}
+            loading={deletingNow}
+            loadingLabel="Deleting…"
+          >
             Delete article
           </AdminButton>
         </div>

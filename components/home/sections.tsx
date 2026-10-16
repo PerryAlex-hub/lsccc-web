@@ -1,85 +1,202 @@
 import { getPublishedNews } from "@/lib/news/repository";
 import { getPublicNotices, getWebsitePage } from "@/lib/cms/public";
-import type { ReactNode } from "react";
 import { ActionLink, TextLink } from "@/components/ui/text-link";
-import { assets } from "@/lib/assets";
-import {
-  agencies,
-  gallery,
-  informationLinks,
-  resources,
-} from "@/lib/home-content";
-import { destinations } from "@/lib/navigation";
-
 import { Photograph } from "@/components/ui/photograph";
+import { assets } from "@/lib/assets";
+import { destinations } from "@/lib/navigation";
 import { NewsSlider } from "./news-slider";
+import { SectionHeading } from "./section-heading";
 
-function SectionHeading({
-  children,
-  href,
-  linkLabel,
-}: {
-  children: ReactNode;
-  href?: string;
-  linkLabel?: string;
-}) {
-  return (
-    <div className="flex flex-wrap items-start justify-between gap-4">
-      <h2 className="text-[25px] font-bold leading-[1.45] text-navy">
-        {children}
-      </h2>
-      {href && (
-        <TextLink
-          href={href}
-          className="text-[13px] leading-[19px] xl:w-[248px]"
-        >
-          {linkLabel} <span aria-hidden="true">→</span>
-        </TextLink>
-      )}
-    </div>
-  );
-}
+export { HomeAbout, HomeGallery, HomeResources } from "./information-sections";
+export { HomePartners } from "./response-network";
+export { HomeServiceLinks } from "./service-links";
 
 async function PublicNotices() {
   const notices = await getPublicNotices();
+
   return (
     <aside
       id="emergency"
       aria-labelledby="notices-title"
-      className="flex flex-col gap-[18px] bg-paper p-[26px]"
+      className="border border-border bg-paper"
     >
-      <h2 id="notices-title" className="text-base font-bold text-navy">
-        PUBLIC NOTICES
-      </h2>
-      <div className="h-[3px] bg-navy" />
-      {notices.map((notice) => (
-        <article
-          key={notice.id}
-          className="space-y-4 border-b border-border pb-5"
+      <div className="border-b border-border px-6 py-5">
+        <p className="mb-2 text-[11px] font-bold tracking-[0.14em] text-blue">
+          INFORMATION DESK
+        </p>
+        <h3 id="notices-title" className="text-xl font-bold text-navy">
+          Public notices
+        </h3>
+      </div>
+      <div className="px-6">
+        {notices.map((notice) => (
+          <article
+            key={notice.id}
+            className="border-b border-border py-5 last:border-0"
+          >
+            <h4 className="text-sm font-bold leading-6 text-navy">
+              {notice.title}
+            </h4>
+            {notice.key === "emergency-lines" && (
+              <p className="mt-3 flex flex-wrap items-center gap-3 text-3xl font-bold text-blue">
+                <a href="tel:112">112</a>
+                <span className="text-lg font-normal text-muted">/</span>
+                <a href="tel:767">767</a>
+              </p>
+            )}
+            <p className="mt-3 text-sm leading-6 text-muted">
+              {notice.summary}
+            </p>
+            {notice.body && notice.body !== notice.summary && (
+              <p className="mt-3 whitespace-pre-line text-sm leading-6 text-muted">
+                {notice.body}
+              </p>
+            )}
+            {notice.url && (
+              <TextLink
+                href={notice.url}
+                className="mt-3 inline-block text-xs text-blue"
+              >
+                More information <span aria-hidden="true">→</span>
+              </TextLink>
+            )}
+          </article>
+        ))}
+        {!notices.length && (
+          <p className="py-6 text-sm leading-6 text-muted">
+            No current public notices. For urgent assistance, call 112 or 767.
+          </p>
+        )}
+      </div>
+      <div className="border-t border-border bg-white px-6 py-5">
+        <TextLink
+          href={destinations.citizensGate}
+          className="text-xs text-blue"
         >
-          <h3 className="text-xl font-bold">{notice.title}</h3>
-          {notice.key === "emergency-lines" && (
-            <p className="text-[40px] font-extrabold text-navy">
-              <a href="tel:112">112</a> / <a href="tel:767">767</a>
-            </p>
-          )}
-          <p className="text-[15px] leading-6 text-muted">{notice.summary}</p>
-          {notice.body && notice.body !== notice.summary && (
-            <p className="whitespace-pre-line text-sm leading-6 text-muted">
-              {notice.body}
-            </p>
-          )}
-          {notice.url && (
-            <TextLink href={notice.url} className="text-sm text-navy">
-              More information →
-            </TextLink>
-          )}
-        </article>
-      ))}
-      <TextLink href={destinations.citizensGate} className="text-sm text-navy">
-        Open Citizens Gate ↗
-      </TextLink>
+          Visit Lagos Citizens Gate <span aria-hidden="true">↗</span>
+        </TextLink>
+      </div>
     </aside>
+  );
+}
+
+export async function HomeLeadStory() {
+  const article = (await getPublishedNews())[0];
+
+  return (
+    <section
+      id="news"
+      aria-labelledby="news-title"
+      className="editorial-container py-14 md:py-20"
+    >
+      <SectionHeading
+        id="news-title"
+        eyebrow="LATEST FROM LSCCC"
+        title="News & public information"
+        href={destinations.news}
+        linkLabel="View all updates"
+      />
+      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)] lg:gap-10">
+        {article ? (
+          <article>
+            <Photograph
+              asset={article.asset}
+              className="aspect-[16/9]"
+              sizes="(max-width: 1023px) 92vw, 60vw"
+            />
+            <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] font-bold tracking-wide">
+              <span className="border-l-2 border-gold pl-3 text-blue">
+                {article.category}
+              </span>
+              <time dateTime={article.dateTime} className="text-muted">
+                {article.date}
+              </time>
+            </div>
+            <h3 className="mt-4 max-w-3xl text-[clamp(1.35rem,2.2vw,1.85rem)] font-bold leading-[1.4] tracking-[-0.02em] text-navy">
+              <TextLink href={`${destinations.news}/${article.slug}`}>
+                {article.title}
+              </TextLink>
+            </h3>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-muted sm:text-base">
+              {article.description}
+            </p>
+            <TextLink
+              href={`${destinations.news}/${article.slug}`}
+              className="mt-5 inline-block text-sm text-blue"
+            >
+              Read the full story{" "}
+              <span aria-hidden="true" className="ml-2">
+                →
+              </span>
+            </TextLink>
+          </article>
+        ) : (
+          <p className="text-muted">No published news yet.</p>
+        )}
+        <PublicNotices />
+      </div>
+    </section>
+  );
+}
+
+export async function HomeNews() {
+  const newsStories = (await getPublishedNews()).slice(1, 7);
+
+  return (
+    <section
+      id="agency-news"
+      aria-labelledby="agency-news-title"
+      className="border-t border-border bg-paper"
+    >
+      <div className="editorial-container py-14 md:py-20">
+        <SectionHeading
+          id="agency-news-title"
+          eyebrow="ACROSS THE RESPONSE NETWORK"
+          title="Agency news"
+          description="The latest engagements, training and updates from the centre and its response partners."
+          href={destinations.news}
+          linkLabel="News & media"
+        />
+        <NewsSlider>
+          {newsStories.map((story) => (
+            <article
+              key={story.slug}
+              className="news-card flex min-w-0 flex-col border border-border bg-white"
+            >
+              <Photograph
+                asset={story.asset}
+                className="aspect-[16/10]"
+                sizes="(max-width: 767px) 85vw, (max-width: 1023px) 44vw, 30vw"
+              />
+              <div className="flex flex-1 flex-col p-5 sm:p-6">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[10px] font-bold tracking-wide">
+                  <span className="text-blue">{story.category}</span>
+                  <time dateTime={story.dateTime} className="text-muted">
+                    {story.date}
+                  </time>
+                </div>
+                <h3 className="mt-4 text-lg font-bold leading-7 text-navy line-clamp-3">
+                  {story.title}
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-muted line-clamp-3">
+                  {story.description}
+                </p>
+                <TextLink
+                  href={`${destinations.news}/${story.slug}`}
+                  className="mt-auto inline-block pt-6 text-xs text-blue"
+                  ariaLabel={`Read article: ${story.title}`}
+                >
+                  Read article{" "}
+                  <span aria-hidden="true" className="ml-2">
+                    →
+                  </span>
+                </TextLink>
+              </div>
+            </article>
+          ))}
+        </NewsSlider>
+      </div>
+    </section>
   );
 }
 
@@ -154,354 +271,6 @@ export async function HomeHero() {
             </a>
           </p>
         </div>
-      </div>
-    </section>
-  );
-}
-
-export async function HomeLeadStory() {
-  const article = (await getPublishedNews())[0];
-  return (
-    <section
-      id="news"
-      aria-labelledby="news-title"
-      className="editorial-container py-10 xl:min-h-[913px] xl:py-12"
-      data-node-id="34:713"
-    >
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-        <h2 id="news-title" className="text-section font-bold text-navy">
-          News &amp; public information
-        </h2>
-        <TextLink
-          href={destinations.news}
-          className="text-[13px] leading-[19px] text-navy xl:w-[248px]"
-        >
-          All centre updates <span aria-hidden="true">→</span>
-        </TextLink>
-      </div>
-      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,884fr)_minmax(0,428fr)]">
-        {article ? (
-          <article className="flex flex-col gap-[14px]" data-node-id="34:718">
-            <Photograph
-              asset={article.asset}
-              className="aspect-[884/430]"
-              sizes="(max-width: 1023px) 93vw, (max-width: 1440px) 62vw, 884px"
-              nodeId="34:719"
-            />
-            <p className="min-h-4 text-[11px] font-bold leading-[15.95px] text-navy">
-              <time dateTime={article.dateTime}>{article.date}</time> /{" "}
-              {article.category}
-            </p>
-            <h3 className="text-[24px] font-bold leading-[1.45] xl:min-h-[84px] xl:text-section">
-              {article.title}
-            </h3>
-            <p className="text-body text-muted xl:min-h-[72px]">
-              {article.description}
-            </p>
-            <TextLink
-              href={`${destinations.news}/${article.slug}`}
-              className="text-[13px] leading-[19px] text-navy"
-            >
-              Read article <span aria-hidden="true">→</span>
-            </TextLink>
-          </article>
-        ) : (
-          <p className="text-muted">No published news yet.</p>
-        )}
-        <PublicNotices />
-      </div>
-    </section>
-  );
-}
-
-export async function HomeNews() {
-  const newsStories = (await getPublishedNews()).slice(1, 7);
-  return (
-    <section
-      id="agency-news"
-      aria-labelledby="agency-news-title"
-      className="editorial-container py-10 xl:min-h-[669px] xl:py-12"
-      data-node-id="34:740"
-    >
-      <div className="mb-6 h-px bg-border" />
-      <h2
-        id="agency-news-title"
-        className="text-[25px] font-bold leading-[37px] text-navy"
-      >
-        Agency news
-      </h2>
-      <p className="mb-6 mt-2 text-sm leading-6 text-muted">
-        Updates from the centre and its response partners.
-      </p>
-      <NewsSlider>
-        {newsStories.map((story) => (
-          <article
-            key={story.slug}
-            className="news-card flex min-w-0 flex-col gap-3"
-          >
-            <Photograph
-              asset={story.asset}
-              className="aspect-[432/244]"
-              sizes="(max-width: 767px) 93vw, (max-width: 1440px) 30vw, 432px"
-            />
-            <time
-              dateTime={story.dateTime}
-              className="min-h-[15px] text-[10px] font-bold leading-[14.5px] text-navy"
-            >
-              {story.date}
-            </time>
-            <h3 className="min-h-[87px] text-[20px] font-bold leading-[29px] text-navy line-clamp-3">
-              {story.title}
-            </h3>
-            <p className="min-h-[66px] text-[15px] leading-[22px] text-muted line-clamp-3">
-              {story.description}
-            </p>
-            {story.source && (
-              <p className="min-h-[15px] text-[10px] font-medium leading-[14.5px] text-muted">
-                SOURCE: {story.source}
-              </p>
-            )}
-            <TextLink
-              href={`${destinations.news}/${story.slug}`}
-              className="mt-auto pt-2 text-[13px] leading-[19px] text-blue"
-              ariaLabel={`Read article: ${story.title}`}
-            >
-              Read article <span aria-hidden="true">→</span>
-            </TextLink>
-          </article>
-        ))}
-      </NewsSlider>
-    </section>
-  );
-}
-
-export function HomeAbout() {
-  return (
-    <section
-      id="home-about"
-      aria-labelledby="about-title"
-      className="bg-paper"
-      data-node-id="34:765"
-    >
-      <div className="editorial-container grid gap-10 py-10 lg:grid-cols-[minmax(0,824fr)_minmax(0,472fr)] xl:min-h-[774px] xl:gap-12 xl:py-12">
-        <div className="flex flex-col gap-5">
-          <p className="min-h-[18px] text-eyebrow font-bold text-navy">
-            ABOUT THE AGENCY
-          </p>
-          <h2
-            id="about-title"
-            className="text-[27px] font-bold leading-[39.15px]"
-          >
-            Lagos State Command &amp; Control Centre
-          </h2>
-          <p className="text-body text-muted xl:min-h-24">
-            Established in 2010, LSCCC is the state’s central hub for emergency
-            communication and coordination. From its Ikeja headquarters, the
-            centre connects incident information with agencies responsible for
-            emergency management, fire and rescue, traffic, ambulance services
-            and public safety.
-          </p>
-          <p id="home-mandate" className="text-body text-muted xl:min-h-[72px]">
-            Its role combines emergency call handling, interagency communication
-            and operational coordination. Specialist response agencies provide
-            the assistance required on the ground.
-          </p>
-          <div className="h-px bg-border" />
-          <dl className="grid gap-6 sm:grid-cols-[220fr_276fr_280fr]">
-            {[
-              { value: "2010", label: "Year of establishment" },
-              { value: "112 & 767", label: "Published emergency lines" },
-              { value: "Ikeja", label: "Lagos State, Nigeria" },
-            ].map((fact) => (
-              <div key={fact.value} className="space-y-4">
-                <dt className="text-section font-bold text-navy">
-                  {fact.value}
-                </dt>
-                <dd className="text-xs font-medium leading-[18px] text-muted">
-                  {fact.label}
-                </dd>
-              </div>
-            ))}
-          </dl>
-          <TextLink
-            href={destinations.mandate}
-            className="text-sm leading-[21px] text-navy"
-          >
-            About the centre and its mandate <span aria-hidden="true">→</span>
-          </TextLink>
-          <div className="h-px bg-border" />
-          <h3 className="text-lg font-bold leading-[27px] text-navy">
-            Management
-          </h3>
-          <p className="text-[15px] leading-[21.75px] text-muted xl:min-h-[70px]">
-            Mr. Femi Kennedy Giwa serves as General Manager. The centre’s
-            institutional engagements include road safety collaboration,
-            response-agency coordination and stakeholder training on LERMS.
-          </p>
-        </div>
-        <aside
-          aria-label="Agency information"
-          className="flex flex-col gap-[18px] self-start bg-white p-7"
-        >
-          <h3 className="min-h-[22px] text-[15px] font-bold text-navy">
-            AGENCY INFORMATION
-          </h3>
-          {informationLinks.map((link) => (
-            <div
-              key={link.title}
-              className="flex flex-col gap-[18px] border-b border-border pb-[18px]"
-            >
-              <TextLink
-                href={link.href}
-                className="text-[17px] leading-[25px] text-navy"
-              >
-                {link.title} <span aria-hidden="true">→</span>
-              </TextLink>
-              <p className="text-[13px] leading-[18.85px] text-muted xl:min-h-10">
-                {link.description}
-              </p>
-            </div>
-          ))}
-        </aside>
-      </div>
-    </section>
-  );
-}
-
-export function HomePartners() {
-  return (
-    <section
-      id="home-partners"
-      aria-labelledby="partners-title"
-      className="editorial-container flex flex-col gap-6 py-10 xl:min-h-[456px] xl:py-12"
-      data-node-id="34:801"
-    >
-      <p className="min-h-[18px] text-eyebrow font-bold text-navy">
-        RESPONSE NETWORK
-      </p>
-      <h2
-        id="partners-title"
-        className="text-[26px] font-bold leading-[37.7px]"
-      >
-        Agencies supporting coordinated emergency response
-      </h2>
-      <div className="grid gap-8 lg:grid-cols-2 xl:gap-12">
-        {[agencies.slice(0, 3), agencies.slice(3)].map((column, index) => (
-          <div key={index} className="flex flex-col gap-5">
-            {column.map((agency) => (
-              <div
-                key={agency.abbreviation}
-                className="flex flex-col gap-3 border-b border-border pb-5 sm:flex-row sm:gap-5"
-              >
-                <p className="w-fit bg-paper p-4 text-[13px] font-bold leading-[19px] text-navy sm:w-[132px] sm:shrink-0">
-                  {agency.abbreviation}
-                </p>
-                <div className="space-y-[6px]">
-                  <h3 className="text-base font-bold leading-6">
-                    {agency.name}
-                  </h3>
-                  <p className="text-sm leading-[21px] text-muted">
-                    {agency.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-export function HomeGallery() {
-  return (
-    <section
-      aria-label="Photographs from the centre"
-      className="bg-paper"
-      data-node-id="34:849"
-    >
-      <div className="editorial-container space-y-6 py-10 xl:min-h-[446px] xl:py-12">
-        <SectionHeading href={destinations.news} linkLabel="News & media">
-          From the centre
-        </SectionHeading>
-        <div className="grid gap-8 md:grid-cols-3 md:gap-6">
-          {gallery.map((item) => (
-            <figure key={item.imageNodeId} className="space-y-[10px]">
-              <Photograph
-                asset={item.asset}
-                className="aspect-[432/232]"
-                sizes="(max-width: 767px) 93vw, (max-width: 1440px) 30vw, 432px"
-                nodeId={item.imageNodeId}
-              />
-              <figcaption className="space-y-[10px]">
-                <p className="text-[15px] font-semibold leading-[22px]">
-                  {item.caption}
-                </p>
-                <p className="text-[10px] font-medium leading-[15px] text-muted">
-                  {item.date}
-                </p>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-export function HomeResources() {
-  return (
-    <section
-      id="resources"
-      aria-labelledby="resources-title"
-      className="editorial-container grid gap-10 py-10 lg:grid-cols-[minmax(0,568fr)_minmax(0,728fr)] xl:min-h-[500px] xl:gap-12 xl:py-12"
-      data-node-id="34:866"
-    >
-      <figure className="space-y-4">
-        <Photograph
-          asset={assets.operations}
-          className="aspect-[568/284]"
-          sizes="(max-width: 1023px) 93vw, (max-width: 1440px) 40vw, 568px"
-          nodeId="34:869"
-        />
-        <figcaption className="space-y-4">
-          <h3 className="text-base font-bold leading-6">
-            Emergency call agents at the centre
-          </h3>
-          <p className="text-sm leading-[20.3px] text-muted xl:min-h-16">
-            LSCCC manages communication through Lagos State’s emergency
-            helplines and coordinates with relevant response agencies.
-          </p>
-        </figcaption>
-      </figure>
-      <div className="space-y-4">
-        <p className="text-eyebrow font-bold text-navy">PUBLIC INFORMATION</p>
-        <h2
-          id="resources-title"
-          className="text-[26px] font-bold leading-[37.7px]"
-        >
-          Guides, enquiries &amp; government services
-        </h2>
-        {resources.map((resource) => (
-          <div
-            id={resource.id}
-            key={resource.id}
-            className="grid gap-3 border-b border-border pb-4 sm:grid-cols-[minmax(0,252fr)_minmax(0,456fr)] sm:gap-5"
-          >
-            <TextLink
-              href={resource.href}
-              className="text-base leading-6 text-navy"
-            >
-              {resource.title}{" "}
-              <span aria-hidden="true">
-                {resource.href.startsWith("https://") ? "↗" : "→"}
-              </span>
-            </TextLink>
-            <p className="text-sm leading-[20.3px] text-muted xl:min-h-[42px]">
-              {resource.description}
-            </p>
-          </div>
-        ))}
       </div>
     </section>
   );

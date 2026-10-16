@@ -32,7 +32,6 @@ export function NewsSlider({ children }: { children: ReactNode }) {
     stops: [0],
     visible: null,
   });
-  const [paused, setPaused] = useState(false);
   const [interacting, setInteracting] = useState(false);
   const [inView, setInView] = useState(false);
   const reducedMotion = useSyncExternalStore(
@@ -41,7 +40,7 @@ export function NewsSlider({ children }: { children: ReactNode }) {
     () => true,
   );
   const canSlide = position.stops.length > 1;
-  const automatic = canSlide && !paused && !reducedMotion;
+  const automatic = canSlide && !reducedMotion;
 
   useEffect(() => {
     const element = track.current;
@@ -122,10 +121,7 @@ export function NewsSlider({ children }: { children: ReactNode }) {
       if (document.hidden) {
         return;
       }
-      if (
-        region.current?.contains(document.activeElement) ||
-        region.current?.matches(":hover")
-      ) {
+      if (region.current?.contains(document.activeElement)) {
         return;
       }
       const next = (position.index + 1) % position.stops.length;
@@ -133,12 +129,11 @@ export function NewsSlider({ children }: { children: ReactNode }) {
         left: position.stops[next],
         behavior: "smooth",
       });
-    }, 7000);
+    }, 5000);
     return () => window.clearInterval(timer);
   }, [automatic, interacting, inView, position.index, position.stops]);
 
   function goTo(index: number) {
-    setPaused(true);
     if (track.current?.contains(document.activeElement)) {
       track.current.focus({ preventScroll: true });
     }
@@ -171,8 +166,6 @@ export function NewsSlider({ children }: { children: ReactNode }) {
       aria-roledescription="carousel"
       aria-labelledby="agency-news-title"
       className="min-w-0"
-      onMouseEnter={() => setInteracting(true)}
-      onMouseLeave={() => setInteracting(false)}
       onFocusCapture={() => setInteracting(true)}
       onBlurCapture={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
@@ -246,33 +239,6 @@ export function NewsSlider({ children }: { children: ReactNode }) {
               ))}
             </div>
             <div className="flex items-center gap-2">
-              {!reducedMotion && (
-                <button
-                  type="button"
-                  aria-label={
-                    paused
-                      ? "Start automatic news sliding"
-                      : "Pause automatic news sliding"
-                  }
-                  aria-controls={id}
-                  onClick={() => setPaused(!paused)}
-                  className="motion-control inline-flex size-11 items-center justify-center rounded-full border border-border text-navy hover:border-blue hover:bg-paper"
-                >
-                  <svg
-                    aria-hidden="true"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                  >
-                    {paused ? (
-                      <path d="M4 2.5 13 8l-9 5.5z" />
-                    ) : (
-                      <path d="M4 3h3v10H4zm5 0h3v10H9z" />
-                    )}
-                  </svg>
-                </button>
-              )}
               {([-1, 1] as const).map((direction) => (
                 <button
                   key={direction}

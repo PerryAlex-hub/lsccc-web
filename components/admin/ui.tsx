@@ -42,17 +42,29 @@ export function AdminButton({
   children,
   variant = "primary",
   className = "",
+  loading = false,
+  loadingLabel,
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: keyof typeof buttonClasses;
+  loading?: boolean;
+  loadingLabel?: string;
 }) {
   return (
     <button
       type="button"
       {...props}
+      disabled={loading || props.disabled}
+      aria-busy={loading || undefined}
       className={`motion-control inline-flex min-h-11 items-center justify-center gap-2 rounded-md border px-4 py-2.5 text-sm font-bold disabled:cursor-default disabled:opacity-45 ${buttonClasses[variant]} ${className}`}
     >
-      {children}
+      {loading && (
+        <span
+          aria-hidden="true"
+          className="size-4 shrink-0 animate-spin rounded-full border-2 border-current border-r-transparent"
+        />
+      )}
+      {loading ? (loadingLabel ?? children) : children}
     </button>
   );
 }

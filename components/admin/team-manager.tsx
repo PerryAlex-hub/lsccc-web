@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { authRequest, navigateAfterAuth } from "@/lib/auth/client";
 import { AdminButton, AdminField, AdminFeedback, AdminHeading } from "./ui";
 import { AdminDialog } from "./dialog";
+import { showAdminToast } from "./toast";
 
 type Staff = {
   id: string;
@@ -81,15 +82,17 @@ export function TeamManager() {
       const result = await authRequest("/api/admin/team", data, method);
       setMessage(result.message);
       setError(false);
+      showAdminToast({ message: result.message, tone: "success" });
       setSetupUrl(result.setupUrl || "");
       setConfirm(null);
       await load();
       return true;
     } catch (error) {
-      setMessage(
-        error instanceof Error ? error.message : "Unable to update access.",
-      );
+      const nextMessage =
+        error instanceof Error ? error.message : "Unable to update access.";
+      setMessage(nextMessage);
       setError(true);
+      showAdminToast({ message: nextMessage, tone: "error" });
       return false;
     } finally {
       setBusy(false);
@@ -135,7 +138,7 @@ export function TeamManager() {
               <option value="ADMINISTRATOR">Administrator</option>
             </select>
           </AdminField>
-          <AdminButton type="submit" disabled={busy}>
+          <AdminButton type="submit" loading={busy} loadingLabel="Creating…">
             Create invitation
           </AdminButton>
         </div>
@@ -167,8 +170,16 @@ export function TeamManager() {
               try {
                 await navigator.clipboard.writeText(setupUrl);
                 setMessage("Setup link copied.");
+                showAdminToast({
+                  message: "Setup link copied.",
+                  tone: "success",
+                });
               } catch {
                 setMessage("Could not copy the link. Open it above.");
+                showAdminToast({
+                  message: "Could not copy the link. Open it above.",
+                  tone: "error",
+                });
               }
             }}
           >
@@ -306,7 +317,8 @@ export function TeamManager() {
         <div className="flex gap-3">
           <AdminButton
             variant="danger"
-            disabled={busy}
+            loading={busy}
+            loadingLabel="Updating…"
             onClick={() =>
               confirm &&
               update(

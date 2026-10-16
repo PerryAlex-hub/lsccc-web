@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     revalidateTag("public-content", { expire: 0 });
     revalidatePath("/", "layout");
     return authResponse({
-      message: "Saved to the database. Published changes are live.",
+      message: "Changes saved. Published updates are now live.",
       state: await readAdminContent(),
     });
   } catch (error) {

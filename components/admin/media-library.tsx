@@ -12,6 +12,7 @@ import { matchesQuery } from "@/lib/search";
 import { AdminButton, AdminFeedback, AdminField, AdminHeading } from "./ui";
 import { AdminDialog } from "./dialog";
 import { AdminIcon } from "./icons";
+import { showAdminToast } from "./toast";
 
 export function AdminMediaLibrary() {
   const state = useAdminState();
@@ -20,6 +21,8 @@ export function AdminMediaLibrary() {
   const [selected, setSelected] = useState<AdminMedia | null>(null);
   const [confirmRemove, setConfirmRemove] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [removing, setRemoving] = useState(false);
   const [feedback, setFeedback] = useState({ message: "", error: false });
   const images = state.media.filter((image) =>
     matchesQuery(query, image.name, image.alt),
@@ -55,17 +58,17 @@ export function AdminMediaLibrary() {
       }
       replaceAdminState(result.state);
       setFeedback({ message: result.message, error: false });
+      showAdminToast({ message: result.message, tone: "success" });
       setSelected(
         result.state.media.find(
           (image: AdminMedia) => image.id === result.id,
         ) ?? null,
       );
     } catch (error) {
-      setFeedback({
-        message:
-          error instanceof Error ? error.message : "Upload failed. Try again.",
-        error: true,
-      });
+      const message =
+        error instanceof Error ? error.message : "Upload failed. Try again.";
+      setFeedback({ message, error: true });
+      showAdminToast({ message, tone: "error" });
     } finally {
       setUploading(false);
       if (input.current) {
@@ -85,6 +88,7 @@ export function AdminMediaLibrary() {
       });
       return;
     }
+    setSaving(true);
     const result = await updateAdminState(
       (current) => ({
         ...current,
@@ -94,6 +98,7 @@ export function AdminMediaLibrary() {
       }),
       `Updated image details: ${selected.name}`,
     );
+    setSaving(false);
     setFeedback({ message: result.message, error: !result.ok });
     if (result.ok) {
       setSelected(null);
@@ -113,6 +118,7 @@ export function AdminMediaLibrary() {
       setConfirmRemove(false);
       return;
     }
+    setRemoving(true);
     const result = await updateAdminState(
       (current) => ({
         ...current,
@@ -120,6 +126,7 @@ export function AdminMediaLibrary() {
       }),
       `Removed image: ${selected.name}`,
     );
+    setRemoving(false);
     setFeedback({ message: result.message, error: !result.ok });
     if (result.ok) {
       setSelected(null);
@@ -134,7 +141,8 @@ export function AdminMediaLibrary() {
         description="Organise photographs and keep image descriptions clear and accessible."
         actions={
           <AdminButton
-            disabled={uploading}
+            loading={uploading}
+            loadingLabel="Uploading…"
             onClick={() => input.current?.click()}
           >
             <AdminIcon name="plus" />{" "}
@@ -229,7 +237,12 @@ export function AdminMediaLibrary() {
                 >
                   Cancel
                 </AdminButton>
-                <AdminButton variant="danger" onClick={remove}>
+                <AdminButton
+                  variant="danger"
+                  onClick={remove}
+                  loading={removing}
+                  loadingLabel="Removing…"
+                >
                   Remove image
                 </AdminButton>
               </div>
@@ -273,7 +286,11 @@ export function AdminMediaLibrary() {
                 >
                   Remove image
                 </AdminButton>
-                <AdminButton onClick={saveDetails}>
+                <AdminButton
+                  onClick={saveDetails}
+                  loading={saving}
+                  loadingLabel="Saving…"
+                >
                   Save image details
                 </AdminButton>
               </div>

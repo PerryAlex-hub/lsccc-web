@@ -46,6 +46,7 @@ export function AdminContentManager({
   const [editing, setEditing] = useState<AdminContent | null>(null);
   const [deleting, setDeleting] = useState<AdminContent | null>(null);
   const [feedback, setFeedback] = useState({ message: "", error: false });
+  const [busy, setBusy] = useState<"save" | "delete" | null>(null);
   const items = state[collection].filter((item) =>
     matchesQuery(query, item.title, item.summary),
   );
@@ -94,6 +95,7 @@ export function AdminContentManager({
       id: editing.id === "new" ? crypto.randomUUID() : editing.id,
       updatedAt: new Date().toISOString(),
     };
+    setBusy("save");
     const result = await updateAdminState(
       (current) => ({
         ...current,
@@ -106,6 +108,7 @@ export function AdminContentManager({
       }),
       `Saved ${copy.singular}: ${item.title}`,
     );
+    setBusy(null);
     setFeedback({ message: result.message, error: !result.ok });
     if (result.ok) {
       setEditing(null);
@@ -116,6 +119,7 @@ export function AdminContentManager({
     if (!deleting) {
       return;
     }
+    setBusy("delete");
     const result = await updateAdminState(
       (current) => ({
         ...current,
@@ -125,6 +129,7 @@ export function AdminContentManager({
       }),
       `Removed ${copy.singular}: ${deleting.title}`,
     );
+    setBusy(null);
     setFeedback({ message: result.message, error: !result.ok });
     if (result.ok) {
       setDeleting(null);
@@ -281,7 +286,14 @@ export function AdminContentManager({
               <AdminButton variant="secondary" onClick={() => setEditing(null)}>
                 Cancel
               </AdminButton>
-              <AdminButton type="submit">Save changes</AdminButton>
+              <AdminButton
+                type="submit"
+                loading={busy === "save"}
+                loadingLabel="Saving…"
+                disabled={busy !== null}
+              >
+                Save changes
+              </AdminButton>
             </div>
           </form>
         )}
@@ -298,7 +310,13 @@ export function AdminContentManager({
           <AdminButton variant="secondary" onClick={() => setDeleting(null)}>
             Cancel
           </AdminButton>
-          <AdminButton variant="danger" onClick={remove}>
+          <AdminButton
+            variant="danger"
+            onClick={remove}
+            loading={busy === "delete"}
+            loadingLabel="Deleting…"
+            disabled={busy !== null}
+          >
             Delete {copy.singular}
           </AdminButton>
         </div>

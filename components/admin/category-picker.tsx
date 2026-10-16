@@ -17,6 +17,7 @@ export function CategoryPicker({
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
   const [feedback, setFeedback] = useState({ message: "", error: false });
+  const [creating, setCreating] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
   const input = useRef<HTMLInputElement>(null);
 
@@ -39,6 +40,7 @@ export function CategoryPicker({
       setFeedback({ message: error, error: true });
       return;
     }
+    setCreating(true);
     const result = await updateAdminState(
       (current) => ({
         ...current,
@@ -46,9 +48,10 @@ export function CategoryPicker({
       }),
       `Created news category: ${category}`,
     );
+    setCreating(false);
     setFeedback({
       message: result.ok
-        ? "Category created and selected. Saved to the database."
+        ? "Category created and selected."
         : result.message,
       error: !result.ok,
     });
@@ -106,7 +109,13 @@ export function CategoryPicker({
             />
           </AdminField>
           <div className="flex flex-wrap gap-2">
-            <AdminButton onClick={create}>Create category</AdminButton>
+            <AdminButton
+              onClick={create}
+              loading={creating}
+              loadingLabel="Creating…"
+            >
+              Create category
+            </AdminButton>
             <AdminButton variant="secondary" onClick={close}>
               Cancel
             </AdminButton>

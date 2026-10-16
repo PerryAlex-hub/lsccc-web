@@ -10,6 +10,7 @@ import { AdminButton, AdminFeedback, AdminField, AdminHeading } from "./ui";
 export function AdminSettingsPage() {
   const state = useAdminState();
   const [feedback, setFeedback] = useState({ message: "", error: false });
+  const [saving, setSaving] = useState(false);
 
   async function save(settings: AdminSettings) {
     if (
@@ -34,10 +35,12 @@ export function AdminSettingsPage() {
       });
       return;
     }
+    setSaving(true);
     const result = await updateAdminState(
       (current) => ({ ...current, settings }),
       "Updated website settings",
     );
+    setSaving(false);
     setFeedback({ message: result.message, error: !result.ok });
   }
 
@@ -53,6 +56,7 @@ export function AdminSettingsPage() {
           settings={state.settings}
           onSave={save}
           feedback={feedback}
+          saving={saving}
         />
         <div className="space-y-6">
           <section className="rounded-lg border border-border bg-white p-6">
@@ -90,10 +94,12 @@ function SettingsForm({
   settings,
   onSave,
   feedback,
+  saving,
 }: {
   settings: AdminSettings;
   onSave: (settings: AdminSettings) => void;
   feedback: { message: string; error: boolean };
+  saving: boolean;
 }) {
   const [form, setForm] = useState(settings);
   return (
@@ -150,7 +156,9 @@ function SettingsForm({
         />
       </AdminField>
       <AdminFeedback {...feedback} />
-      <AdminButton type="submit">Save settings</AdminButton>
+      <AdminButton type="submit" loading={saving} loadingLabel="Saving…">
+        Save settings
+      </AdminButton>
     </form>
   );
 }

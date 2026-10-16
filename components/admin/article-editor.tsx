@@ -75,6 +75,7 @@ function ArticleEditorForm({
   const [slugEdited, setSlugEdited] = useState(Boolean(article.slug));
   const [picker, setPicker] = useState(false);
   const [preview, setPreview] = useState(false);
+  const [saving, setSaving] = useState<PublicationStatus | null>(null);
   const titleRef = useRef<HTMLInputElement>(null);
   const dirty = JSON.stringify(form) !== JSON.stringify(article);
   const cover = state.media.find((image) => image.id === form.coverId);
@@ -130,6 +131,7 @@ function ArticleEditorForm({
       id: article.id === "new" ? crypto.randomUUID() : article.id,
       updatedAt: new Date().toISOString(),
     };
+    setSaving(status);
     const result = await updateAdminState(
       (current) => ({
         ...current,
@@ -142,6 +144,7 @@ function ArticleEditorForm({
       }),
       `${status === "Published" ? "Published" : "Saved draft"}: ${title}`,
     );
+    setSaving(null);
     setFeedback({ message: result.message, error: !result.ok });
     if (result.ok && article.id === "new") {
       router.replace(`/admin/news/${saved.id}`);
@@ -271,7 +274,13 @@ function ArticleEditorForm({
                   : "Not saved yet"}
             </p>
             <div className="flex flex-col gap-3">
-              <AdminButton type="submit" variant="secondary">
+              <AdminButton
+                type="submit"
+                variant="secondary"
+                loading={saving === "Draft"}
+                loadingLabel="Saving draft…"
+                disabled={saving !== null}
+              >
                 Save draft
               </AdminButton>
               {article.status === "Published" && (
@@ -280,7 +289,12 @@ function ArticleEditorForm({
                   website.
                 </p>
               )}
-              <AdminButton onClick={() => save("Published")}>
+              <AdminButton
+                onClick={() => save("Published")}
+                loading={saving === "Published"}
+                loadingLabel="Publishing…"
+                disabled={saving !== null}
+              >
                 {article.status === "Published"
                   ? "Update published article"
                   : "Publish article"}
