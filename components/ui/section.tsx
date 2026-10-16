@@ -20,7 +20,7 @@ export function Section({
   };
   return (
     <section id={id} className={tones[tone]} data-node-id={nodeId}>
-      <div className={`site-container section-space ${className}`}>
+      <div className={`site-container py-14 md:py-20 ${className}`}>
         {children}
       </div>
     </section>
@@ -33,8 +33,8 @@ export function SectionIntro({
   children,
   dark = false,
   className = "",
-  gap = 24,
-  titleClassName = "text-[26px] leading-[38px]",
+  gap = 16,
+  titleClassName = "text-[clamp(1.65rem,2.6vw,2.25rem)] leading-[1.3]",
 }: {
   eyebrow: string;
   title: ReactNode;
@@ -47,11 +47,13 @@ export function SectionIntro({
   return (
     <div className={`flex flex-col ${className}`} style={{ gap }}>
       <p
-        className={`text-eyebrow font-bold ${dark ? "text-gold" : "text-navy"}`}
+        className={`text-xs font-bold tracking-[0.14em] ${dark ? "text-gold" : "text-blue"}`}
       >
         {eyebrow}
       </p>
-      <h2 className={`whitespace-pre-line font-extrabold ${titleClassName}`}>
+      <h2
+        className={`max-w-3xl whitespace-pre-line font-bold tracking-[-0.025em] text-balance ${dark ? "text-white" : "text-navy"} ${titleClassName}`}
+      >
         {title}
       </h2>
       {children}
@@ -73,15 +75,17 @@ export function InfoCard({
   className?: string;
 }) {
   return (
-    <article className={`flex min-w-0 flex-col gap-4 p-7 ${className}`}>
-      <div className={`h-1 ${accent}`} aria-hidden="true" />
+    <article
+      className={`flex h-full min-w-0 flex-col gap-4 border border-border p-6 sm:p-8 ${className}`}
+    >
+      <div className={`h-0.5 w-10 ${accent}`} aria-hidden="true" />
       {number && (
-        <p className="text-[11px] font-bold leading-[17px] text-navy">
+        <p className="text-2xl font-semibold tabular-nums text-blue">
           {number}
         </p>
       )}
-      <h3 className="text-[22px] font-bold leading-[33px]">{title}</h3>
-      <div className="text-[15px] leading-[23px] text-muted">{children}</div>
+      <h3 className="text-lg font-bold leading-7 text-navy">{title}</h3>
+      <div className="text-sm leading-7 text-muted">{children}</div>
     </article>
   );
 }

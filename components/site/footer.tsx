@@ -3,6 +3,7 @@ import Image from "next/image";
 import { assets } from "@/lib/assets";
 import { destinations } from "@/lib/navigation";
 import { TextLink } from "@/components/ui/text-link";
+import { publicContact } from "@/lib/content/contact";
 
 const groups = [
   {
@@ -89,14 +90,12 @@ export async function SiteFooter() {
               </p>
               <p>Available 24 hours</p>
               <address className="not-italic">{settings.address}</address>
-              {settings.enquiryEmail && (
-                <a
-                  href={`mailto:${settings.enquiryEmail}`}
-                  className="mt-2 block break-all hover:underline"
-                >
-                  {settings.enquiryEmail}
-                </a>
-              )}
+              <a
+                href={`mailto:${publicContact.email}`}
+                className="my-3 block break-all leading-6 hover:underline"
+              >
+                {publicContact.email}
+              </a>
               <TextLink
                 href={destinations.contact}
                 className="inline-block py-1 font-normal sm:py-0"

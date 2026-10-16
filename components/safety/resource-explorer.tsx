@@ -49,15 +49,17 @@ export function ResourceExplorer({
 
   return (
     <>
-      <div className="bg-paper" data-node-id="19:239">
+      <div className="border-b border-border bg-paper" data-node-id="19:239">
         <form
           onSubmit={submitSearch}
           role="search"
           aria-label="Search safety resources"
-          className="site-container grid gap-6 py-10 md:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[850fr_294fr_120fr]"
+          className="site-container grid items-end gap-5 py-7 md:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,1fr)_280px_120px]"
         >
           <label className="min-w-0">
-            <span className="sr-only">Search safety topics or guidance</span>
+            <span className="mb-2 block text-xs font-bold text-navy">
+              Search safety resources
+            </span>
             <input
               type="search"
               value={query}
@@ -67,7 +69,9 @@ export function ResourceExplorer({
             />
           </label>
           <label>
-            <span className="sr-only">Safety topic</span>
+            <span className="mb-2 block text-xs font-bold text-navy">
+              Filter by topic
+            </span>
             <select
               value={topic}
               onChange={(event) => {
@@ -93,11 +97,15 @@ export function ResourceExplorer({
         </form>
       </div>
       {children}
-      <Section id="safety-topics" nodeId="19:263" className="space-y-6">
+      <Section
+        id="safety-topics"
+        nodeId="19:263"
+        className="space-y-8 lg:space-y-10"
+      >
         <SectionIntro
           eyebrow="BROWSE BY TOPIC"
           title="Information for everyday preparedness."
-          titleClassName="text-[28px] leading-[1.5] sm:text-[32px]"
+          titleClassName="text-[clamp(1.65rem,2.6vw,2.25rem)] leading-[1.3]"
         />
         <p
           role="status"

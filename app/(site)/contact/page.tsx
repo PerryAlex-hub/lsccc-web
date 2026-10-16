@@ -14,6 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function ContactPage() {
   return (
     <InteriorPage
+      image="operations"
       cmsPath="/contact"
       title="Contact & Enquiries"
       description="Find the right route for general enquiries, media requests and government feedback."

@@ -8,13 +8,13 @@ export function LinkPanel({
   return (
     <nav
       aria-label="Related information"
-      className="flex flex-col gap-5 bg-paper p-7"
+      className="flex flex-col border border-border bg-paper px-6 sm:px-8"
     >
       {links.map((link) => (
         <TextLink
           key={link.href}
           href={link.href}
-          className="border-b border-border pb-5 text-[17px] leading-[25px] text-navy last:border-0 last:pb-0"
+          className="flex items-center justify-between gap-4 border-b border-border py-6 text-sm leading-7 text-navy last:border-0"
         >
           {link.label}{" "}
           <span aria-hidden="true">

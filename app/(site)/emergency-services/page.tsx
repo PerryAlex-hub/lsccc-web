@@ -15,6 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function EmergencyServicesPage() {
   return (
     <InteriorPage
+      image="operations"
       cmsPath="/emergency-services"
       title="Emergency Services"
       description="For emergencies requiring immediate help, call the Lagos State emergency lines."

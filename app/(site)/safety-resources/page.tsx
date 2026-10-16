@@ -15,6 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function SafetyResourcesPage() {
   return (
     <InteriorPage
+      image="responderTraining"
       cmsPath="/safety-resources"
       title="Safety Resources"
       description="Find public safety topics and practical information for your household, workplace and community."

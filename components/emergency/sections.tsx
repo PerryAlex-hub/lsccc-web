@@ -9,50 +9,57 @@ import { destinations } from "@/lib/navigation";
 
 export function EmergencyContacts() {
   return (
-    <Section nodeId="19:116" className="space-y-6">
-      <div className="grid gap-6 md:grid-cols-2">
+    <Section className="grid items-center gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+      <SectionIntro
+        eyebrow="EMERGENCY ASSISTANCE · 24 HOURS"
+        title="Two numbers. One route to emergency help."
+      >
+        <p className="max-w-lg text-base leading-8 text-muted">
+          For urgent incidents anywhere in Lagos State, call 112 or 767. Give
+          your location, explain what happened and follow the call agent’s
+          guidance.
+        </p>
+        <p className="text-sm leading-7 text-muted">
+          Keep these lines available for real emergencies.
+        </p>
+      </SectionIntro>
+      <div className="grid gap-px border border-border bg-border sm:grid-cols-2">
         {["112", "767"].map((number) => (
           <div
             key={number}
-            className="flex flex-col items-start gap-4 bg-navy p-7 text-white sm:p-9"
+            className="flex flex-col items-start bg-paper p-7 sm:p-8"
           >
-            <h2 className="text-eyebrow font-bold text-gold">
+            <p className="text-[11px] font-bold tracking-wider text-blue">
               TOLL-FREE EMERGENCY LINE
-            </h2>
-            <p className="text-[64px] font-extrabold leading-[1.5] sm:text-[88px]">
-              {number}
             </p>
-            <p className="text-[17px] leading-[26px]">
-              For urgent incidents requiring emergency assistance.
+            <h2 className="my-5 text-6xl font-bold leading-none tabular-nums tracking-tight text-navy sm:text-7xl">
+              {number}
+            </h2>
+            <p className="mb-6 text-sm leading-7 text-muted">
+              For incidents requiring immediate assistance.
             </p>
             <ActionLink
               href={`tel:${number}`}
-              className="w-full bg-gold px-4 py-4 text-navy sm:w-[260px]"
+              className="mt-auto w-full justify-between bg-blue text-white"
               ariaLabel={`Call emergency line ${number}`}
             >
-              Call {number}{" "}
-              <span aria-hidden="true" className="ml-2">
-                ↗
-              </span>
+              Call {number}
+              <span aria-hidden="true">↗</span>
             </ActionLink>
           </div>
         ))}
       </div>
-      <p className="text-[13px] leading-[19px] text-muted">
-        Both numbers are published emergency contacts for Lagos State. Keep
-        these lines available for real emergencies.
-      </p>
     </Section>
   );
 }
 
 export function WhenToCall() {
   return (
-    <Section tone="paper" nodeId="19:131" className="space-y-6">
+    <Section tone="paper" nodeId="19:131" className="space-y-8 lg:space-y-10">
       <SectionIntro
         eyebrow="WHEN TO CALL"
         title="Report incidents that need urgent assistance."
-        titleClassName="text-[28px] leading-[1.5] sm:text-[32px]"
+        titleClassName="text-[clamp(1.65rem,2.6vw,2.25rem)] leading-[1.3]"
       />
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {incidentTypes.map((incident) => (
@@ -75,22 +82,27 @@ export function WhenToCall() {
 
 export function EmergencyReporting() {
   return (
-    <Section tone="navy" nodeId="19:148" className="space-y-7">
+    <Section tone="navy" nodeId="19:148" className="space-y-8 lg:space-y-10">
       <SectionIntro
         eyebrow="REPORTING AN EMERGENCY"
         title="Clear information helps responders reach you."
-        titleClassName="text-[26px] leading-[1.45] sm:text-[30px]"
+        titleClassName="text-[clamp(1.65rem,2.6vw,2.25rem)] leading-[1.3]"
         dark
         gap={28}
       />
       <ol className="grid gap-8 sm:grid-cols-2 xl:grid-cols-4">
         {reportingSteps.map((step, index) => (
-          <li key={step.title} className="space-y-4">
+          <li
+            key={step.title}
+            className="space-y-4 border-t border-white/25 pt-6"
+          >
             <p className="text-[26px] font-extrabold leading-[38px] text-gold">
               {String(index + 1).padStart(2, "0")}
             </p>
             <h3 className="text-xl font-bold leading-[30px]">{step.title}</h3>
-            <p className="text-[15px] leading-[23px]">{step.description}</p>
+            <p className="text-sm leading-7 text-white/80">
+              {step.description}
+            </p>
           </li>
         ))}
       </ol>
@@ -109,12 +121,12 @@ export function EmergencyQuestions() {
           eyebrow="COMMON QUESTIONS"
           title="Know what to expect when you call."
           gap={22}
-          titleClassName="text-[26px] leading-[1.5] sm:text-[30px]"
+          titleClassName="text-[clamp(1.65rem,2.6vw,2.25rem)] leading-[1.3]"
         />
         {emergencyQuestions.map((item, index) => (
           <details
             key={item.question}
-            open
+            open={index === 0}
             className="group border-b border-border pb-[22px]"
           >
             <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 text-[19px] font-bold leading-[29px] md:min-h-[29px] [&::-webkit-details-marker]:hidden">
@@ -132,9 +144,9 @@ export function EmergencyQuestions() {
           </details>
         ))}
       </div>
-      <aside className="flex flex-col gap-5 bg-gold p-7 text-ink">
+      <aside className="flex flex-col gap-5 border-t-2 border-gold bg-paper p-7 text-navy">
         <h2 className="text-eyebrow font-bold">BEFORE YOU CALL</h2>
-        <h3 className="text-[28px] font-extrabold leading-[42px]">
+        <h3 className="text-[28px] font-bold leading-[1.3]">
           Your location
           <br />
           comes first.

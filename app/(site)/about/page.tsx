@@ -16,6 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function AboutPage() {
   return (
     <InteriorPage
+      image="operations"
       cmsPath="/about"
       title="About the Centre"
       description="Our role is to connect emergency communication, response agencies and the people who need help."

@@ -15,7 +15,7 @@ export function ArticleContent({
   related: readonly NewsArticle[];
 }) {
   return (
-    <Section className="grid items-start gap-12 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)]">
+    <Section className="grid items-start gap-12 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] lg:gap-16">
       <article className="min-w-0">
         <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-3 border-b border-border pb-5 text-sm text-muted">
           <span className="bg-paper px-3 py-1.5 font-bold text-blue">
@@ -33,11 +33,11 @@ export function ArticleContent({
             sizes="(max-width: 1023px) 92vw, (max-width: 1440px) 62vw, 870px"
             preload
           />
-          <figcaption className="text-xs leading-5 text-muted">
+          <figcaption className="border-l-2 border-gold pl-4 text-xs leading-6 text-muted">
             {article.caption}
           </figcaption>
         </figure>
-        <div className="max-w-[70ch] space-y-6">
+        <div className="max-w-[65ch] space-y-6">
           {article.paragraphs.map((paragraph, index) => (
             <p
               key={paragraph}
@@ -62,17 +62,23 @@ export function ArticleContent({
           </TextLink>
         </div>
       </article>
-      <aside className="min-w-0 space-y-8" aria-label="More from the centre">
-        <div className="border-t-4 border-gold bg-paper p-6">
+      <aside
+        className="min-w-0 space-y-8 lg:sticky lg:top-6"
+        aria-label="More from the centre"
+      >
+        <div className="border border-border border-t-2 border-t-gold bg-paper p-6 sm:p-8">
+          <p className="mb-3 text-xs font-bold tracking-[0.14em] text-blue">
+            MORE FROM LSCCC
+          </p>
           <h2 className="text-xl font-bold text-navy">Related news</h2>
           <nav aria-label="Related news" className="mt-6 space-y-6">
             {related.map((item) => (
               <Link
                 key={item.slug}
                 href={newsHref(item.slug)}
-                className="group block space-y-2 border-b border-border pb-6 last:border-b-0 last:pb-0"
+                className="group block space-y-3 border-b border-border pb-6 last:border-b-0 last:pb-0"
               >
-                <span className="text-eyebrow font-bold text-blue">
+                <span className="text-xs font-semibold text-blue">
                   {item.category}
                 </span>
                 <h3 className="text-base font-bold leading-[1.5] text-navy group-hover:underline group-hover:underline-offset-4">
@@ -88,7 +94,7 @@ export function ArticleContent({
             ))}
           </nav>
         </div>
-        <div className="space-y-4 bg-navy p-6 text-white">
+        <div className="space-y-4 border-l-2 border-gold bg-navy p-6 text-white sm:p-8">
           <p className="text-eyebrow font-bold text-gold">MEDIA ENQUIRIES</p>
           <h2 className="text-xl font-bold leading-[1.4]">
             Get in touch with the centre

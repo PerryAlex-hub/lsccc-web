@@ -16,6 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function BeforeYouCallPage() {
   return (
     <InteriorPage
+      image="operations"
       cmsPath="/before-you-call"
       title="Before You Call"
       description="Know the information that helps an emergency call agent understand your incident and location."

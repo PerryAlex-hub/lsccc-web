@@ -1,77 +1,90 @@
-import { Photograph } from "@/components/ui/photograph";
+﻿import { Photograph } from "@/components/ui/photograph";
 import { Section, SectionIntro, InfoCard } from "@/components/ui/section";
 import { TextLink } from "@/components/ui/text-link";
+import { AgencyGrid } from "@/components/site/agency-grid";
 import { assets } from "@/lib/assets";
-import {
-  mandates,
-  operatingStages,
-  responsePartners,
-  milestones,
-} from "@/lib/content/about";
+import { mandates, operatingStages, milestones } from "@/lib/content/about";
+
+const pageLinks = [
+  { label: "Overview", href: "#overview" },
+  { label: "Our mandate", href: "#mandate" },
+  { label: "How we work", href: "#how-we-work" },
+  { label: "Response partners", href: "#partners" },
+  { label: "Management", href: "#management" },
+] as const;
 
 export function AboutOverview() {
   return (
-    <Section
-      id="overview"
-      nodeId="18:71"
-      className="grid items-start gap-10 lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-12"
-    >
+    <>
       <nav
         aria-label="On this page"
-        className="flex flex-col gap-5 bg-paper p-6"
+        className="border-b border-border bg-paper"
       >
-        <h2 className="text-[11px] font-bold leading-[17px] text-navy">
-          IN THIS SECTION
-        </h2>
-        {[
-          { label: "Overview", href: "#overview" },
-          { label: "Our mandate", href: "#mandate" },
-          { label: "How we work", href: "#how-we-work" },
-          { label: "Response partners", href: "#partners" },
-        ].map((item) => (
-          <TextLink
-            key={item.href}
-            href={item.href}
-            className="border-b border-border pb-5 text-sm font-medium text-muted first-of-type:font-bold first-of-type:text-navy"
-          >
-            {item.label} <span aria-hidden="true">→</span>
-          </TextLink>
-        ))}
-      </nav>
-      <div className="min-w-0 space-y-6">
-        <SectionIntro eyebrow="ABOUT LSCCC" title="Role of the centre">
-          <p className="text-[17px] leading-[26px] text-muted xl:min-h-[77px]">
-            Lagos State Command &amp; Control Centre serves as a central
-            coordination hub for emergency services across the state. It brings
-            call handling and interagency communication together so that
-            incident information can reach the right response teams.
+        <div className="site-container flex flex-wrap items-center gap-x-8 gap-y-2 py-4">
+          <p className="mr-2 text-[11px] font-bold tracking-wider text-muted">
+            IN THIS SECTION
           </p>
-        </SectionIntro>
-        <figure className="space-y-6">
+          {pageLinks.map((item) => (
+            <TextLink
+              key={item.href}
+              href={item.href}
+              className="py-3 text-xs text-navy"
+            >
+              {item.label}
+            </TextLink>
+          ))}
+        </div>
+      </nav>
+      <Section
+        id="overview"
+        className="grid items-center gap-10 lg:grid-cols-[1fr_1.2fr] lg:gap-16"
+      >
+        <div>
+          <SectionIntro
+            eyebrow="ABOUT LSCCC"
+            title="The connection between an emergency call and the help it needs."
+          >
+            <p className="max-w-xl text-base leading-8 text-muted">
+              Lagos State Command &amp; Control Centre serves as a central
+              coordination hub for emergency services across the state. It
+              brings call handling and interagency communication together so
+              that incident information can reach the right response teams.
+            </p>
+          </SectionIntro>
+          <div className="mt-8 border-l-2 border-gold pl-5">
+            <p className="text-lg font-bold text-navy">
+              One centre. A coordinated network.
+            </p>
+            <p className="mt-3 text-sm leading-7 text-muted">
+              Emergency management, fire and rescue, ambulance, traffic and
+              public safety agencies working together for Lagos.
+            </p>
+          </div>
+        </div>
+        <figure>
           <Photograph
             asset={assets.operations}
-            className="aspect-[984/380] min-h-48"
-            sizes="(max-width: 1023px) 92vw, (max-width: 1440px) 68vw, 984px"
-            nodeId="18:77"
+            className="aspect-[5/4]"
+            sizes="(max-width: 1023px) 92vw, 48vw"
             preload
           />
-          <figcaption className="text-xs font-medium leading-[18px] text-muted">
+          <figcaption className="mt-4 border-l-2 border-gold pl-4 text-xs leading-6 text-muted">
             Inside the centre: emergency call agents at work.
           </figcaption>
         </figure>
-      </div>
-    </Section>
+      </Section>
+    </>
   );
 }
 
 export function AboutMandate() {
   return (
-    <Section id="mandate" tone="paper" nodeId="18:89" className="space-y-6">
+    <Section id="mandate" tone="paper" className="space-y-8 lg:space-y-10">
       <SectionIntro
         eyebrow="OUR MANDATE"
-        title="Mandate and responsibilities"
+        title="Communication. Coordination. Public awareness."
       />
-      <div className="grid items-start gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-5 md:grid-cols-3">
         {mandates.map((item, index) => (
           <InfoCard
             key={item.title}
@@ -90,24 +103,29 @@ export function AboutOperations() {
   return (
     <Section
       id="how-we-work"
-      nodeId="18:108"
-      className="grid items-start gap-8 lg:grid-cols-[560fr_688fr] xl:gap-16"
+      className="grid items-start gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20"
     >
       <SectionIntro
         eyebrow="HOW WE WORK"
-        title="Operational coordination"
-        gap={16}
+        title="From the first call to coordinated communication."
       >
-        <p className="text-[17px] leading-[26px] text-muted">
+        <p className="max-w-lg text-base leading-8 text-muted">
           LSCCC coordinates the communication. Specialist response agencies
           provide the appropriate assistance on the ground.
         </p>
       </SectionIntro>
-      <ol className="flex flex-col gap-5 bg-paper p-8 text-[19px] font-bold leading-[29px]">
+      <ol className="border-t border-border">
         {operatingStages.map((stage, index) => (
-          <li key={stage} className="flex gap-3">
-            <span>{String(index + 1).padStart(2, "0")}</span>
-            <span>{stage}</span>
+          <li
+            key={stage}
+            className="flex items-center gap-6 border-b border-border py-6"
+          >
+            <span className="flex size-11 shrink-0 items-center justify-center border border-border bg-paper text-sm font-bold tabular-nums text-blue">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <h3 className="text-base font-bold leading-7 text-navy sm:text-lg">
+              {stage}
+            </h3>
           </li>
         ))}
       </ol>
@@ -117,81 +135,67 @@ export function AboutOperations() {
 
 export function AboutPartners() {
   return (
-    <Section id="partners" tone="paper" nodeId="18:119" className="space-y-6">
+    <Section id="partners" tone="paper" className="space-y-8 lg:space-y-10">
       <SectionIntro
-        eyebrow="A COORDINATED RESPONSE NETWORK"
-        title="Partner response agencies"
+        eyebrow="OUR RESPONSE NETWORK"
+        title="Specialist agencies. A shared commitment to Lagos."
       >
-        <p className="text-[15px] leading-[22px] text-muted">
+        <p className="max-w-2xl text-base leading-8 text-muted">
           The centre coordinates with agencies across emergency management,
           healthcare, traffic and public safety.
         </p>
       </SectionIntro>
-      <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        {responsePartners.map((partner) => (
-          <div key={partner.name} className="space-y-3 bg-white p-5">
-            <dt className="text-base font-bold leading-6 text-navy">
-              {partner.name}
-            </dt>
-            <dd className="text-xs leading-[17.4px] text-muted xl:min-h-[38px]">
-              {partner.role}
-            </dd>
-          </div>
-        ))}
-      </dl>
+      <AgencyGrid />
     </Section>
   );
 }
 
 export function AboutManagement() {
   return (
-    <section className="bg-paper" data-node-id="35:727">
-      <div className="editorial-container grid gap-10 py-10 lg:grid-cols-[460fr_844fr] xl:py-12">
-        <figure className="space-y-4">
-          <Photograph
-            asset={assets.frscEngagement}
-            className="aspect-[460/280]"
-            sizes="(max-width: 1023px) 92vw, (max-width: 1440px) 32vw, 460px"
-            nodeId="35:730"
-          />
-          <figcaption className="text-[13px] leading-[18.85px] text-muted xl:min-h-16">
-            LSCCC General Manager Femi Kennedy Giwa with the FRSC Lagos Sector
-            Commander during their February 2026 engagement.
-          </figcaption>
-        </figure>
-        <div className="flex flex-col gap-4">
-          <SectionIntro
-            eyebrow="MANAGEMENT & DEVELOPMENT"
-            title="Mr. Femi Kennedy Giwa"
-            titleClassName="text-[27px] leading-[39.15px]"
-            gap={16}
-          >
-            <p className="text-[15px] font-semibold leading-[22px] text-navy">
-              General Manager, Lagos State Command &amp; Control Centre
-            </p>
-            <p className="text-body text-muted xl:min-h-[76px]">
-              The General Manager represents the centre in institutional
-              engagements focused on emergency coordination, road safety
-              partnerships and the systems supporting interagency response.
-            </p>
-          </SectionIntro>
-          <div className="h-px bg-border" />
-          <h3 className="text-lg font-bold leading-[27px] text-navy">
-            Institutional milestones
-          </h3>
-          <dl className="flex flex-col gap-3">
-            {milestones.map((item) => (
-              <div
-                key={item.year}
-                className="grid grid-cols-[64px_1fr] gap-4 text-sm leading-[21px]"
-              >
-                <dt className="font-bold text-navy">{item.year}</dt>
-                <dd className="text-muted">{item.description}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
+    <Section
+      id="management"
+      className="grid items-start gap-10 lg:grid-cols-[1fr_1.2fr] lg:gap-16"
+    >
+      <figure>
+        <Photograph
+          asset={assets.frscEngagement}
+          className="aspect-[4/3]"
+          sizes="(max-width: 1023px) 92vw, 42vw"
+        />
+        <figcaption className="mt-4 border-l-2 border-gold pl-4 text-xs leading-6 text-muted">
+          LSCCC General Manager Femi Kennedy Giwa with the FRSC Lagos Sector
+          Commander during their February 2026 engagement.
+        </figcaption>
+      </figure>
+      <div>
+        <SectionIntro
+          eyebrow="MANAGEMENT & DEVELOPMENT"
+          title="Mr. Femi Kennedy Giwa"
+        >
+          <p className="text-sm font-semibold leading-7 text-blue">
+            General Manager, Lagos State Command &amp; Control Centre
+          </p>
+          <p className="text-base leading-8 text-muted">
+            The General Manager represents the centre in institutional
+            engagements focused on emergency coordination, road safety
+            partnerships and the systems supporting interagency response.
+          </p>
+        </SectionIntro>
+        <h3 className="mb-5 mt-8 text-lg font-bold text-navy">
+          Institutional milestones
+        </h3>
+        <dl className="border-t border-border">
+          {milestones.map((item) => (
+            <div
+              key={item.year}
+              className="grid grid-cols-[4rem_1fr] gap-5 border-b border-border py-4 text-sm leading-7"
+            >
+              <dt className="font-bold tabular-nums text-blue">{item.year}</dt>
+              <dd className="text-muted">{item.description}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
-    </section>
+    </Section>
   );
 }

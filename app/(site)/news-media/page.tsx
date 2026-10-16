@@ -12,6 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function NewsMediaPage() {
   return (
     <InteriorPage
+      image="lermsEngagement"
       cmsPath="/news-media"
       title="News & Media"
       description="Updates on emergency coordination, partnerships and the work of the centre."

@@ -5,29 +5,32 @@ import { destinations } from "@/lib/navigation";
 export function NewsPublicInformation() {
   return (
     <Section
+      tone="paper"
       nodeId="20:251"
       className="grid items-start gap-6 lg:grid-cols-[680fr_608fr]"
     >
       <SectionIntro
         eyebrow="PUBLIC INFORMATION"
         title={"Looking for information\nabout the centre?"}
-        titleClassName="text-[28px] leading-[1.5] sm:text-[32px]"
+        titleClassName="text-[clamp(1.65rem,2.6vw,2.25rem)] leading-[1.3]"
       >
         <p className="text-base leading-6 text-muted">
           Use the centre overview for our mandate and response network. For
           media or partnership enquiries, visit Contact &amp; Enquiries.
         </p>
       </SectionIntro>
-      <LinkPanel
-        links={[
-          { label: "About the Centre", href: destinations.about },
-          {
-            label: "Media & partnership enquiries",
-            href: `${destinations.contact}?topic=media`,
-          },
-          { label: "Safety resources", href: destinations.safety },
-        ]}
-      />
+      <div className="[&>nav]:bg-white">
+        <LinkPanel
+          links={[
+            { label: "About the Centre", href: destinations.about },
+            {
+              label: "Media & partnership enquiries",
+              href: `${destinations.contact}?topic=media`,
+            },
+            { label: "Safety resources", href: destinations.safety },
+          ]}
+        />
+      </div>
     </Section>
   );
 }

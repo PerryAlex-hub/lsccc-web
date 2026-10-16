@@ -1,3 +1,8 @@
+// Public contact information only. Email delivery is configured separately.
+export const publicContact = {
+  email: "lagcommandandcontrolcentre@gmail.com",
+} as const;
+
 export const enquiryRoutes = [
   {
     title: "General enquiries",

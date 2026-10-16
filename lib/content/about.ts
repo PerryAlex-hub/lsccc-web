@@ -23,14 +23,6 @@ export const operatingStages = [
   "Support coordinated communication",
 ] as const;
 
-export const responsePartners = [
-  { name: "LASEMA", role: "Emergency management" },
-  { name: "FIRE & RESCUE", role: "Fire and rescue services" },
-  { name: "LASAMBUS", role: "Ambulance services" },
-  { name: "LASTMA", role: "Traffic management" },
-  { name: "RRS", role: "Rapid response squad" },
-] as const;
-
 export const milestones = [
   { year: "2010", description: "Establishment of the centre" },
   {

@@ -72,7 +72,7 @@ export function EnquiryForm() {
       <SectionIntro
         eyebrow="GENERAL ENQUIRIES"
         title="How can we help?"
-        titleClassName="text-[30px] leading-[1.5] sm:text-[34px]"
+        titleClassName="text-[clamp(1.65rem,2.6vw,2.25rem)] leading-[1.3]"
       >
         <p className="text-base leading-6 text-muted">
           Choose a topic and send your message to the centre.

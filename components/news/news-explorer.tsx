@@ -92,7 +92,7 @@ export function NewsExplorer({
       </div>
       {featured && <FeaturedNews article={featured} />}
       <section
-        className="site-container section-space"
+        className="site-container py-14 md:py-20"
         aria-labelledby="latest-news-heading"
       >
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4 border-b border-border pb-5">
@@ -100,7 +100,7 @@ export function NewsExplorer({
             id="latest-news-heading"
             ref={heading}
             tabIndex={-1}
-            className="text-section font-bold text-navy"
+            className="text-[clamp(1.65rem,2.6vw,2.25rem)] font-bold tracking-tight text-navy"
           >
             {filtered ? "Search results" : "Latest news"}
           </h2>

@@ -7,21 +7,23 @@ export function CallingIntroduction() {
   return (
     <Section
       nodeId="21:378"
-      className="grid items-start gap-8 lg:grid-cols-[896fr_368fr] xl:gap-12"
+      className="grid items-center gap-10 lg:grid-cols-[1.4fr_1fr] lg:gap-16"
     >
       <SectionIntro
         eyebrow="EMERGENCY REPORTING GUIDE"
         title={"Start with where you are.\nThen explain what happened."}
-        titleClassName="text-[28px] leading-[1.5] sm:text-[34px]"
+        titleClassName="text-[clamp(1.65rem,2.6vw,2.25rem)] leading-[1.3]"
       >
-        <p className="text-lg leading-[27px] text-muted">
+        <p className="text-base leading-8 text-muted">
           When reporting an emergency, give the call agent clear information.
           Answer their questions and follow their guidance.
         </p>
       </SectionIntro>
-      <aside className="flex flex-col gap-4 bg-gold p-7 text-navy">
-        <h2 className="text-eyebrow font-bold">LAGOS EMERGENCY LINES</h2>
-        <p className="text-[38px] font-extrabold leading-[1.5] sm:text-[44px]">
+      <aside className="flex flex-col gap-4 border-l-2 border-gold bg-navy p-7 text-white sm:p-9">
+        <h2 className="text-xs font-bold tracking-wider text-gold">
+          LAGOS EMERGENCY LINES
+        </h2>
+        <p className="text-4xl font-bold leading-[1.5] tabular-nums sm:text-5xl">
           <a href="tel:112" className="hover:underline">
             112
           </a>{" "}
@@ -30,7 +32,7 @@ export function CallingIntroduction() {
             767
           </a>
         </p>
-        <p className="text-base leading-6">
+        <p className="text-sm leading-7 text-white/80">
           Call for emergencies requiring immediate assistance.
         </p>
       </aside>
@@ -40,23 +42,23 @@ export function CallingIntroduction() {
 
 export function CallingChecklist() {
   return (
-    <Section tone="paper" nodeId="21:388" className="space-y-6">
+    <Section tone="paper" nodeId="21:388" className="space-y-8 lg:space-y-10">
       <SectionIntro
         eyebrow="HAVE THESE DETAILS READY"
         title="Four things to tell the call agent."
-        titleClassName="text-[28px] leading-[1.5] sm:text-[32px]"
+        titleClassName="text-[clamp(1.65rem,2.6vw,2.25rem)] leading-[1.3]"
       />
-      <ol className="space-y-6">
+      <ol className="divide-y divide-border border border-border bg-white">
         {callingDetails.map((detail, index) => (
           <li
             key={detail.title}
-            className="grid items-start gap-7 bg-white p-7 sm:grid-cols-[64px_minmax(0,1fr)] xl:grid-cols-[76px_minmax(0,700fr)_minmax(0,396fr)] xl:pr-14"
+            className="grid items-start gap-5 p-6 sm:grid-cols-[48px_minmax(0,1fr)] sm:p-8 lg:grid-cols-[48px_minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-8"
           >
-            <span className="text-[32px] font-extrabold leading-[46px] text-navy">
+            <span className="text-3xl font-semibold leading-10 tabular-nums text-blue">
               {String(index + 1).padStart(2, "0")}
             </span>
             <div className="space-y-4">
-              <h3 className="text-[23px] font-bold leading-[35px]">
+              <h3 className="text-xl font-bold leading-8 text-navy">
                 {detail.title}
               </h3>
               <p
@@ -65,7 +67,7 @@ export function CallingChecklist() {
                 {detail.description}
               </p>
             </div>
-            <p className="bg-paper p-5 text-[13px] font-medium leading-[19px] text-navy sm:col-start-2 xl:col-start-auto">
+            <p className="border-l-2 border-gold bg-paper p-5 text-sm font-medium leading-7 text-navy sm:col-start-2 lg:col-start-auto">
               {detail.prompt}
             </p>
           </li>
@@ -82,11 +84,11 @@ export function CallingAdvice() {
         <SectionIntro
           eyebrow="DURING THE CALL"
           title={"Listen. Answer.\nFollow the agent’s guidance."}
-          titleClassName="text-[26px] leading-[1.5] sm:text-[29px]"
+          titleClassName="text-[clamp(1.65rem,2.6vw,2.25rem)] leading-[1.3]"
           dark
           gap={20}
         >
-          <p className="text-[17px] leading-[26px] xl:min-h-[77px]">
+          <p className="text-[17px] leading-[26px]">
             The call agent may ask questions to clarify the location and
             incident. Keep your responses clear and let them guide the
             conversation.
@@ -97,10 +99,10 @@ export function CallingAdvice() {
         <SectionIntro
           eyebrow="KEEP THE LINES AVAILABLE"
           title={"Emergency lines are\nfor real emergencies."}
-          titleClassName="text-[26px] leading-[1.5] sm:text-[29px]"
+          titleClassName="text-[clamp(1.65rem,2.6vw,2.25rem)] leading-[1.3]"
           gap={20}
         >
-          <p className="text-[17px] leading-[26px] text-muted">
+          <p className="text-base leading-8 text-muted">
             Avoid prank calls. For general government feedback or a
             non-emergency enquiry, use the Contact &amp; Enquiries page.
           </p>

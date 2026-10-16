@@ -1,16 +1,20 @@
 import { Section, SectionIntro, InfoCard } from "@/components/ui/section";
-import { ActionLink, TextLink } from "@/components/ui/text-link";
+import { ActionLink } from "@/components/ui/text-link";
 import { enquiryRoutes } from "@/lib/content/contact";
 import { destinations } from "@/lib/navigation";
 import { EnquiryForm } from "./enquiry-form";
+import { ContactDetails } from "./contact-details";
 
 export function EmergencyPriority() {
   return (
-    <aside className="bg-gold text-navy" data-node-id="20:314">
-      <div className="site-container flex flex-col items-start gap-6 py-8 lg:flex-row lg:items-center">
+    <aside
+      className="border-b border-gold/30 bg-gold/10 text-navy"
+      data-node-id="20:314"
+    >
+      <div className="site-container flex flex-col items-start gap-6 py-6 lg:flex-row lg:items-center">
         <div className="flex-1 space-y-3">
           <h2 className="text-eyebrow font-bold">NEED EMERGENCY ASSISTANCE?</h2>
-          <p className="text-[24px] font-bold leading-9">
+          <p className="text-xl font-bold leading-8">
             Call{" "}
             <a href="tel:112" className="hover:underline">
               112
@@ -43,60 +47,10 @@ export function ContactEnquiries() {
   return (
     <Section
       nodeId="20:322"
-      className="grid items-start gap-10 lg:grid-cols-[800fr_464fr] xl:gap-12"
+      className="grid items-start gap-10 lg:grid-cols-[1fr_1.35fr] lg:gap-16"
     >
+      <ContactDetails />
       <EnquiryForm />
-      <aside className="flex flex-col gap-6 bg-paper p-7">
-        <h2 className="text-eyebrow font-bold text-navy">
-          OTHER WAYS TO FIND HELP
-        </h2>
-        <div className="space-y-4 border-b border-border pb-6">
-          <h3 className="text-[22px] font-bold leading-[33px]">
-            Emergency assistance
-          </h3>
-          <p className="text-[38px] font-extrabold leading-[57px] text-navy">
-            <a href="tel:112" className="hover:underline">
-              112
-            </a>{" "}
-            /{" "}
-            <a href="tel:767" className="hover:underline">
-              767
-            </a>
-          </p>
-          <p className="text-[15px] leading-[23px] text-muted">
-            For emergencies requiring immediate assistance.
-          </p>
-        </div>
-        <div className="space-y-4 border-b border-border pb-6">
-          <h3 className="text-xl font-bold leading-[30px]">
-            Government feedback
-          </h3>
-          <p className="text-[15px] leading-[23px] text-muted">
-            For non-emergency feedback about Lagos State services, use Citizens
-            Gate.
-          </p>
-          <ActionLink
-            href={destinations.citizensGate}
-            className="w-full bg-navy text-white sm:max-w-[320px]"
-          >
-            Open Citizens Gate <span aria-hidden="true">↗</span>
-          </ActionLink>
-        </div>
-        <div className="space-y-4">
-          <h3 className="text-xl font-bold leading-[30px]">
-            Visit the state portal
-          </h3>
-          <p className="text-[15px] leading-[23px] text-muted">
-            Find ministries, agencies and public services at lagosstate.gov.ng.
-          </p>
-          <TextLink
-            href={destinations.governmentServices}
-            className="text-sm text-navy"
-          >
-            Lagos State services <span aria-hidden="true">↗</span>
-          </TextLink>
-        </div>
-      </aside>
     </Section>
   );
 }
@@ -107,7 +61,7 @@ export function ContactRoutes() {
       <SectionIntro
         eyebrow="BEFORE YOU SEND"
         title="Choose the right route for your message."
-        titleClassName="text-[26px] leading-[1.5] sm:text-[30px]"
+        titleClassName="text-[clamp(1.65rem,2.6vw,2.25rem)] leading-[1.3]"
       />
       <div className="grid items-start gap-6 md:grid-cols-2 xl:grid-cols-3">
         {enquiryRoutes.map((route) => (
