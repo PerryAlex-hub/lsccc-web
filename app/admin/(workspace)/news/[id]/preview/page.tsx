@@ -1,7 +1,12 @@
 import { Suspense } from "react";
 import { AdminArticlePreviewPage } from "@/components/admin/article-preview";
+import { AdminContentSkeleton } from "@/components/admin/skeleton";
 
 export const metadata = { title: "Article preview" };
+
+// Article preview loads client-side through TanStack Query; opt out of
+// instant-navigation validation rather than leave it unvalidated and silently dropped.
+export const instant = false;
 
 export default function ArticlePreviewPage({
   params,
@@ -11,9 +16,10 @@ export default function ArticlePreviewPage({
   return (
     <Suspense
       fallback={
-        <p role="status" className="text-sm text-muted">
-          Loading preview…
-        </p>
+        <div role="status">
+          <span className="sr-only">Loading preview…</span>
+          <AdminContentSkeleton />
+        </div>
       }
     >
       <Preview params={params} />

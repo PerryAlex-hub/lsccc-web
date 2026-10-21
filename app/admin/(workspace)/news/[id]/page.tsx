@@ -1,8 +1,13 @@
 import { Suspense } from "react";
 import { ArticleEditor } from "@/components/admin/article-editor";
+import { AdminContentSkeleton } from "@/components/admin/skeleton";
 import { getDatabase } from "@/lib/db/prisma";
 
 export const metadata = { title: "Edit article" };
+
+// Article editor loads client-side through TanStack Query; opt out of
+// instant-navigation validation rather than leave it unvalidated and silently dropped.
+export const instant = false;
 
 export async function generateStaticParams() {
   const articles = await getDatabase().newsArticle.findMany({
@@ -20,9 +25,10 @@ export default function EditArticlePage({
   return (
     <Suspense
       fallback={
-        <p role="status" className="text-sm text-muted">
-          Loading article editor…
-        </p>
+        <div role="status">
+          <span className="sr-only">Loading article editor…</span>
+          <AdminContentSkeleton />
+        </div>
       }
     >
       <Editor params={params} />

@@ -8,6 +8,7 @@ import {
 } from "@/lib/admin/queries/team";
 import { AdminButton, AdminField, AdminFeedback, AdminHeading } from "./ui";
 import { AdminDialog } from "./dialog";
+import { AdminListSkeleton } from "./skeleton";
 
 export function TeamManager() {
   const { data: team, isPending, isError, error, refetch, isFetching } =
@@ -162,7 +163,12 @@ export function TeamManager() {
           </AdminButton>
         </div>
       )}
-      {isPending && <p role="status">Loading staff…</p>}
+      {isPending && (
+        <div role="status">
+          <span className="sr-only">Loading staff…</span>
+          <AdminListSkeleton />
+        </div>
+      )}
       {isError && (
         <div
           className="rounded-lg border border-border bg-white p-8"

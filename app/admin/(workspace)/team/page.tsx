@@ -1,6 +1,7 @@
 import { TeamManager } from "@/components/admin/team-manager";
 import { Suspense } from "react";
 import { AdministratorAccess } from "@/components/admin/access";
+import { AdminContentSkeleton } from "@/components/admin/skeleton";
 
 export const metadata = { title: "Team & access" };
 
@@ -10,7 +11,14 @@ export const instant = false;
 
 export default function TeamPage() {
   return (
-    <Suspense fallback={<p role="status">Checking permissions…</p>}>
+    <Suspense
+      fallback={
+        <div role="status">
+          <span className="sr-only">Checking permissions…</span>
+          <AdminContentSkeleton />
+        </div>
+      }
+    >
       <AdministratorAccess>
         <TeamManager />
       </AdministratorAccess>

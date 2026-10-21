@@ -2,17 +2,16 @@
 
 import type { ReactNode } from "react";
 import { useAdminContent } from "@/lib/admin/queries/content";
+import { AdminContentSkeleton } from "./skeleton";
 
 export function AdminDataBoundary({ children }: { children: ReactNode }) {
   const { isPending, isError, error, refetch, isFetching } =
     useAdminContent();
   if (isPending) {
     return (
-      <div
-        className="rounded-lg border border-border bg-white p-8"
-        role="status"
-      >
-        <p>Loading website content…</p>
+      <div role="status">
+        <span className="sr-only">Loading website content…</span>
+        <AdminContentSkeleton />
       </div>
     );
   }
