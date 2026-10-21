@@ -22,6 +22,24 @@ export const navigation = [
   { label: "Contact", href: destinations.contact },
 ] as const;
 
+export const socialLinks = [
+  {
+    platform: "x",
+    label: "X (Twitter)",
+    href: "https://x.com/Lagoscommand_CC",
+  },
+  {
+    platform: "facebook",
+    label: "Facebook",
+    href: "https://www.facebook.com/p/Lagos-State-Command-Control-Centre-61574188144403/",
+  },
+  {
+    platform: "instagram",
+    label: "Instagram",
+    href: "https://www.instagram.com/lagosstatecommandcontrolcentre/",
+  },
+] as const;
+
 export const searchablePages = [
   {
     title: "About the centre",

@@ -1,8 +1,9 @@
 ﻿import { getSiteSettings } from "@/lib/cms/public";
 import Image from "next/image";
 import { assets } from "@/lib/assets";
-import { destinations } from "@/lib/navigation";
+import { destinations, socialLinks } from "@/lib/navigation";
 import { TextLink } from "@/components/ui/text-link";
+import { SocialIcon } from "@/components/ui/social-icons";
 import { publicContact } from "@/lib/content/contact";
 
 const groups = [
@@ -124,6 +125,26 @@ export async function SiteFooter() {
               >
                 Contact the centre <span aria-hidden="true">→</span>
               </TextLink>
+            </div>
+            <div className="mt-5">
+              <h2 className="mb-3 text-xs font-bold uppercase leading-6 tracking-[0.1em] text-gold">
+                Follow us
+              </h2>
+              <ul className="flex items-center gap-3">
+                {socialLinks.map((social) => (
+                  <li key={social.href}>
+                    <a
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${social.label} (opens in a new tab)`}
+                      className="flex size-11 items-center justify-center rounded-full border border-white/25 text-white hover:border-gold hover:text-gold"
+                    >
+                      <SocialIcon platform={social.platform} />
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
