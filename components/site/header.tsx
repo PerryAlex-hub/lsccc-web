@@ -3,8 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { assets } from "@/lib/assets";
-import { destinations, navigation } from "@/lib/navigation";
+import { destinations, navigation, socialLinks } from "@/lib/navigation";
 import { mandates } from "@/lib/content/about";
+import { SocialIcon } from "@/components/ui/social-icons";
 import { SiteNavigation } from "./navigation";
 import { RotatingTagline } from "./rotating-tagline";
 
@@ -35,10 +36,23 @@ export async function SiteHeader() {
             LAGOS STATE GOVERNMENT <span className="mx-1">/</span> OFFICIAL
             AGENCY PORTAL
           </a>
-          <div className="hidden items-center gap-5 md:flex xl:w-[492px]">
-            <a href="#main-content" className="hover:underline">
-              Accessibility
-            </a>
+          <div className="hidden items-center gap-5 md:flex">
+            <ul className="flex items-center gap-3">
+              {socialLinks.map((social) => (
+                <li key={social.href}>
+                  <a
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${social.label} (opens in a new tab)`}
+                    className="flex size-6 items-center justify-center text-white/75 hover:text-gold"
+                  >
+                    <SocialIcon platform={social.platform} className="size-[15px]" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <span aria-hidden="true" className="h-4 w-px bg-white/25" />
             <span>English</span>
             <Link href={destinations.contact} className="hover:underline">
               Contact us
