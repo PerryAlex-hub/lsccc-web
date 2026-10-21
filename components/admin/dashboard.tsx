@@ -5,9 +5,12 @@ import { useAdminState } from "@/lib/admin/queries/content";
 import { formatAdminDate } from "@/lib/admin/helpers";
 import { AdminHeading, AdminLink, StatusBadge } from "./ui";
 import { AdminIcon } from "./icons";
+import { useAdminUser } from "./user-context";
 
 export function AdminDashboard() {
   const state = useAdminState();
+  const { name } = useAdminUser();
+  const firstName = name.trim().split(/\s+/)[0];
   const drafts = state.articles.filter((article) => article.status === "Draft");
   const recent = [...state.articles]
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
@@ -30,7 +33,10 @@ export function AdminDashboard() {
   return (
     <>
       <AdminHeading
-        title="Your publishing workspace"
+        eyebrow="YOUR PUBLISHING WORKSPACE"
+        title={
+          firstName ? `Welcome, ${firstName}` : "Welcome to your workspace"
+        }
         description="Manage the stories, information and resources that keep Lagos informed."
         actions={
           <AdminLink href="/admin/news/new">

@@ -135,6 +135,10 @@
     animation: gentle-enter 180ms var(--ease-out);
   }
 
+  .tagline-fade {
+    animation: gentle-enter 420ms var(--ease-out);
+  }
+
   .motion-control {
     transition:
       transform 180ms var(--ease-out),

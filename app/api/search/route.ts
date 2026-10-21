@@ -1,26 +1,71 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { getDatabase } from "@/lib/db/prisma";
 import { getPublishedNews } from "@/lib/news/repository";
+import { destinations, searchablePages } from "@/lib/navigation";
 
-async function getSearchIndex() {
+export type SearchResultType = "page" | "news" | "notice" | "resource";
+
+export type SearchResult = {
+  href: string;
+  title: string;
+  description: string;
+  type: SearchResultType;
+};
+
+async function getSearchIndex(): Promise<SearchResult[]> {
   "use cache";
   cacheLife("hours");
   cacheTag("public-content");
-  const pages = await getDatabase().websitePage.findMany({
-    where: { status: "PUBLISHED" },
-    select: { path: true, title: true, introduction: true },
-  });
-  const articles = await getPublishedNews();
-  return [
-    ...pages.map((page) => ({
+  const db = getDatabase();
+  const [dbPages, articles, notices, resources] = await Promise.all([
+    db.websitePage.findMany({
+      where: { status: "PUBLISHED" },
+      select: { path: true, title: true, introduction: true },
+    }),
+    getPublishedNews(),
+    db.publicNotice.findMany({
+      where: { status: "PUBLISHED" },
+      select: { title: true, summary: true },
+    }),
+    db.safetyResource.findMany({
+      where: { status: "PUBLISHED" },
+      select: { title: true, summary: true },
+      orderBy: [{ position: "asc" }, { createdAt: "asc" }],
+    }),
+  ]);
+
+  const dbPageHrefs = new Set(dbPages.map((page) => page.path));
+  const pages: SearchResult[] = [
+    ...dbPages.map((page) => ({
       href: page.path,
       title: page.title,
       description: page.introduction,
+      type: "page" as const,
     })),
+    ...searchablePages
+      .filter((page) => !dbPageHrefs.has(page.href))
+      .map((page) => ({ ...page, type: "page" as const })),
+  ];
+
+  return [
+    ...pages,
     ...articles.map((article) => ({
-      href: `/news-media/${article.slug}`,
+      href: `${destinations.news}/${article.slug}`,
       title: article.title,
       description: article.description,
+      type: "news" as const,
+    })),
+    ...notices.map((notice) => ({
+      href: `${destinations.home}#emergency`,
+      title: notice.title,
+      description: notice.summary,
+      type: "notice" as const,
+    })),
+    ...resources.map((resource) => ({
+      href: destinations.safety,
+      title: resource.title,
+      description: resource.summary,
+      type: "resource" as const,
     })),
   ];
 }

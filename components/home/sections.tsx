@@ -202,6 +202,14 @@ export async function HomeNews() {
 
 export async function HomeHero() {
   const page = await getWebsitePage("/");
+  const introduction = page?.introduction ?? "";
+  const sentenceEnd = introduction.search(/[.!?]\s+/);
+  const opening =
+    sentenceEnd >= 0
+      ? introduction.slice(0, sentenceEnd + 1).trim()
+      : introduction;
+  const closing =
+    sentenceEnd >= 0 ? introduction.slice(sentenceEnd + 1).trim() : "";
   return (
     <section
       aria-labelledby="hero-heading"
@@ -226,9 +234,17 @@ export async function HomeHero() {
           </p>
           <h1
             id="hero-heading"
-            className="text-[34px] font-bold leading-[1.25] sm:text-[42px] xl:min-h-[184px] xl:text-hero"
+            className="max-w-full text-[clamp(1.375rem,calc(0.875rem_+_2.6vw),3rem)] font-bold leading-[1.25] tracking-[-0.015em] sm:leading-[1.18] sm:text-balance [overflow-wrap:anywhere]"
           >
-            {page?.introduction}
+            <span className="block text-balance sm:inline">{opening}</span>
+            {closing && (
+              <>
+                <span className="hidden sm:inline"> </span>
+                <span className="mt-2 block text-balance sm:mt-0 sm:inline">
+                  {closing}
+                </span>
+              </>
+            )}
           </h1>
           <p className="text-base leading-6 sm:text-[19px] xl:min-h-[58px]">
             Connecting emergency calls with the agencies that respond.

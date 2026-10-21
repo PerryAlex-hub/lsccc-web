@@ -9,6 +9,7 @@ import { AdminNavigation, AdminNavigationLinks } from "./navigation";
 import { AdminDataBoundary } from "./data-boundary";
 import { StaffControls } from "./staff-controls";
 import { AdminToastRegion } from "./toast";
+import { AdminUserProvider } from "./user-context";
 
 export function AdminShell({
   children,
@@ -172,7 +173,9 @@ export function AdminShell({
             tabIndex={-1}
             className="mx-auto min-w-0 max-w-[1440px] px-5 py-8 sm:px-8 lg:px-10 lg:py-10"
           >
-            <AdminDataBoundary>{children}</AdminDataBoundary>
+            <AdminUserProvider user={user}>
+              <AdminDataBoundary>{children}</AdminDataBoundary>
+            </AdminUserProvider>
           </main>
         </div>
       </div>

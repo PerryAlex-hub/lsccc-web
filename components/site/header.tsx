@@ -4,7 +4,9 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { assets } from "@/lib/assets";
 import { destinations, navigation } from "@/lib/navigation";
+import { mandates } from "@/lib/content/about";
 import { SiteNavigation } from "./navigation";
+import { RotatingTagline } from "./rotating-tagline";
 
 export async function SiteHeader() {
   const settings = await getSiteSettings();
@@ -44,64 +46,72 @@ export async function SiteHeader() {
           </div>
         </div>
       </div>
-      <div className="site-container flex flex-wrap items-center gap-5 py-6 xl:flex-nowrap xl:gap-6 xl:py-8">
+      <div className="site-container grid gap-3 py-4 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center xl:gap-8 xl:py-7">
         <Link
           href="/"
           aria-label="Lagos State Command & Control Centre home"
-          className="shrink-0"
+          className="grid min-w-0 grid-cols-[48px_minmax(0,1fr)_48px] items-center gap-3 sm:grid-cols-[64px_minmax(0,1fr)_64px] sm:gap-5 xl:grid-cols-[76px_minmax(0,1fr)_80px] xl:gap-6"
         >
           <Image
             src={assets.lagosCrest.image}
             alt={assets.lagosCrest.alt}
             width={76}
             height={76}
-            className="size-14 object-contain sm:size-[76px]"
+            className="size-12 object-contain sm:size-16 xl:size-[76px]"
           />
-        </Link>
-        <div className="min-w-0 flex-1 space-y-2 xl:space-y-4">
-          <p className="text-[11px] font-bold leading-[19px] text-navy sm:text-[13px]">
-            LAGOS STATE
-          </p>
-          <Link
-            href="/"
-            className="block text-[21px] font-extrabold leading-[1.3] text-ink sm:text-[30px] xl:leading-[44px]"
-          >
-            Command &amp; Control Centre
-          </Link>
-          <p className="hidden text-[13px] leading-[19px] text-muted sm:block">
-            {settings.description}
-          </p>
-        </div>
-        <div className="flex w-full items-center gap-4 border-t border-border pt-4 sm:ml-auto sm:w-auto sm:border-0 sm:pt-0 xl:gap-6">
+          <div className="min-w-0 space-y-1 xl:space-y-3">
+            <p className="text-[10px] font-bold leading-4 text-navy sm:text-xs xl:text-[13px]">
+              LAGOS STATE
+            </p>
+            <p className="text-[clamp(1rem,calc(0.5rem_+_2.6vw),1.875rem)] font-bold leading-[1.3] tracking-tight text-navy text-balance [overflow-wrap:anywhere]">
+              Command &amp; Control Centre
+            </p>
+            <p className="hidden text-[13px] leading-6 text-muted xl:block">
+              <RotatingTagline
+                className="min-h-12"
+                messages={[
+                  settings.description,
+                  ...mandates.map((mandate) => mandate.description),
+                ]}
+              />
+            </p>
+          </div>
           <Image
             src={assets.lscccEmblem.image}
             alt={assets.lscccEmblem.alt}
             width={80}
             height={80}
-            className="size-12 object-contain sm:size-16 xl:size-20"
+            className="size-12 rounded-full object-cover sm:size-16 xl:size-20"
           />
-          <div className="space-y-1 xl:w-[294px]">
-            <p className="text-[10px] font-bold leading-[16px] text-muted xl:text-[11px]">
-              24-HOUR EMERGENCY LINES
+        </Link>
+        <div className="flex min-w-0 items-center justify-between gap-4 border-t border-border pt-2 xl:gap-6 xl:border-0 xl:pt-0">
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold leading-5 text-navy xl:text-[11px]">
+              Emergency helplines
             </p>
-            <p className="text-[26px] font-extrabold leading-[43px] text-navy xl:text-[29px]">
-              <a
-                href="tel:112"
-                aria-label="Call emergency line 112"
-                className="hover:underline"
-              >
-                112
-              </a>
-              <span className="mx-3">/</span>
-              <a
-                href="tel:767"
-                aria-label="Call emergency line 767"
-                className="hover:underline"
-              >
-                767
-              </a>
+            <p className="text-[10px] leading-4 text-muted xl:text-xs">
+              Available 24 hours
             </p>
           </div>
+          <p className="flex shrink-0 items-center gap-2 text-[22px] font-bold leading-none tabular-nums text-navy xl:text-[28px]">
+            <a
+              href="tel:112"
+              aria-label="Call emergency line 112"
+              className="inline-flex min-h-11 items-center hover:underline"
+            >
+              112
+            </a>
+            <span aria-hidden="true" className="font-normal text-muted">
+              /
+            </span>
+            <a
+              href="tel:767"
+              aria-label="Call emergency line 767"
+              className="inline-flex min-h-11 items-center hover:underline"
+            >
+              767
+            </a>
+          </p>
         </div>
       </div>
       <Suspense fallback={<NavigationFallback />}>
