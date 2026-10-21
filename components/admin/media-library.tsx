@@ -1,5 +1,8 @@
 "use client";
 
+import { usePagination } from "@/lib/admin/use-pagination";
+import { AdminPagination } from "./pagination";
+
 import Image from "next/image";
 import { useRef, useState } from "react";
 import {
@@ -26,6 +29,8 @@ export function AdminMediaLibrary() {
   const images = state.media.filter((image) =>
     matchesQuery(query, image.name, image.alt),
   );
+
+  const pagination = usePagination(images, query, 12);
 
   async function upload(file?: File) {
     if (!file) {
@@ -168,7 +173,7 @@ export function AdminMediaLibrary() {
         </div>
       )}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-        {images.map((image) => (
+        {pagination.items.map((image) => (
           <button
             key={image.id}
             type="button"
@@ -204,9 +209,9 @@ export function AdminMediaLibrary() {
           </p>
         </div>
       )}
-      <p role="status" className="mt-5 text-xs text-muted">
-        {images.length} {images.length === 1 ? "image" : "images"}
-      </p>
+      <div className="mt-5 rounded-lg border border-border bg-white">
+        <AdminPagination {...pagination} label="images" />
+      </div>
       <AdminDialog
         open={Boolean(selected)}
         onClose={() => {

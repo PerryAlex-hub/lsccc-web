@@ -5,7 +5,7 @@ import {
   authResponse,
 } from "@/lib/auth/http";
 import { AuthError } from "@/lib/auth/errors";
-import { getDatabase } from "@/lib/db/prisma";
+import { prisma } from "@/lib/db/prisma";
 import { uploadImageObject, deleteImageObject } from "@/lib/storage/neon";
 import { hasImageSignature, validateImageMetadata } from "@/lib/storage/images";
 import { readAdminContent } from "@/lib/cms/read";
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     }
     const image = await uploadImageObject(body, mimeType);
     objectKey = image.objectKey;
-    const asset = await getDatabase().$transaction(async (tx) => {
+    const asset = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT pg_advisory_xact_lock(48392017)`;
       const actor = await tx.user.findUnique({ where: { id: user.id } });
       if (!actor || actor.status !== "ACTIVE") {

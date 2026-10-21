@@ -1,5 +1,8 @@
 "use client";
 
+import { usePagination } from "@/lib/admin/use-pagination";
+import { AdminPagination } from "./pagination";
+
 import { useState } from "react";
 import { useAdminState, useContentCommand } from "@/lib/admin/queries/content";
 import { formatAdminDate } from "@/lib/admin/helpers";
@@ -51,6 +54,8 @@ export function AdminContentManager({
   const items = state[collection].filter((item) =>
     matchesQuery(query, item.title, item.summary),
   );
+
+  const pagination = usePagination(items, JSON.stringify([collection, query]));
 
   function add() {
     setEditing({
@@ -169,7 +174,7 @@ export function AdminContentManager({
         </div>
       )}
       <div className="grid gap-5 xl:grid-cols-2">
-        {items.map((item) => (
+        {pagination.items.map((item) => (
           <article
             key={item.id}
             className="flex flex-col rounded-lg border border-border bg-white p-5 sm:p-6"
@@ -218,6 +223,9 @@ export function AdminContentManager({
           <p className="mt-3 text-sm text-muted">Try another search term.</p>
         </div>
       )}
+      <div className="mt-5 rounded-lg border border-border bg-white">
+        <AdminPagination {...pagination} label={copy.title.toLowerCase()} />
+      </div>
       <AdminDialog
         open={Boolean(editing)}
         onClose={() => setEditing(null)}

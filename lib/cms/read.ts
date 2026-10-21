@@ -1,9 +1,8 @@
 import "server-only";
-import { getDatabase } from "@/lib/db/prisma";
+import { prisma as db } from "@/lib/db/prisma";
 import type { AdminState } from "@/lib/admin/types";
 
 export async function readAdminContent(): Promise<AdminState> {
-  const db = getDatabase();
   const [
     articles,
     media,

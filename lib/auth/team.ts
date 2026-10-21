@@ -1,5 +1,5 @@
 import "server-only";
-import { getDatabase } from "../db/prisma";
+import { prisma } from "../db/prisma";
 import { AuthError } from "./errors";
 import { normalizedEmail } from "./validation";
 import { createToken, hashToken } from "./crypto";
@@ -10,13 +10,12 @@ import { getEmailBrand } from "../email/brand";
 import { invitationEmail } from "../email/templates";
 
 export async function listTeam() {
-  const database = getDatabase();
   return {
-    users: await database.user.findMany({
+    users: await prisma.user.findMany({
       select: { id: true, name: true, email: true, role: true, status: true },
       orderBy: { createdAt: "asc" },
     }),
-    invitations: await database.invitation.findMany({
+    invitations: await prisma.invitation.findMany({
       where: { acceptedAt: null },
       select: {
         id: true,
@@ -42,7 +41,7 @@ export async function inviteStaff(
   await rateLimit("team-invite", actorId, 20, 60);
   const token = createToken();
   const setupUrl = authLink("/admin/accept-invitation", token);
-  await getDatabase().$transaction(async (tx) => {
+  await prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(48392017)`;
     const actor = await tx.user.findUnique({ where: { id: actorId } });
     if (actor?.role !== "ADMINISTRATOR" || actor.status !== "ACTIVE") {
@@ -106,7 +105,7 @@ export async function changeAccess(
   if (typeof input.id !== "string" || !/^[a-f0-9-]{36}$/.test(input.id)) {
     throw new AuthError(422, "Select a staff member.");
   }
-  await getDatabase().$transaction(async (tx) => {
+  await prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(48392017)`;
     const actor = await tx.user.findUnique({ where: { id: actorId } });
     if (actor?.role !== "ADMINISTRATOR" || actor.status !== "ACTIVE") {

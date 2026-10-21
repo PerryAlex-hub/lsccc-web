@@ -1,5 +1,5 @@
 import { cacheLife, cacheTag } from "next/cache";
-import { getDatabase } from "@/lib/db/prisma";
+import { prisma } from "@/lib/db/prisma";
 import { getPublishedNews } from "@/lib/news/repository";
 import { destinations, searchablePages } from "@/lib/navigation";
 
@@ -16,18 +16,17 @@ async function getSearchIndex(): Promise<SearchResult[]> {
   "use cache";
   cacheLife("hours");
   cacheTag("public-content");
-  const db = getDatabase();
   const [dbPages, articles, notices, resources] = await Promise.all([
-    db.websitePage.findMany({
+    prisma.websitePage.findMany({
       where: { status: "PUBLISHED" },
       select: { path: true, title: true, introduction: true },
     }),
     getPublishedNews(),
-    db.publicNotice.findMany({
+    prisma.publicNotice.findMany({
       where: { status: "PUBLISHED" },
       select: { title: true, summary: true },
     }),
-    db.safetyResource.findMany({
+    prisma.safetyResource.findMany({
       where: { status: "PUBLISHED" },
       select: { title: true, summary: true },
       orderBy: [{ position: "asc" }, { createdAt: "asc" }],

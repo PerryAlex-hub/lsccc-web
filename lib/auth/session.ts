@@ -1,7 +1,7 @@
 import "server-only";
 import { cookies } from "next/headers";
 import { connection } from "next/server";
-import { getDatabase } from "../db/prisma";
+import { prisma } from "../db/prisma";
 import { createToken, hashToken, isToken } from "./crypto";
 import { AuthError } from "./errors";
 import type { Prisma } from "@prisma/client";
@@ -24,7 +24,7 @@ export async function currentUser() {
   if (!isToken(token)) {
     return null;
   }
-  const session = await getDatabase().session.findUnique({
+  const session = await prisma.session.findUnique({
     where: { tokenHash: hashToken(token) },
     include: { user: true },
   });
@@ -56,7 +56,7 @@ export async function requireUser(administrator = false) {
 
 export async function startSession(
   userId: string,
-  database: Prisma.TransactionClient = getDatabase(),
+  database: Prisma.TransactionClient = prisma,
 ) {
   const token = createToken();
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
@@ -73,7 +73,7 @@ export async function endSession() {
   const store = await cookies();
   const token = store.get(sessionCookie)?.value;
   if (isToken(token)) {
-    await getDatabase().session.deleteMany({
+    await prisma.session.deleteMany({
       where: { tokenHash: hashToken(token) },
     });
   }

@@ -1,5 +1,8 @@
 "use client";
 
+import { usePagination } from "@/lib/admin/use-pagination";
+import { AdminPagination } from "./pagination";
+
 import { useState, type FormEvent } from "react";
 import {
   useAdminTeam,
@@ -11,8 +14,14 @@ import { AdminDialog } from "./dialog";
 import { AdminListSkeleton } from "./skeleton";
 
 export function TeamManager() {
-  const { data: team, isPending, isError, error, refetch, isFetching } =
-    useAdminTeam();
+  const {
+    data: team,
+    isPending,
+    isError,
+    error,
+    refetch,
+    isFetching,
+  } = useAdminTeam();
   const inviteMutation = useTeamMutation();
   const accessMutation = useTeamMutation();
   const [email, setEmail] = useState("");
@@ -48,7 +57,10 @@ export function TeamManager() {
   async function changeAccess(data: unknown) {
     setSetupUrl("");
     try {
-      const result = await accessMutation.mutateAsync({ data, method: "PATCH" });
+      const result = await accessMutation.mutateAsync({
+        data,
+        method: "PATCH",
+      });
       setFeedback({ message: result.message, error: false });
       setConfirm(null);
     } catch (error) {
@@ -79,6 +91,9 @@ export function TeamManager() {
       });
     }
   }
+
+  const staffPagination = usePagination(team?.users ?? []);
+  const invitationPagination = usePagination(team?.invitations ?? []);
 
   const busy = inviteMutation.isPending || accessMutation.isPending;
 
@@ -188,7 +203,7 @@ export function TeamManager() {
         </div>
       )}
       <div className="space-y-3">
-        {team?.users.map((member) => (
+        {staffPagination.items.map((member) => (
           <article
             key={member.id}
             className="flex flex-col justify-between gap-4 rounded-md border border-border bg-white p-5 sm:flex-row sm:items-center"
@@ -246,10 +261,15 @@ export function TeamManager() {
           </article>
         ))}
       </div>
+      {team && (
+        <div className="mt-4 rounded-lg border border-border bg-white">
+          <AdminPagination {...staffPagination} label="staff members" />
+        </div>
+      )}
       {!!team?.invitations.length && (
         <section className="mt-8 space-y-3">
           <h2 className="text-xl font-bold text-navy">Invitations</h2>
-          {team.invitations.map((invitation) => (
+          {invitationPagination.items.map((invitation) => (
             <article
               key={invitation.id}
               className="flex flex-col justify-between gap-4 rounded-md border border-border bg-white p-5 sm:flex-row sm:items-center"
@@ -292,6 +312,9 @@ export function TeamManager() {
               </div>
             </article>
           ))}
+          <div className="rounded-lg border border-border bg-white">
+            <AdminPagination {...invitationPagination} label="invitations" />
+          </div>
         </section>
       )}
       <AdminDialog

@@ -1,6 +1,6 @@
 import "server-only";
 import { Prisma } from "@prisma/client";
-import { getDatabase } from "@/lib/db/prisma";
+import { prisma } from "@/lib/db/prisma";
 import { AuthError } from "@/lib/auth/errors";
 import { createSlug } from "@/lib/admin/helpers";
 import { deleteImageObject } from "@/lib/storage/neon";
@@ -32,7 +32,7 @@ export async function writeContent(
     throw new AuthError(400, "Check the record.");
   }
   try {
-    await getDatabase().$transaction(
+    await prisma.$transaction(
       async (tx) => {
         // Serialize content changes, including media references and access changes.
         await tx.$executeRaw`SELECT pg_advisory_xact_lock(48392017)`;

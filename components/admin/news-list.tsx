@@ -1,5 +1,8 @@
 "use client";
 
+import { usePagination } from "@/lib/admin/use-pagination";
+import { AdminPagination } from "./pagination";
+
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -34,6 +37,11 @@ export function AdminNewsList() {
         matchesQuery(query, article.title, article.category, article.author),
     )
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+
+  const pagination = usePagination(
+    articles,
+    JSON.stringify([query, status, category]),
+  );
 
   async function remove() {
     if (!deleting) {
@@ -161,7 +169,7 @@ export function AdminNewsList() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {articles.map((article) => {
+                  {pagination.items.map((article) => {
                     const cover = state.media.find(
                       (image) => image.id === article.coverId,
                     );
@@ -210,7 +218,7 @@ export function AdminNewsList() {
               </table>
             </div>
             <div className="divide-y divide-border md:hidden">
-              {articles.map((article) => (
+              {pagination.items.map((article) => (
                 <article key={article.id} className="space-y-3 p-5">
                   <StatusBadge status={article.status} />
                   <h2 className="text-base font-bold leading-6 text-navy">
@@ -244,12 +252,7 @@ export function AdminNewsList() {
             </AdminButton>
           </div>
         )}
-        <div
-          className="border-t border-border px-5 py-4 text-xs text-muted"
-          role="status"
-        >
-          {articles.length} {articles.length === 1 ? "article" : "articles"}
-        </div>
+        <AdminPagination {...pagination} label="articles" />
       </div>
       {feedback.message && (
         <div className="mt-4">

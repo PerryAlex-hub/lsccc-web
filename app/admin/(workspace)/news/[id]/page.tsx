@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { ArticleEditor } from "@/components/admin/article-editor";
 import { AdminContentSkeleton } from "@/components/admin/skeleton";
-import { getDatabase } from "@/lib/db/prisma";
+import { prisma } from "@/lib/db/prisma";
 
 export const metadata = { title: "Edit article" };
 
@@ -10,7 +10,7 @@ export const metadata = { title: "Edit article" };
 export const instant = false;
 
 export async function generateStaticParams() {
-  const articles = await getDatabase().newsArticle.findMany({
+  const articles = await prisma.newsArticle.findMany({
     where: { deletedAt: null },
     select: { id: true },
   });

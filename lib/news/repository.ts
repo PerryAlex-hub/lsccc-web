@@ -1,13 +1,13 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { getDatabase } from "@/lib/db/prisma";
+import { prisma } from "@/lib/db/prisma";
 import type { NewsArticle } from "@/lib/content/news";
 
 export async function getPublishedNews(): Promise<NewsArticle[]> {
   "use cache";
   cacheLife("hours");
   cacheTag("public-content");
-  const articles = await getDatabase().newsArticle.findMany({
+  const articles = await prisma.newsArticle.findMany({
     where: { status: "PUBLISHED", deletedAt: null, cover: { status: "READY" } },
     include: { cover: true, category: true },
     orderBy: [{ featured: "desc" }, { publishedAt: "desc" }],

@@ -1,19 +1,19 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
-import { getDatabase } from "@/lib/db/prisma";
+import { prisma } from "@/lib/db/prisma";
 
 export async function getWebsitePage(path: string) {
   "use cache";
   cacheLife("hours");
   cacheTag("public-content");
-  return getDatabase().websitePage.findUnique({ where: { path } });
+  return prisma.websitePage.findUnique({ where: { path } });
 }
 
 export async function getSiteSettings() {
   "use cache";
   cacheLife("hours");
   cacheTag("public-content");
-  return getDatabase().siteSettings.findUniqueOrThrow({
+  return prisma.siteSettings.findUniqueOrThrow({
     where: { id: "site" },
   });
 }
@@ -22,7 +22,7 @@ export async function getPublicNotices() {
   "use cache";
   cacheLife("hours");
   cacheTag("public-content");
-  return getDatabase().publicNotice.findMany({
+  return prisma.publicNotice.findMany({
     where: { status: "PUBLISHED" },
     orderBy: { createdAt: "asc" },
   });
@@ -32,7 +32,7 @@ export async function getSafetyResources() {
   "use cache";
   cacheLife("hours");
   cacheTag("public-content");
-  const resources = await getDatabase().safetyResource.findMany({
+  const resources = await prisma.safetyResource.findMany({
     where: { status: "PUBLISHED" },
     orderBy: [{ position: "asc" }, { createdAt: "asc" }],
   });

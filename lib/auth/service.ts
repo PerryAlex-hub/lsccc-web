@@ -1,5 +1,5 @@
 import "server-only";
-import { getDatabase } from "../db/prisma";
+import { prisma } from "../db/prisma";
 import {
   hashPassword,
   verifyPassword,
@@ -28,14 +28,13 @@ export async function login(input: Record<string, unknown>) {
   }
   await rateLimit("login-global", "all", 300);
   await rateLimit("login-account", email, 10);
-  const user = await getDatabase().user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({ where: { email } });
   const matches = await verifyPassword(password, user?.passwordHash || "");
   if (!matches || !user || user.status !== "ACTIVE") {
     throw new AuthError(401, "The email or password is incorrect.");
   }
   // Recheck under the same user-row lock used by deactivation/password reset.
-  const database = getDatabase();
-  await database.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx) => {
     await tx.$queryRaw`SELECT "id" FROM "User" WHERE "id" = ${user.id}::uuid FOR UPDATE`;
     const current = await tx.user.findUnique({ where: { id: user.id } });
     if (
@@ -54,7 +53,7 @@ export async function invitationDetails(token: unknown) {
   if (!isToken(token)) {
     return { state: "invalid" };
   }
-  const invitation = await getDatabase().invitation.findUnique({
+  const invitation = await prisma.invitation.findUnique({
     where: { tokenHash: hashToken(token) },
   });
   if (!invitation || invitation.revokedAt) {
@@ -84,7 +83,7 @@ export async function acceptInvitation(input: Record<string, unknown>) {
   await rateLimit("invitation-accept", input.token, 5);
   const tokenHash = hashToken(input.token);
   const passwordHash = await hashPassword(input.password);
-  await getDatabase().$transaction(async (tx) => {
+  await prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(48392017)`;
     await tx.$queryRaw`SELECT "id" FROM "Invitation" WHERE "tokenHash" = ${tokenHash} FOR UPDATE`;
     const invitation = await tx.invitation.findUnique({ where: { tokenHash } });
@@ -142,11 +141,11 @@ export async function requestPasswordReset(input: Record<string, unknown>) {
       "Password recovery email is not configured yet. No email was sent.",
     );
   }
-  const user = await getDatabase().user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({ where: { email } });
   if (user?.status === "ACTIVE") {
     const token = createToken();
     const link = authLink("/admin/reset-password", token);
-    const record = await getDatabase().$transaction(async (tx) => {
+    const record = await prisma.$transaction(async (tx) => {
       await tx.passwordResetToken.updateMany({
         where: { userId: user.id, usedAt: null },
         data: { usedAt: new Date() },
@@ -165,7 +164,7 @@ export async function requestPasswordReset(input: Record<string, unknown>) {
         passwordResetEmail(getEmailBrand(), link, user.name),
       );
     } catch {
-      await getDatabase().passwordResetToken.update({
+      await prisma.passwordResetToken.update({
         where: { id: record.id },
         data: { usedAt: new Date() },
       });
@@ -181,7 +180,7 @@ export async function resetDetails(token: unknown) {
   if (!isToken(token)) {
     return { valid: false };
   }
-  const record = await getDatabase().passwordResetToken.findUnique({
+  const record = await prisma.passwordResetToken.findUnique({
     where: { tokenHash: hashToken(token) },
     include: { user: { select: { status: true } } },
   });
@@ -205,7 +204,7 @@ export async function resetPassword(input: Record<string, unknown>) {
   await rateLimit("reset-complete", input.token, 5);
   const tokenHash = hashToken(input.token);
   const passwordHash = await hashPassword(input.password);
-  await getDatabase().$transaction(async (tx) => {
+  await prisma.$transaction(async (tx) => {
     const record = await tx.passwordResetToken.findUnique({
       where: { tokenHash },
     });
