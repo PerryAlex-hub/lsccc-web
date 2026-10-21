@@ -3,19 +3,19 @@ import { agencies } from "@/lib/content/agencies";
 
 export function AgencyGrid() {
   return (
-    <div className="grid grid-cols-1 gap-px border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-px border border-border bg-border sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
       {agencies.map((agency) => (
         <article
           key={agency.abbreviation}
-          className="flex gap-5 bg-white p-6 sm:flex-col sm:p-8 xl:flex-row"
+          className="flex min-w-0 gap-4 bg-white p-5 sm:flex-col sm:p-6"
         >
-          <div className="flex h-24 w-24 shrink-0 items-center justify-center self-start bg-white">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center self-start bg-white">
             <Image
               src={agency.logo}
               alt={`${agency.abbreviation} emblem`}
-              width={96}
-              height={96}
-              className="h-24 w-24 object-contain"
+              width={80}
+              height={80}
+              className="h-20 w-20 object-contain"
             />
           </div>
           <div>

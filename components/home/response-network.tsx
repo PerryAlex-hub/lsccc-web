@@ -14,7 +14,7 @@ export function HomePartners() {
         id="partners-title"
         eyebrow="ONE COORDINATED RESPONSE"
         title="Working together for a safer Lagos"
-        description="LSCCC connects emergency calls with a network of specialist agencies, each bringing the expertise an incident requires."
+        description="LSCCC connects emergency communication with specialist response, safeguarding and public support organisations across Lagos State."
         href={destinations.partners}
         linkLabel="Our response network"
       />

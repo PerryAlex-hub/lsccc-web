@@ -3,14 +3,14 @@
 import Image from "next/image";
 import { useState } from "react";
 import { assets } from "@/lib/assets";
-import { updateAdminState, useAdminState } from "@/lib/admin/store";
+import { useAdminState, useContentCommand } from "@/lib/admin/queries/content";
 import type { AdminSettings } from "@/lib/admin/types";
 import { AdminButton, AdminFeedback, AdminField, AdminHeading } from "./ui";
 
 export function AdminSettingsPage() {
   const state = useAdminState();
   const [feedback, setFeedback] = useState({ message: "", error: false });
-  const [saving, setSaving] = useState(false);
+  const saveMutation = useContentCommand();
 
   async function save(settings: AdminSettings) {
     if (
@@ -35,13 +35,22 @@ export function AdminSettingsPage() {
       });
       return;
     }
-    setSaving(true);
-    const result = await updateAdminState(
-      (current) => ({ ...current, settings }),
-      "Updated website settings",
-    );
-    setSaving(false);
-    setFeedback({ message: result.message, error: !result.ok });
+    try {
+      const result = await saveMutation.mutateAsync({
+        collection: "settings",
+        operation: "save",
+        value: settings,
+      });
+      setFeedback({ message: result.message, error: false });
+    } catch (error) {
+      setFeedback({
+        message:
+          error instanceof Error
+            ? error.message
+            : "Could not save settings. Try again.",
+        error: true,
+      });
+    }
   }
 
   return (
@@ -56,7 +65,7 @@ export function AdminSettingsPage() {
           settings={state.settings}
           onSave={save}
           feedback={feedback}
-          saving={saving}
+          saving={saveMutation.isPending}
         />
         <div className="space-y-6">
           <section className="rounded-lg border border-border bg-white p-6">
@@ -155,7 +164,7 @@ function SettingsForm({
           }
         />
       </AdminField>
-      <AdminFeedback {...feedback} />
+      {feedback.message && <AdminFeedback {...feedback} />}
       <AdminButton type="submit" loading={saving} loadingLabel="Saving…">
         Save settings
       </AdminButton>

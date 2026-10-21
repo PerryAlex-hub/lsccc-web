@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useAdminState } from "@/lib/admin/store";
+import { useAdminState } from "@/lib/admin/queries/content";
 
 export function MediaPicker({ onSelect }: { onSelect: (id: string) => void }) {
   const state = useAdminState();

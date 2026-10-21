@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useAdminState } from "@/lib/admin/store";
+import { useAdminState } from "@/lib/admin/queries/content";
 import { formatAdminDate } from "@/lib/admin/helpers";
 import { AdminHeading, AdminLink, StatusBadge } from "./ui";
 import { AdminIcon } from "./icons";
@@ -137,7 +137,7 @@ export function AdminDashboard() {
         <h2 className="text-lg font-bold text-navy">Workspace activity</h2>
         {state.activity.length > 0 ? (
           <ul className="mt-4 divide-y divide-border">
-            {state.activity.slice(0, 5).map((item) => (
+            {state.activity.slice(0, 6).map((item) => (
               <li
                 key={item.id}
                 className="flex flex-wrap justify-between gap-2 py-3 text-sm"

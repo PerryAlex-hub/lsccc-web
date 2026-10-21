@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useAdminState } from "@/lib/admin/store";
+import { useAdminState } from "@/lib/admin/queries/content";
 import type { AdminArticle, AdminMedia } from "@/lib/admin/types";
 import { AdminHeading, AdminLink, StatusBadge } from "./ui";
 

@@ -45,7 +45,7 @@ export async function readAdminContent(): Promise<AdminState> {
         },
       },
       orderBy: { createdAt: "desc" },
-      take: 12,
+      take: 6,
     }),
   ]);
   return {

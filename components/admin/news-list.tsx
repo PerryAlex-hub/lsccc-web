@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { getAdminCategories } from "@/lib/admin/categories";
 import { formatAdminDate } from "@/lib/admin/helpers";
-import { updateAdminState, useAdminState } from "@/lib/admin/store";
+import { useAdminState, useContentCommand } from "@/lib/admin/queries/content";
 import type { AdminArticle } from "@/lib/admin/types";
 import { matchesQuery } from "@/lib/search";
 import {
@@ -25,7 +25,7 @@ export function AdminNewsList() {
   const [category, setCategory] = useState("All categories");
   const [deleting, setDeleting] = useState<AdminArticle | null>(null);
   const [feedback, setFeedback] = useState({ message: "", error: false });
-  const [deletingNow, setDeletingNow] = useState(false);
+  const deleteMutation = useContentCommand();
   const articles = [...state.articles]
     .filter(
       (article) =>
@@ -39,20 +39,23 @@ export function AdminNewsList() {
     if (!deleting) {
       return;
     }
-    setDeletingNow(true);
-    const result = await updateAdminState(
-      (current) => ({
-        ...current,
-        articles: current.articles.filter(
-          (article) => article.id !== deleting.id,
-        ),
-      }),
-      `Deleted article: ${deleting.title}`,
-    );
-    setDeletingNow(false);
-    setFeedback({ message: result.message, error: !result.ok });
-    if (result.ok) {
+    try {
+      const result = await deleteMutation.mutateAsync({
+        collection: "articles",
+        operation: "delete",
+        value: { id: deleting.id },
+        expectedUpdatedAt: deleting.updatedAt,
+      });
+      setFeedback({ message: result.message, error: false });
       setDeleting(null);
+    } catch (error) {
+      setFeedback({
+        message:
+          error instanceof Error
+            ? error.message
+            : "Could not delete this article. Try again.",
+        error: true,
+      });
     }
   }
 
@@ -248,9 +251,11 @@ export function AdminNewsList() {
           {articles.length} {articles.length === 1 ? "article" : "articles"}
         </div>
       </div>
-      <div className="mt-4">
-        <AdminFeedback {...feedback} />
-      </div>
+      {feedback.message && (
+        <div className="mt-4">
+          <AdminFeedback {...feedback} />
+        </div>
+      )}
       <AdminDialog
         open={Boolean(deleting)}
         onClose={() => setDeleting(null)}
@@ -267,7 +272,7 @@ export function AdminNewsList() {
           <AdminButton
             variant="danger"
             onClick={remove}
-            loading={deletingNow}
+            loading={deleteMutation.isPending}
             loadingLabel="Deleting…"
           >
             Delete article

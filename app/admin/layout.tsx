@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { AdminQueryProvider } from "@/lib/admin/query-provider";
 
 export const metadata: Metadata = {
   title: { default: "Administration", template: "%s | LSCCC Admin" },
@@ -7,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
-  return children;
+  return <AdminQueryProvider>{children}</AdminQueryProvider>;
 }

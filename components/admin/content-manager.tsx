@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { updateAdminState, useAdminState } from "@/lib/admin/store";
+import { useAdminState, useContentCommand } from "@/lib/admin/queries/content";
 import { formatAdminDate } from "@/lib/admin/helpers";
 import type { AdminContent, ContentCollection } from "@/lib/admin/types";
 import { matchesQuery } from "@/lib/search";
@@ -46,7 +46,8 @@ export function AdminContentManager({
   const [editing, setEditing] = useState<AdminContent | null>(null);
   const [deleting, setDeleting] = useState<AdminContent | null>(null);
   const [feedback, setFeedback] = useState({ message: "", error: false });
-  const [busy, setBusy] = useState<"save" | "delete" | null>(null);
+  const saveMutation = useContentCommand();
+  const deleteMutation = useContentCommand();
   const items = state[collection].filter((item) =>
     matchesQuery(query, item.title, item.summary),
   );
@@ -95,23 +96,23 @@ export function AdminContentManager({
       id: editing.id === "new" ? crypto.randomUUID() : editing.id,
       updatedAt: new Date().toISOString(),
     };
-    setBusy("save");
-    const result = await updateAdminState(
-      (current) => ({
-        ...current,
-        [collection]:
-          editing.id === "new"
-            ? [item, ...current[collection]]
-            : current[collection].map((existing) =>
-                existing.id === item.id ? item : existing,
-              ),
-      }),
-      `Saved ${copy.singular}: ${item.title}`,
-    );
-    setBusy(null);
-    setFeedback({ message: result.message, error: !result.ok });
-    if (result.ok) {
+    try {
+      const result = await saveMutation.mutateAsync({
+        collection,
+        operation: "save",
+        value: item,
+        expectedUpdatedAt: editing.id === "new" ? undefined : editing.updatedAt,
+      });
+      setFeedback({ message: result.message, error: false });
       setEditing(null);
+    } catch (error) {
+      setFeedback({
+        message:
+          error instanceof Error
+            ? error.message
+            : "Could not save changes. Try again.",
+        error: true,
+      });
     }
   }
 
@@ -119,20 +120,23 @@ export function AdminContentManager({
     if (!deleting) {
       return;
     }
-    setBusy("delete");
-    const result = await updateAdminState(
-      (current) => ({
-        ...current,
-        [collection]: current[collection].filter(
-          (item) => item.id !== deleting.id,
-        ),
-      }),
-      `Removed ${copy.singular}: ${deleting.title}`,
-    );
-    setBusy(null);
-    setFeedback({ message: result.message, error: !result.ok });
-    if (result.ok) {
+    try {
+      const result = await deleteMutation.mutateAsync({
+        collection,
+        operation: "delete",
+        value: { id: deleting.id },
+        expectedUpdatedAt: deleting.updatedAt,
+      });
+      setFeedback({ message: result.message, error: false });
       setDeleting(null);
+    } catch (error) {
+      setFeedback({
+        message:
+          error instanceof Error
+            ? error.message
+            : "Could not delete this item. Try again.",
+        error: true,
+      });
     }
   }
 
@@ -159,9 +163,11 @@ export function AdminContentManager({
           placeholder={`Search ${copy.title.toLowerCase()}…`}
         />
       </label>
-      <div className="mb-4">
-        <AdminFeedback {...feedback} />
-      </div>
+      {feedback.message && (
+        <div className="mb-4">
+          <AdminFeedback {...feedback} />
+        </div>
+      )}
       <div className="grid gap-5 xl:grid-cols-2">
         {items.map((item) => (
           <article
@@ -254,7 +260,14 @@ export function AdminContentManager({
             </AdminField>
             <AdminField
               label={
-                collection === "pages" ? "Page address" : "Destination link"
+                collection === "pages"
+                  ? "Page address (fixed)"
+                  : "Destination link (optional)"
+              }
+              hint={
+                collection === "pages"
+                  ? "This is an existing website page. Editing its content does not change its address or layout."
+                  : "Link to an existing website page or a complete https:// address. This link does not create a new page."
               }
             >
               <input
@@ -281,16 +294,16 @@ export function AdminContentManager({
                 <option>Published</option>
               </select>
             </AdminField>
-            <AdminFeedback {...feedback} />
+            {feedback.message && <AdminFeedback {...feedback} />}
             <div className="flex justify-end gap-3">
               <AdminButton variant="secondary" onClick={() => setEditing(null)}>
                 Cancel
               </AdminButton>
               <AdminButton
                 type="submit"
-                loading={busy === "save"}
+                loading={saveMutation.isPending}
                 loadingLabel="Saving…"
-                disabled={busy !== null}
+                disabled={saveMutation.isPending || deleteMutation.isPending}
               >
                 Save changes
               </AdminButton>
@@ -313,9 +326,9 @@ export function AdminContentManager({
           <AdminButton
             variant="danger"
             onClick={remove}
-            loading={busy === "delete"}
+            loading={deleteMutation.isPending}
             loadingLabel="Deleting…"
-            disabled={busy !== null}
+            disabled={saveMutation.isPending || deleteMutation.isPending}
           >
             Delete {copy.singular}
           </AdminButton>

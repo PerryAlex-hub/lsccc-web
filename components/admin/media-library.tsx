@@ -3,16 +3,15 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import {
-  replaceAdminState,
-  updateAdminState,
   useAdminState,
-} from "@/lib/admin/store";
+  useContentCommand,
+  useUploadMedia,
+} from "@/lib/admin/queries/content";
 import type { AdminMedia } from "@/lib/admin/types";
 import { matchesQuery } from "@/lib/search";
 import { AdminButton, AdminFeedback, AdminField, AdminHeading } from "./ui";
 import { AdminDialog } from "./dialog";
 import { AdminIcon } from "./icons";
-import { showAdminToast } from "./toast";
 
 export function AdminMediaLibrary() {
   const state = useAdminState();
@@ -20,9 +19,9 @@ export function AdminMediaLibrary() {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<AdminMedia | null>(null);
   const [confirmRemove, setConfirmRemove] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [removing, setRemoving] = useState(false);
+  const uploadMutation = useUploadMedia();
+  const saveMutation = useContentCommand();
+  const removeMutation = useContentCommand();
   const [feedback, setFeedback] = useState({ message: "", error: false });
   const images = state.media.filter((image) =>
     matchesQuery(query, image.name, image.alt),
@@ -42,35 +41,19 @@ export function AdminMediaLibrary() {
       });
       return;
     }
-    setUploading(true);
     try {
-      const response = await fetch("/api/admin/media", {
-        method: "POST",
-        headers: {
-          "Content-Type": file.type,
-          "x-filename": encodeURIComponent(file.name),
-        },
-        body: file,
-      });
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.message);
-      }
-      replaceAdminState(result.state);
+      const result = await uploadMutation.mutateAsync(file);
       setFeedback({ message: result.message, error: false });
-      showAdminToast({ message: result.message, tone: "success" });
       setSelected(
-        result.state.media.find(
-          (image: AdminMedia) => image.id === result.id,
-        ) ?? null,
+        result.state.media.find((image) => image.id === result.id) ?? null,
       );
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Upload failed. Try again.";
-      setFeedback({ message, error: true });
-      showAdminToast({ message, tone: "error" });
+      setFeedback({
+        message:
+          error instanceof Error ? error.message : "Upload failed. Try again.",
+        error: true,
+      });
     } finally {
-      setUploading(false);
       if (input.current) {
         input.current.value = "";
       }
@@ -88,20 +71,22 @@ export function AdminMediaLibrary() {
       });
       return;
     }
-    setSaving(true);
-    const result = await updateAdminState(
-      (current) => ({
-        ...current,
-        media: current.media.map((image) =>
-          image.id === selected.id ? selected : image,
-        ),
-      }),
-      `Updated image details: ${selected.name}`,
-    );
-    setSaving(false);
-    setFeedback({ message: result.message, error: !result.ok });
-    if (result.ok) {
+    try {
+      const result = await saveMutation.mutateAsync({
+        collection: "media",
+        operation: "save",
+        value: selected,
+      });
+      setFeedback({ message: result.message, error: false });
       setSelected(null);
+    } catch (error) {
+      setFeedback({
+        message:
+          error instanceof Error
+            ? error.message
+            : "Could not save image details. Try again.",
+        error: true,
+      });
     }
   }
 
@@ -118,19 +103,23 @@ export function AdminMediaLibrary() {
       setConfirmRemove(false);
       return;
     }
-    setRemoving(true);
-    const result = await updateAdminState(
-      (current) => ({
-        ...current,
-        media: current.media.filter((image) => image.id !== selected.id),
-      }),
-      `Removed image: ${selected.name}`,
-    );
-    setRemoving(false);
-    setFeedback({ message: result.message, error: !result.ok });
-    if (result.ok) {
+    try {
+      const result = await removeMutation.mutateAsync({
+        collection: "media",
+        operation: "delete",
+        value: { id: selected.id },
+      });
+      setFeedback({ message: result.message, error: false });
       setSelected(null);
       setConfirmRemove(false);
+    } catch (error) {
+      setFeedback({
+        message:
+          error instanceof Error
+            ? error.message
+            : "Could not remove this image. Try again.",
+        error: true,
+      });
     }
   }
 
@@ -141,12 +130,12 @@ export function AdminMediaLibrary() {
         description="Organise photographs and keep image descriptions clear and accessible."
         actions={
           <AdminButton
-            loading={uploading}
+            loading={uploadMutation.isPending}
             loadingLabel="Uploading…"
             onClick={() => input.current?.click()}
           >
             <AdminIcon name="plus" />{" "}
-            {uploading ? "Uploading…" : "Upload image"}
+            {uploadMutation.isPending ? "Uploading…" : "Upload image"}
           </AdminButton>
         }
       />
@@ -173,9 +162,11 @@ export function AdminMediaLibrary() {
           JPG, PNG or WebP · Up to 2 MB per image
         </p>
       </div>
-      <div className="mb-4">
-        <AdminFeedback {...feedback} />
-      </div>
+      {feedback.message && (
+        <div className="mb-4">
+          <AdminFeedback {...feedback} />
+        </div>
+      )}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {images.map((image) => (
           <button
@@ -228,7 +219,7 @@ export function AdminMediaLibrary() {
           (confirmRemove ? (
             <div className="space-y-6">
               <p className="text-sm leading-6 text-muted">
-                Remove “{selected.name}” from this browser’s media library?
+                Remove “{selected.name}” from the media library?
               </p>
               <div className="flex flex-wrap justify-end gap-3">
                 <AdminButton
@@ -240,7 +231,7 @@ export function AdminMediaLibrary() {
                 <AdminButton
                   variant="danger"
                   onClick={remove}
-                  loading={removing}
+                  loading={removeMutation.isPending}
                   loadingLabel="Removing…"
                 >
                   Remove image
@@ -278,7 +269,7 @@ export function AdminMediaLibrary() {
                   }
                 />
               </AdminField>
-              <AdminFeedback {...feedback} />
+              {feedback.message && <AdminFeedback {...feedback} />}
               <div className="flex flex-wrap justify-between gap-3">
                 <AdminButton
                   variant="secondary"
@@ -288,7 +279,7 @@ export function AdminMediaLibrary() {
                 </AdminButton>
                 <AdminButton
                   onClick={saveDetails}
-                  loading={saving}
+                  loading={saveMutation.isPending}
                   loadingLabel="Saving…"
                 >
                   Save image details

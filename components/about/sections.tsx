@@ -142,7 +142,8 @@ export function AboutPartners() {
       >
         <p className="max-w-2xl text-base leading-8 text-muted">
           The centre coordinates with agencies across emergency management,
-          healthcare, traffic and public safety.
+          healthcare, traffic, public safety, survivor support and social
+          welfare.
         </p>
       </SectionIntro>
       <AgencyGrid />

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { createSlug, formatAdminDate } from "@/lib/admin/helpers";
-import { updateAdminState, useAdminState } from "@/lib/admin/store";
+import { useAdminState, useContentCommand } from "@/lib/admin/queries/content";
 import type { AdminArticle, PublicationStatus } from "@/lib/admin/types";
 import {
   AdminButton,
@@ -75,7 +75,10 @@ function ArticleEditorForm({
   const [slugEdited, setSlugEdited] = useState(Boolean(article.slug));
   const [picker, setPicker] = useState(false);
   const [preview, setPreview] = useState(false);
-  const [saving, setSaving] = useState<PublicationStatus | null>(null);
+  const [savingStatus, setSavingStatus] = useState<PublicationStatus | null>(
+    null,
+  );
+  const saveMutation = useContentCommand();
   const titleRef = useRef<HTMLInputElement>(null);
   const dirty = JSON.stringify(form) !== JSON.stringify(article);
   const cover = state.media.find((image) => image.id === form.coverId);
@@ -131,23 +134,28 @@ function ArticleEditorForm({
       id: article.id === "new" ? crypto.randomUUID() : article.id,
       updatedAt: new Date().toISOString(),
     };
-    setSaving(status);
-    const result = await updateAdminState(
-      (current) => ({
-        ...current,
-        articles:
-          article.id === "new"
-            ? [saved, ...current.articles]
-            : current.articles.map((item) =>
-                item.id === saved.id ? saved : item,
-              ),
-      }),
-      `${status === "Published" ? "Published" : "Saved draft"}: ${title}`,
-    );
-    setSaving(null);
-    setFeedback({ message: result.message, error: !result.ok });
-    if (result.ok && article.id === "new") {
-      router.replace(`/admin/news/${saved.id}`);
+    setSavingStatus(status);
+    try {
+      const result = await saveMutation.mutateAsync({
+        collection: "articles",
+        operation: "save",
+        value: saved,
+        expectedUpdatedAt: article.id === "new" ? undefined : article.updatedAt,
+      });
+      setFeedback({ message: result.message, error: false });
+      if (article.id === "new") {
+        router.replace(`/admin/news/${saved.id}`);
+      }
+    } catch (error) {
+      setFeedback({
+        message:
+          error instanceof Error
+            ? error.message
+            : "Could not save this article. Try again.",
+        error: true,
+      });
+    } finally {
+      setSavingStatus(null);
     }
   }
 
@@ -277,9 +285,9 @@ function ArticleEditorForm({
               <AdminButton
                 type="submit"
                 variant="secondary"
-                loading={saving === "Draft"}
+                loading={savingStatus === "Draft"}
                 loadingLabel="Saving draft…"
-                disabled={saving !== null}
+                disabled={saveMutation.isPending}
               >
                 Save draft
               </AdminButton>
@@ -291,16 +299,16 @@ function ArticleEditorForm({
               )}
               <AdminButton
                 onClick={() => save("Published")}
-                loading={saving === "Published"}
+                loading={savingStatus === "Published"}
                 loadingLabel="Publishing…"
-                disabled={saving !== null}
+                disabled={saveMutation.isPending}
               >
                 {article.status === "Published"
                   ? "Update published article"
                   : "Publish article"}
               </AdminButton>
             </div>
-            <AdminFeedback {...feedback} />
+            {feedback.message && <AdminFeedback {...feedback} />}
           </section>
           <section className="space-y-4 rounded-lg border border-border bg-white p-5 sm:p-6">
             <h2 className="text-lg font-bold text-navy">Cover image</h2>

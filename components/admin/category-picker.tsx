@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { categoryError, getAdminCategories } from "@/lib/admin/categories";
-import { updateAdminState, useAdminState } from "@/lib/admin/store";
+import { useAdminState, useContentCommand } from "@/lib/admin/queries/content";
 import { AdminButton, AdminFeedback, AdminField } from "./ui";
 
 export function CategoryPicker({
@@ -17,7 +17,7 @@ export function CategoryPicker({
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
   const [feedback, setFeedback] = useState({ message: "", error: false });
-  const [creating, setCreating] = useState(false);
+  const createMutation = useContentCommand();
   const trigger = useRef<HTMLButtonElement>(null);
   const input = useRef<HTMLInputElement>(null);
 
@@ -40,24 +40,23 @@ export function CategoryPicker({
       setFeedback({ message: error, error: true });
       return;
     }
-    setCreating(true);
-    const result = await updateAdminState(
-      (current) => ({
-        ...current,
-        categories: [...current.categories, category],
-      }),
-      `Created news category: ${category}`,
-    );
-    setCreating(false);
-    setFeedback({
-      message: result.ok
-        ? "Category created and selected."
-        : result.message,
-      error: !result.ok,
-    });
-    if (result.ok) {
+    try {
+      await createMutation.mutateAsync({
+        collection: "categories",
+        operation: "save",
+        value: { name: category },
+      });
+      setFeedback({ message: "Category created and selected.", error: false });
       onChange(category);
       close();
+    } catch (error) {
+      setFeedback({
+        message:
+          error instanceof Error
+            ? error.message
+            : "Could not create this category. Try again.",
+        error: true,
+      });
     }
   }
 
@@ -111,7 +110,7 @@ export function CategoryPicker({
           <div className="flex flex-wrap gap-2">
             <AdminButton
               onClick={create}
-              loading={creating}
+              loading={createMutation.isPending}
               loadingLabel="Creating…"
             >
               Create category

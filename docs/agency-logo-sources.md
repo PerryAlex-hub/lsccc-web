@@ -23,3 +23,19 @@ approved. The low-resolution LASEMA, LASAMBUS and LASTMA source images are kept
 at modest display sizes rather than enlarged into illustrations.
 
 Emblems identify the respective public agencies; no new agency marks were drawn.
+
+## Additional response-network emblems
+
+Retrieved 21 October 2026. Names and roles were checked against the agencies'
+public websites and Lagos State government publications.
+
+| Organisation | Public source                                                                 | Original image                                                                                           |
+| ------------ | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| DSVA         | [Domestic and Sexual Violence Agency](https://lagosdsva.org/)                 | [DSVA logo](https://lagosdsva.org/wp-content/uploads/2024/09/cropped-logo2.jpg)                          |
+| LNSA         | [Published agency profile](https://x.com/lnsalagos)                           | [LNSA emblem](https://pbs.twimg.com/profile_images/987459778615095297/UWyWkT6a.jpg)                      |
+| WAPA         | [Published ministry profile](https://x.com/wapalagos)                         | [WAPA emblem](https://pbs.twimg.com/profile_images/1775527214500532224/5W3ib6a8_400x400.jpg)             |
+| LASHMA       | [LAMATA strategic partners](https://www.lamata-ng.com/strategic-partnership/) | [LASHMA emblem](https://www.lamata-ng.com/wp-content/uploads/2026/05/lashma-C0LHpq38-e1778835999375.png) |
+
+WAPA is a ministry. LASHMA provides health coverage support; its inclusion does
+not describe it as an ambulance or emergency dispatch service. The list and grid
+are shared between the homepage and About page.

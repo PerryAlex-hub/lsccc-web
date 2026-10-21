@@ -1,34 +1,22 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
-import { authRequest, navigateAfterAuth } from "@/lib/auth/client";
+import { useState, type FormEvent } from "react";
+import {
+  useAdminTeam,
+  useTeamMutation,
+  type Staff,
+} from "@/lib/admin/queries/team";
 import { AdminButton, AdminField, AdminFeedback, AdminHeading } from "./ui";
 import { AdminDialog } from "./dialog";
-import { showAdminToast } from "./toast";
-
-type Staff = {
-  id: string;
-  name: string;
-  email: string;
-  role: "ADMINISTRATOR" | "EDITOR";
-  status: "ACTIVE" | "DEACTIVATED";
-};
-type Invite = {
-  id: string;
-  email: string;
-  role: Staff["role"];
-  expiresAt: string;
-  revokedAt: string | null;
-};
-type Team = { users: Staff[]; invitations: Invite[] };
 
 export function TeamManager() {
-  const [team, setTeam] = useState<Team | null>(null);
+  const { data: team, isPending, isError, error, refetch, isFetching } =
+    useAdminTeam();
+  const inviteMutation = useTeamMutation();
+  const accessMutation = useTeamMutation();
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<Staff["role"]>("EDITOR");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState(false);
-  const [busy, setBusy] = useState(false);
+  const [feedback, setFeedback] = useState({ message: "", error: false });
   const [setupUrl, setSetupUrl] = useState("");
   const [confirm, setConfirm] = useState<{
     id: string;
@@ -36,74 +24,62 @@ export function TeamManager() {
     action: "deactivate" | "revoke";
   } | null>(null);
 
-  async function load() {
-    const response = await fetch("/api/admin/team", { cache: "no-store" });
-    if (response.status === 401) {
-      navigateAfterAuth("/admin/login");
-      return;
-    }
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.message || "Unable to load staff.");
-    }
-    setTeam(result);
-  }
-  useEffect(() => {
-    let active = true;
-    fetch("/api/admin/team", { cache: "no-store" })
-      .then(async (response) => {
-        if (!response.ok) {
-          throw new Error(
-            "Unable to load staff. Administrator access is required.",
-          );
-        }
-        return response.json();
-      })
-      .then((result) => {
-        if (active) {
-          setTeam(result);
-        }
-      })
-      .catch((error) => {
-        if (active) {
-          setMessage(error.message);
-          setError(true);
-        }
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
-  async function update(data: unknown, method = "PATCH") {
-    setBusy(true);
-    setMessage("");
-    setSetupUrl("");
-    try {
-      const result = await authRequest("/api/admin/team", data, method);
-      setMessage(result.message);
-      setError(false);
-      showAdminToast({ message: result.message, tone: "success" });
-      setSetupUrl(result.setupUrl || "");
-      setConfirm(null);
-      await load();
-      return true;
-    } catch (error) {
-      const nextMessage =
-        error instanceof Error ? error.message : "Unable to update access.";
-      setMessage(nextMessage);
-      setError(true);
-      showAdminToast({ message: nextMessage, tone: "error" });
-      return false;
-    } finally {
-      setBusy(false);
-    }
-  }
   async function invite(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (await update({ email, role }, "POST")) {
+    setSetupUrl("");
+    try {
+      const result = await inviteMutation.mutateAsync({
+        data: { email, role },
+        method: "POST",
+      });
+      setFeedback({ message: result.message, error: false });
+      setSetupUrl(result.setupUrl || "");
       setEmail("");
+    } catch (error) {
+      setFeedback({
+        message:
+          error instanceof Error ? error.message : "Unable to send invitation.",
+        error: true,
+      });
     }
   }
+
+  async function changeAccess(data: unknown) {
+    setSetupUrl("");
+    try {
+      const result = await accessMutation.mutateAsync({ data, method: "PATCH" });
+      setFeedback({ message: result.message, error: false });
+      setConfirm(null);
+    } catch (error) {
+      setFeedback({
+        message:
+          error instanceof Error ? error.message : "Unable to update access.",
+        error: true,
+      });
+    }
+  }
+
+  async function resend(invitation: { email: string; role: Staff["role"] }) {
+    setSetupUrl("");
+    try {
+      const result = await inviteMutation.mutateAsync({
+        data: { email: invitation.email, role: invitation.role },
+        method: "POST",
+      });
+      setFeedback({ message: result.message, error: false });
+      setSetupUrl(result.setupUrl || "");
+    } catch (error) {
+      setFeedback({
+        message:
+          error instanceof Error
+            ? error.message
+            : "Unable to resend invitation.",
+        error: true,
+      });
+    }
+  }
+
+  const busy = inviteMutation.isPending || accessMutation.isPending;
 
   return (
     <>
@@ -138,7 +114,11 @@ export function TeamManager() {
               <option value="ADMINISTRATOR">Administrator</option>
             </select>
           </AdminField>
-          <AdminButton type="submit" loading={busy} loadingLabel="Creating…">
+          <AdminButton
+            type="submit"
+            loading={inviteMutation.isPending}
+            loadingLabel="Creating…"
+          >
             Create invitation
           </AdminButton>
         </div>
@@ -147,9 +127,9 @@ export function TeamManager() {
           link.
         </p>
       </form>
-      {message && (
+      {feedback.message && (
         <div className="mb-5">
-          <AdminFeedback message={message} error={error} />
+          <AdminFeedback {...feedback} />
         </div>
       )}
       {setupUrl && (
@@ -169,16 +149,11 @@ export function TeamManager() {
             onClick={async () => {
               try {
                 await navigator.clipboard.writeText(setupUrl);
-                setMessage("Setup link copied.");
-                showAdminToast({
-                  message: "Setup link copied.",
-                  tone: "success",
-                });
+                setFeedback({ message: "Setup link copied.", error: false });
               } catch {
-                setMessage("Could not copy the link. Open it above.");
-                showAdminToast({
+                setFeedback({
                   message: "Could not copy the link. Open it above.",
-                  tone: "error",
+                  error: true,
                 });
               }
             }}
@@ -187,7 +162,25 @@ export function TeamManager() {
           </AdminButton>
         </div>
       )}
-      {!team && !error && <p role="status">Loading staff…</p>}
+      {isPending && <p role="status">Loading staff…</p>}
+      {isError && (
+        <div
+          className="rounded-lg border border-border bg-white p-8"
+          role="alert"
+        >
+          <p>
+            {error instanceof Error ? error.message : "Unable to load staff."}
+          </p>
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            disabled={isFetching}
+            className="mt-4 min-h-11 font-bold text-blue disabled:opacity-60"
+          >
+            {isFetching ? "Trying again…" : "Try again"}
+          </button>
+        </div>
+      )}
       <div className="space-y-3">
         {team?.users.map((member) => (
           <article
@@ -210,7 +203,7 @@ export function TeamManager() {
                   value={member.role}
                   disabled={busy}
                   onChange={(event) =>
-                    update({ id: member.id, role: event.target.value })
+                    changeAccess({ id: member.id, role: event.target.value })
                   }
                   className="admin-input"
                 >
@@ -236,7 +229,9 @@ export function TeamManager() {
                 <AdminButton
                   variant="secondary"
                   disabled={busy}
-                  onClick={() => update({ id: member.id, status: "ACTIVE" })}
+                  onClick={() =>
+                    changeAccess({ id: member.id, status: "ACTIVE" })
+                  }
                 >
                   Reactivate
                 </AdminButton>
@@ -269,12 +264,7 @@ export function TeamManager() {
                 <AdminButton
                   variant="secondary"
                   disabled={busy}
-                  onClick={() =>
-                    update(
-                      { email: invitation.email, role: invitation.role },
-                      "POST",
-                    )
-                  }
+                  onClick={() => resend(invitation)}
                 >
                   Resend invitation
                 </AdminButton>
@@ -309,19 +299,19 @@ export function TeamManager() {
             : "Revoke this invitation"}{" "}
           for {confirm?.email}?
         </p>
-        {confirm && error && (
+        {confirm && feedback.error && (
           <div className="mb-4">
-            <AdminFeedback message={message} error />
+            <AdminFeedback {...feedback} />
           </div>
         )}
         <div className="flex gap-3">
           <AdminButton
             variant="danger"
-            loading={busy}
+            loading={accessMutation.isPending}
             loadingLabel="Updating…"
             onClick={() =>
               confirm &&
-              update(
+              changeAccess(
                 confirm.action === "revoke"
                   ? { id: confirm.id, action: "revoke" }
                   : { id: confirm.id, status: "DEACTIVATED" },

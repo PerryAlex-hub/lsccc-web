@@ -35,4 +35,31 @@ export const agencies = [
     name: "Federal Road Safety Corps",
     description: "Road safety and traffic incident collaboration.",
   },
+  {
+    abbreviation: "DSVA",
+    logo: "/images/agencies/dsva.jpg",
+    name: "Lagos State Domestic and Sexual Violence Agency",
+    description:
+      "Survivor support and coordinated referrals for domestic and sexual violence.",
+  },
+  {
+    abbreviation: "LNSA",
+    logo: "/images/agencies/lnsa.jpg",
+    name: "Lagos State Neighbourhood Safety Agency",
+    description:
+      "Community safety, local intelligence and neighbourhood security.",
+  },
+  {
+    abbreviation: "WAPA",
+    logo: "/images/agencies/wapa.jpg",
+    name: "Lagos State Ministry of Women Affairs and Poverty Alleviation",
+    description: "Women's welfare, empowerment and social support.",
+  },
+  {
+    abbreviation: "LASHMA",
+    logo: "/images/agencies/lashma.png",
+    name: "Lagos State Health Management Agency",
+    description:
+      "Health insurance access and coordination of healthcare coverage.",
+  },
 ] as const;
